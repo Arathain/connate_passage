@@ -2,6 +2,7 @@ package arathain.connatepassage;
 
 import arathain.connatepassage.init.ConnateBlocks;
 import arathain.connatepassage.init.ConnateItems;
+import net.minecraft.entity.damage.DamageSources;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
 import org.slf4j.Logger;
