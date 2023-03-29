@@ -5,6 +5,7 @@ import arathain.connatepassage.init.ConnateItems;
 import arathain.connatepassage.init.ConnateWorldshells;
 import com.google.common.reflect.Reflection;
 import net.minecraft.entity.damage.DamageSources;
+import net.minecraft.util.Identifier;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
 import org.slf4j.Logger;
@@ -23,5 +24,8 @@ public class ConnatePassage implements ModInitializer {
 		ConnateBlocks.init();
 		ConnateItems.init();
 		Reflection.initialize(ConnateWorldshells.class);
+	}
+	public static Identifier id(String name) {
+		return new Identifier(MODID, name);
 	}
 }
