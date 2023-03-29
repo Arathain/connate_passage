@@ -5,6 +5,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.Registries;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Quaternionf;
@@ -14,14 +15,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class Worldshell {
-	private final Map<BlockPos, BlockState> contained;
-	private Quaternionf rotation = new Quaternionf(0, 0, 0, 0);
-	private Vec3d pos;
+	protected final Map<BlockPos, BlockState> contained;
+	protected Quaternionf rotation = new Quaternionf(0, 0, 0, 0);
+	protected Vec3d pos;
 
 	public Worldshell(Map<BlockPos, BlockState> contained, Vec3d initialPos) {
 		this.contained = contained;
 		this.pos = initialPos;
 	}
+	public abstract Identifier getId();
 
 	public Quaternionf getRotation() {
 		return rotation;
@@ -42,14 +44,7 @@ public abstract class Worldshell {
 	}
 
 	public void writeNbt(NbtCompound nbt) {
-		nbt.putFloat("quatX", rotation.x);
-		nbt.putFloat("quatY", rotation.y);
-		nbt.putFloat("quatZ", rotation.z);
-		nbt.putFloat("quatW", rotation.w);
-
-		nbt.putDouble("posX", pos.x);
-		nbt.putDouble("posY", pos.y);
-		nbt.putDouble("posZ", pos.z);
+		writeUpdateNbt(nbt);
 
 		NbtList list = new NbtList();
 		contained.forEach((key, value) -> {
@@ -59,14 +54,30 @@ public abstract class Worldshell {
 		});
 		nbt.put("containedBlocks", list);
 	}
-	public void readNbt(NbtCompound nbt) {
+	public void writeUpdateNbt(NbtCompound nbt) {
+		nbt.putFloat("quatX", rotation.x);
+		nbt.putFloat("quatY", rotation.y);
+		nbt.putFloat("quatZ", rotation.z);
+		nbt.putFloat("quatW", rotation.w);
+
+		nbt.putDouble("posX", pos.x);
+		nbt.putDouble("posY", pos.y);
+		nbt.putDouble("posZ", pos.z);
+	}
+	public void readUpdateNbt(NbtCompound nbt) {
 		this.rotation = new Quaternionf(nbt.getFloat("quatX"), nbt.getFloat("quatY"), nbt.getFloat("quatZ"), nbt.getFloat("quatW"));
 		this.pos = new Vec3d(nbt.getDouble("posX"), nbt.getDouble("posY"), nbt.getDouble("posZ"));
+	}
+	public void readNbt(NbtCompound nbt) {
+		readUpdateNbt(nbt);
+	}
 
+	public static Map<BlockPos, BlockState> getBlocksFromNbt(NbtCompound nbt) {
 		NbtList list = nbt.getList("containedBlocks", 10);
-		contained.clear();
+		Map<BlockPos, BlockState> map = new HashMap<>();
 		list.forEach(bNbt -> {
-			contained.put(NbtHelper.toBlockPos((NbtCompound) bNbt), NbtHelper.toBlockState(Registries.BLOCK.asLookup(), nbt.getCompound("state")));
+			map.put(NbtHelper.toBlockPos((NbtCompound) bNbt), NbtHelper.toBlockState(Registries.BLOCK.asLookup(), nbt.getCompound("state")));
 		});
+		return map;
 	}
 }

@@ -18,7 +18,8 @@
 		},
 		"intermediate_mappings": "net.fabricmc:intermediary",
 		"entrypoints": {
-			"init": "arathain.connatepassage.ConnatePassage"
+			"init": "arathain.connatepassage.ConnatePassage",
+			"cardinal-components-world": "arathain.connatepassage.content.cca.ConnateWorldComponents"
 		},
 		"depends": [
 			{
@@ -35,5 +36,8 @@
 			}
 		]
 	},
-	"mixin": "example_mod.mixins.json"
+	"mixin": "connatepassage.mixin.json",
+	"cardinal-components": [
+		"connatepassage:worldshells"
+	]
 }

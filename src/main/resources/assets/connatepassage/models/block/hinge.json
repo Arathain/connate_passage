@@ -2,8 +2,8 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [32, 32],
 	"textures": {
-		"2": "connatepassage:textures/block/hinge.png",
-		"particle": "textures/block/copper_block.png"
+      "2": "connatepassage:block/hinge",
+      "particle": "minecraft:block/copper_block"
 	},
 	"elements": [
 		{

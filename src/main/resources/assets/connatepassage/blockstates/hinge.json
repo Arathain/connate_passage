@@ -1,0 +1,14 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "connatepassage:block/hinge"
+    },
+    "axis=y": {
+      "model": "connatepassage:block/hinge_vert"
+    },
+    "axis=z": {
+      "model": "connatepassage:block/hinge",
+      "y": 90
+    }
+  }
+}

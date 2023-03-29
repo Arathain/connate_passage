@@ -2,6 +2,8 @@ package arathain.connatepassage;
 
 import arathain.connatepassage.init.ConnateBlocks;
 import arathain.connatepassage.init.ConnateItems;
+import arathain.connatepassage.init.ConnateWorldshells;
+import com.google.common.reflect.Reflection;
 import net.minecraft.entity.damage.DamageSources;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
@@ -20,5 +22,6 @@ public class ConnatePassage implements ModInitializer {
 		MODID = mod.metadata().id();
 		ConnateBlocks.init();
 		ConnateItems.init();
+		Reflection.initialize(ConnateWorldshells.class);
 	}
 }

@@ -1,12 +1,16 @@
 package arathain.connatepassage.init;
 
 import arathain.connatepassage.ConnatePassage;
+import arathain.connatepassage.content.block.HingeBlock;
 import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
+import org.quiltmc.qsl.block.extensions.api.QuiltBlockSettings;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -16,6 +20,7 @@ public interface ConnateBlocks {
 	static <T extends Block> T register(String id, T block) {
 		return register(id, block, true);
 	}
+	Block HINGE = register("hinge", new HingeBlock(QuiltBlockSettings.copyOf(Blocks.COPPER_BLOCK).nonOpaque()));
 
 	static <T extends Block> T register(String id, T block, boolean createItem) {
 		Identifier identity = new Identifier(ConnatePassage.MODID, id);
