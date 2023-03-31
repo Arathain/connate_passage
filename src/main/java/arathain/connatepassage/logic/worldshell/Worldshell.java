@@ -18,10 +18,12 @@ public abstract class Worldshell {
 	protected final Map<BlockPos, BlockState> contained;
 	protected Quaternionf rotation = new Quaternionf(0, 0, 0, 0);
 	protected Vec3d pos;
+	protected BlockPos pivot;
 
-	public Worldshell(Map<BlockPos, BlockState> contained, Vec3d initialPos) {
+	public Worldshell(Map<BlockPos, BlockState> contained, Vec3d initialPos, BlockPos pivot) {
 		this.contained = contained;
 		this.pos = initialPos;
+		this.pivot = pivot;
 	}
 	public abstract Identifier getId();
 
@@ -63,13 +65,18 @@ public abstract class Worldshell {
 		nbt.putDouble("posX", pos.x);
 		nbt.putDouble("posY", pos.y);
 		nbt.putDouble("posZ", pos.z);
+		nbt.put("pivot", NbtHelper.fromBlockPos(pivot));
 	}
 	public void readUpdateNbt(NbtCompound nbt) {
 		this.rotation = new Quaternionf(nbt.getFloat("quatX"), nbt.getFloat("quatY"), nbt.getFloat("quatZ"), nbt.getFloat("quatW"));
 		this.pos = new Vec3d(nbt.getDouble("posX"), nbt.getDouble("posY"), nbt.getDouble("posZ"));
+		this.pivot = NbtHelper.toBlockPos(nbt.getCompound("pivot"));
 	}
 	public void readNbt(NbtCompound nbt) {
 		readUpdateNbt(nbt);
+	}
+	public static BlockPos getBlockPosFromNbt(NbtCompound nbt) {
+		return NbtHelper.toBlockPos(nbt.getCompound("pivot"));
 	}
 
 	public static Map<BlockPos, BlockState> getBlocksFromNbt(NbtCompound nbt) {

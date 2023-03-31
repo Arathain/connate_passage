@@ -11,8 +11,8 @@ import java.util.Map;
 
 public class AxisLimitedWorldshell extends Worldshell {
 	private Vector3f axis;
-	public AxisLimitedWorldshell(Map<BlockPos, BlockState> contained, Vec3d initialPos, Vector3f initialAxis) {
-		super(contained, initialPos);
+	public AxisLimitedWorldshell(Map<BlockPos, BlockState> contained, Vec3d initialPos, BlockPos pivot, Vector3f initialAxis) {
+		super(contained, initialPos, pivot);
 		this.axis = initialAxis;
 	}
 

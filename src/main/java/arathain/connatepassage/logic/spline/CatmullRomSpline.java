@@ -8,7 +8,7 @@ import org.joml.Vector4d;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CatmullRomSpline {
+public abstract class CatmullRomSpline {
 	public static Vec3d interpolate(float delta, Vec3d p0, Vec3d p1, Vec3d p2, Vec3d p3) {
 		Vector4d cubic = new Vector4d(delta*delta*delta, delta*delta, delta, 1);
 		Matrix4d transform = new Matrix4d( 0, 2, 0, 0,

@@ -19,6 +19,7 @@
 		"intermediate_mappings": "net.fabricmc:intermediary",
 		"entrypoints": {
 			"init": "arathain.connatepassage.ConnatePassage",
+			"client_init": "arathain.connatepassage.ConnatePassageClient",
 			"cardinal-components-world": "arathain.connatepassage.content.cca.ConnateWorldComponents"
 		},
 		"depends": [

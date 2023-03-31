@@ -8,5 +8,5 @@ import java.util.Map;
 
 @FunctionalInterface
 public interface WorldshellSupplier {
-	Worldshell create(Map<BlockPos, BlockState> contained, Vec3d initialPos);
+	Worldshell create(Map<BlockPos, BlockState> contained, Vec3d initialPos, BlockPos pivot);
 }

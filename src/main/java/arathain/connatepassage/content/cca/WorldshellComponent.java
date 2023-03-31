@@ -24,10 +24,14 @@ public class WorldshellComponent implements AutoSyncedComponent {
 		NbtList list = nbt.getList("worldshells", 10);
 		list.forEach(wNbt -> {
 			NbtCompound worldshellNbt = (NbtCompound) wNbt;
-			Worldshell shell = ConnateWorldshells.WORLDSHELLS.get(new Identifier(worldshellNbt.getString("id"))).create(Worldshell.getBlocksFromNbt(worldshellNbt), Vec3d.ZERO);
+			Worldshell shell = ConnateWorldshells.WORLDSHELLS.get(new Identifier(worldshellNbt.getString("id"))).create(Worldshell.getBlocksFromNbt(worldshellNbt), Vec3d.ZERO, Worldshell.getBlockPosFromNbt(worldshellNbt));
 			shell.readNbt(worldshellNbt);
 			worldshells.add(shell);
 		});
+	}
+
+	public List<Worldshell> getWorldshells() {
+		return worldshells;
 	}
 
 	@Override
