@@ -26,6 +26,17 @@ public class CatmullRomSplineCurve {
 
 		regenerateLookupTable(lookupTablePrecision);
 	}
+	public void move(float dist) {
+		this.prevPos = this.pos;
+		this.pos += dist;
+	}
+	public void moveLoop(float dist) {
+		move(dist);
+		if(this.pos > distances.get(distances.size()-1)) {
+			this.prevPos = 0;
+			this.pos = 0;
+		}
+	}
 	public Vec3d getPos(float tickDelta) {
 		float distance = MathHelper.lerp(tickDelta, prevPos, pos);
 		int index = 0;
@@ -46,7 +57,7 @@ public class CatmullRomSplineCurve {
 		return CatmullRomSpline.interpolate(delta, this.points.get(index), this.points.get(index+1), this.points.get(index+2), this.points.get(index+3));
 	}
 	public void regenerateLookupTable(int lookupTablePrecision) {
-		this.lookupTable = CatmullRomSpline.generateLUT(this, lookupTablePrecision);
+		this.lookupTable = CatmullRomSpline.generateLUT(this, lookupTablePrecision+1);
 
 		constructDistances();
 	}

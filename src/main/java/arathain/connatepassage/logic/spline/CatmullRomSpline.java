@@ -1,28 +1,29 @@
 package arathain.connatepassage.logic.spline;
 
 import net.minecraft.util.math.Vec3d;
-import org.joml.Matrix4d;
-import org.joml.Matrix4x3d;
-import org.joml.Vector4d;
+import org.joml.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static net.minecraft.util.math.MathHelper.catmullRom;
+
 public abstract class CatmullRomSpline {
+	private static final Matrix4d IDENTITY_MATRIX = new Matrix4d( -0.5, 1.5, -1.5, 0.5,
+		1, -2.5, 2, -0.5,
+		-0.5, 0, 0.5, 0,
+		0, 1, 0, 0);
 	public static Vec3d interpolate(float delta, Vec3d p0, Vec3d p1, Vec3d p2, Vec3d p3) {
-		Vector4d cubic = new Vector4d(delta*delta*delta, delta*delta, delta, 1);
-		Matrix4d transform = new Matrix4d( 0, 2, 0, 0,
-				                          -1, 0, 1, 0,
-				                           2,-5, 4, -1,
-				                          -1, 3, -3, 1);
+		Vector4d cubic = new Vector4d(delta*delta*delta, delta*delta, delta, 1).mul(IDENTITY_MATRIX);
 		Matrix4x3d vectors = new Matrix4x3d(p0.x, p0.y, p0.z,
 				                            p1.x, p1.y, p1.z,
 				                            p2.x, p2.y, p2.z,
 				                            p3.x, p3.y, p3.z);
-		cubic.mul(0.5);
-		cubic.mul(transform);
-		cubic.mul(vectors);
-		return new Vec3d(cubic.x, cubic.y, cubic.z);
+		Vec3d AAAAAAAAAAA = p1
+			.add(p0.multiply(-0.5).add(p2.multiply(0.5)).multiply(delta))
+			.add(p0.add(p1.multiply(-2.5)).add(p2.multiply(2)).add(p3.multiply(-0.5)).multiply(delta*delta))
+			.add(p0.multiply(-0.5).add(p1.multiply(1.5)).add(p2.multiply(-1.5)).add(p3.multiply(0.5)).multiply(delta*delta*delta));
+		return AAAAAAAAAAA;
 	}
 	public static List<float[]> generateLUT(CatmullRomSplineCurve curve, int steps) {
 		List<float[]> LUT = new ArrayList<>();
@@ -38,18 +39,17 @@ public abstract class CatmullRomSpline {
 		return LUT;
 	}
 	private static float[] composeSegmentLookup(Vec3d a, Vec3d b, Vec3d c, Vec3d d, int precision) {
-		float[] yeag = new float[]{};
+		float[] yeag = new float[precision];
 		float buffer = 0;
-		int index = 0;
 		Vec3d prev = null;
 		Vec3d current;
-		for(int i = 0; i <= precision; i++) {
-			current = interpolate((float)i/precision, a, b, c, d);
+		for(int i = 0; i < precision; i++) {
+			current = interpolate((float)i/(precision-1), a, b, c, d);
 			if(prev == null) {
 				prev = current;
 			} else {
 				buffer += (float) prev.distanceTo(current);
-				yeag[index++] = buffer;
+				yeag[i] = buffer;
 			}
 		}
 		return yeag;
