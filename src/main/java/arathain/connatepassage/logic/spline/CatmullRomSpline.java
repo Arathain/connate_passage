@@ -20,13 +20,12 @@ public abstract class CatmullRomSpline {
 			0, 1, 0, 0);
 	private static final Vec2f[] cubicQuadrature = new Vec2f[]{new Vec2f(-0.7745966F, 0.5555556F), new Vec2f(0, 0.8888889F), new Vec2f(0.7745966F, 0.5555556F)};
 
-	public static float integrate(Function<Float, Float> f, float lowerBound, float upperBound) {
+	public static float integrate(Function<Float, Float> f, float min, float max) {
 		float sum = 0f;
 		for(Vec2f vec : cubicQuadrature) {
-			sum += vec.y * f.apply(MathHelper.lerp(MathHelper.inverseLerp(vec.x, -1, 1), lowerBound, upperBound));
+			sum += vec.y * f.apply(MathHelper.lerp(MathHelper.inverseLerp(vec.x, -1, 1), min, max));
 		}
-
-		return sum * (upperBound - lowerBound) / 2;
+		return sum * (max - min) / 2;
 	}
 	public static Vec3d interpolate(float delta, Vec3d p0, Vec3d p1, Vec3d p2, Vec3d p3) {
 		return p1
