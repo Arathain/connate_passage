@@ -1,5 +1,8 @@
 package arathain.connatepassage.content.block;
 
+import arathain.connatepassage.init.ConnateWorldshells;
+import arathain.connatepassage.logic.worldshell.AxisLimitedWorldshell;
+import arathain.connatepassage.logic.worldshell.Worldshell;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
@@ -10,8 +13,11 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
+
+import java.util.Map;
 
 public class HingeBlock extends WorldshellCreationBlock {
 
@@ -22,6 +28,11 @@ public class HingeBlock extends WorldshellCreationBlock {
 	public HingeBlock(Settings settings) {
 		super(settings);
 		this.setDefaultState(this.getDefaultState().with(AXIS, Direction.Axis.Y));
+	}
+
+	@Override
+	public Worldshell createWorldshell(Map<BlockPos, BlockState> contained, Vec3d initialPos, BlockPos pivot) {
+		return ((AxisLimitedWorldshell)ConnateWorldshells.AXIS_LIMITED.create(contained, initialPos, pivot)).setAxis(contained.get(pivot).get(AXIS));
 	}
 
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
