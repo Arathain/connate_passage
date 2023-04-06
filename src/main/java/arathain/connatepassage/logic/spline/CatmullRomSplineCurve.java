@@ -63,11 +63,10 @@ public class CatmullRomSplineCurve {
 
 	private float mapDistToDelta(float length, int index) {
 		float t = 0 + length / arcLength(1, index);
-		float lowerBound = 0f;
-		float upperBound = 1f;
+		float min = 0;
+		float max = 1;
 
-		for (int i = 0; i < 16*16; ++i)
-		{
+		for (int i = 0; i < 16*16; ++i) {
 			float f = arcLength(t, index) - length;
 
 			if (MathHelper.abs(f) < 0.01f)
@@ -76,19 +75,16 @@ public class CatmullRomSplineCurve {
 			float derivative = (float) getVelocity(index, t).length();
 			float candidateT = t - f / derivative;
 
-			if (f > 0)
-			{
-				upperBound = t;
+			if (f > 0) {
+				max = t;
 				if (candidateT <= 0)
-					t = (upperBound + lowerBound) / 2;
+					t = (max + min) / 2;
 				else
 					t = candidateT;
-			}
-			else
-			{
-				lowerBound = t;
+			} else {
+				min = t;
 				if (candidateT >= 1)
-					t = (upperBound + lowerBound) / 2;
+					t = (max + min) / 2;
 				else
 					t = candidateT;
 			}
