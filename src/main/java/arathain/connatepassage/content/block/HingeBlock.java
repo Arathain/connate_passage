@@ -25,7 +25,7 @@ import org.joml.Vector3f;
 
 import java.util.HashMap;
 
-public class HingeBlock extends WorldshellCreationBlock {
+public class HingeBlock extends Block {
 
 	protected static final VoxelShape X_SHAPE = Block.createCuboidShape(5.0, 0.0, 0.0, 11.0, 16.0, 16.0);
 	protected static final VoxelShape Z_SHAPE = Block.createCuboidShape(0.0, 0.0, 5.0, 16.0, 16.0, 11.0);

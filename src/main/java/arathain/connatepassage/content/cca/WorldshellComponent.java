@@ -22,6 +22,7 @@ public class WorldshellComponent implements AutoSyncedComponent, ServerTickingCo
 	public WorldshellComponent(World world) {
 		this.obj = world;
 	}
+	@SuppressWarnings("unchecked")
 	@Override
 	public void readFromNbt(NbtCompound nbt) {
 		worldshells.clear();
@@ -57,7 +58,7 @@ public class WorldshellComponent implements AutoSyncedComponent, ServerTickingCo
 	@Override
 	public void serverTick() {
 		if(obj instanceof ServerWorld s) {
-			//WorldshellUpdatePacket.send(s.getPlayers(), worldshells);
+			WorldshellUpdatePacket.send(s.getPlayers(), worldshells);
 		}
 	}
 }
