@@ -2,7 +2,6 @@ package arathain.connatepassage.logic.worldshell;
 
 import arathain.connatepassage.ConnatePassage;
 import net.minecraft.block.BlockState;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
