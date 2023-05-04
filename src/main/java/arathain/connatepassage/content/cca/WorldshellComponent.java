@@ -2,9 +2,13 @@ package arathain.connatepassage.content.cca;
 
 import arathain.connatepassage.init.ConnateWorldshells;
 import arathain.connatepassage.logic.worldshell.Worldshell;
+import arathain.connatepassage.logic.worldshell.WorldshellUpdatePacket;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
+import dev.onyxstudios.cca.api.v3.component.tick.ClientTickingComponent;
+import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -12,7 +16,7 @@ import net.minecraft.world.World;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WorldshellComponent implements AutoSyncedComponent {
+public class WorldshellComponent implements AutoSyncedComponent, ServerTickingComponent, ClientTickingComponent {
 	private final List<Worldshell> worldshells = new ArrayList<>();
 	private final World obj;
 	public WorldshellComponent(World world) {
@@ -43,5 +47,17 @@ public class WorldshellComponent implements AutoSyncedComponent {
 			list.add(compound);
 		});
 		tag.put("worldshells", list);
+	}
+
+	@Override
+	public void clientTick() {
+
+	}
+
+	@Override
+	public void serverTick() {
+		if(obj instanceof ServerWorld s) {
+			//WorldshellUpdatePacket.send(s.getPlayers(), worldshells);
+		}
 	}
 }

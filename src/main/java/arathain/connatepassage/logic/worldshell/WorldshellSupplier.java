@@ -7,6 +7,6 @@ import net.minecraft.util.math.Vec3d;
 import java.util.Map;
 
 @FunctionalInterface
-public interface WorldshellSupplier {
-	Worldshell create(Map<BlockPos, BlockState> contained, Vec3d initialPos, BlockPos pivot);
+public interface WorldshellSupplier<T extends Worldshell> {
+	T create(Map<BlockPos, BlockState> contained, Vec3d initialPos, BlockPos pivot);
 }

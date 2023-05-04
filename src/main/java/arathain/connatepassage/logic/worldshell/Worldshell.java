@@ -16,9 +16,9 @@ import java.util.Map;
 
 public abstract class Worldshell {
 	protected final Map<BlockPos, BlockState> contained;
-	protected Quaternionf rotation = new Quaternionf(0, 0, 0, 0);
+	protected Quaternionf rotation = new Quaternionf();
 	protected Vec3d pos;
-	protected BlockPos pivot;
+	protected final BlockPos pivot;
 
 	public Worldshell(Map<BlockPos, BlockState> contained, Vec3d initialPos, BlockPos pivot) {
 		this.contained = contained;
@@ -29,6 +29,10 @@ public abstract class Worldshell {
 
 	public Quaternionf getRotation() {
 		return rotation;
+	}
+
+	public BlockPos getPivot() {
+		return pivot;
 	}
 
 	public void setPos(Vec3d pos) {
@@ -45,6 +49,10 @@ public abstract class Worldshell {
 		return pos;
 	}
 
+	public Map<BlockPos, BlockState> getContained() {
+		return contained;
+	}
+
 	public void writeNbt(NbtCompound nbt) {
 		writeUpdateNbt(nbt);
 
@@ -54,9 +62,11 @@ public abstract class Worldshell {
 			compound.put("state", NbtHelper.fromBlockState(value));
 			list.add(compound);
 		});
+		nbt.putString("id", getId().toString());
 		nbt.put("containedBlocks", list);
+		nbt.put("pivot", NbtHelper.fromBlockPos(pivot));
 	}
-	public void writeUpdateNbt(NbtCompound nbt) {
+	public NbtCompound writeUpdateNbt(NbtCompound nbt) {
 		nbt.putFloat("quatX", rotation.x);
 		nbt.putFloat("quatY", rotation.y);
 		nbt.putFloat("quatZ", rotation.z);
@@ -65,12 +75,11 @@ public abstract class Worldshell {
 		nbt.putDouble("posX", pos.x);
 		nbt.putDouble("posY", pos.y);
 		nbt.putDouble("posZ", pos.z);
-		nbt.put("pivot", NbtHelper.fromBlockPos(pivot));
+		return nbt;
 	}
 	public void readUpdateNbt(NbtCompound nbt) {
 		this.rotation = new Quaternionf(nbt.getFloat("quatX"), nbt.getFloat("quatY"), nbt.getFloat("quatZ"), nbt.getFloat("quatW"));
 		this.pos = new Vec3d(nbt.getDouble("posX"), nbt.getDouble("posY"), nbt.getDouble("posZ"));
-		this.pivot = NbtHelper.toBlockPos(nbt.getCompound("pivot"));
 	}
 	public void readNbt(NbtCompound nbt) {
 		readUpdateNbt(nbt);
@@ -83,7 +92,7 @@ public abstract class Worldshell {
 		NbtList list = nbt.getList("containedBlocks", 10);
 		Map<BlockPos, BlockState> map = new HashMap<>();
 		list.forEach(bNbt -> {
-			map.put(NbtHelper.toBlockPos((NbtCompound) bNbt), NbtHelper.toBlockState(Registries.BLOCK.asLookup(), nbt.getCompound("state")));
+			map.put(NbtHelper.toBlockPos((NbtCompound) bNbt), NbtHelper.toBlockState(Registries.BLOCK.asLookup(), ((NbtCompound) bNbt).getCompound("state")));
 		});
 		return map;
 	}
