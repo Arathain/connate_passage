@@ -5,6 +5,7 @@ import arathain.connatepassage.content.cca.ConnateWorldComponents;
 import arathain.connatepassage.content.cca.WorldshellComponent;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -33,7 +34,7 @@ public class WorldshellUpdatePacket {
 	public static void apply(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf payload, PacketSender responseSender) {
 		WorldshellComponent c = handler.getWorld().getComponent(ConnateWorldComponents.WORLDSHELLS);
 		int i = 0;
-		while(payload.isReadable()) {
+		while(payload.isReadable() && c.getWorldshells().size() > 0) {
 			NbtCompound toRead = payload.readUnlimitedNbt();
 			c.getWorldshells().get(i++).readUpdateNbt(toRead);
 		}

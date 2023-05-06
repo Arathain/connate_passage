@@ -1,6 +1,7 @@
 package arathain.connatepassage.content.block;
 
 import arathain.connatepassage.content.cca.ConnateWorldComponents;
+import arathain.connatepassage.content.item.ConnateBracerItem;
 import arathain.connatepassage.init.ConnateWorldshells;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -52,19 +53,8 @@ public class HingeBlock extends Block {
 
 	@Override
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		HashMap<BlockPos, BlockState> stateMap = new HashMap<>();
-		stateMap.put(pos, state);
-		Vector3f axis;
-		switch (state.get(AXIS)) {
-			case X -> axis = new Vector3f(1, 0, 0);
-			case Y -> axis = new Vector3f(0, 1, 0);
-			default -> axis = new Vector3f(0, 0, 1);
-		}
-		world.getComponent(ConnateWorldComponents.WORLDSHELLS).getWorldshells().add(ConnateWorldshells.AXIS_LIMITED.create(stateMap, Vec3d.ofCenter(pos), pos).putAxis(axis));
-		ConnateWorldComponents.WORLDSHELLS.sync(world);
-		world.setBlockState(pos, Blocks.AIR.getDefaultState());
-		return ActionResult.CONSUME;
-		//return super.onUse(state, world, pos, player, hand, hit);
+
+		return super.onUse(state, world, pos, player, hand, hit);
 	}
 
 	public BlockState rotate(BlockState state, BlockRotation rotation) {

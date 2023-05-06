@@ -57,6 +57,7 @@ public class WorldshellComponent implements AutoSyncedComponent, ServerTickingCo
 
 	@Override
 	public void serverTick() {
+		worldshells.forEach(Worldshell::tick);
 		if(obj instanceof ServerWorld s) {
 			WorldshellUpdatePacket.send(s.getPlayers(), worldshells);
 		}

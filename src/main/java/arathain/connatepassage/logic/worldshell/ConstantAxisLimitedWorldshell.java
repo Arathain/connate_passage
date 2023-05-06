@@ -19,6 +19,14 @@ public class ConstantAxisLimitedWorldshell extends AxisLimitedWorldshell {
 	}
 
 	@Override
+	public void tick() {
+		//TODO temp
+		super.tick();
+		this.prevRotation = this.rotation;
+		this.rotation.rotateAxis(0.05f, this.axis);
+	}
+
+	@Override
 	public NbtCompound writeUpdateNbt(NbtCompound nbt) {
 		nbt.putFloat("axisX", axis.x);
 		nbt.putFloat("axisY", axis.y);

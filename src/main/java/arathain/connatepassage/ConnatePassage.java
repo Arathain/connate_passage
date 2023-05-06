@@ -10,6 +10,8 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.damage.DamageSources;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockBox;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import org.quiltmc.loader.api.ModContainer;
@@ -51,5 +53,30 @@ public class ConnatePassage implements ModInitializer {
 	}
 	public static Identifier id(String name) {
 		return new Identifier(MODID, name);
+	}
+	public static BlockBox makeBlockBoxIndiscriminate(BlockPos one, BlockPos two) {
+		int minX, maxX, minY, maxY, minZ, maxZ;
+		if(one.getX() > two.getX()) {
+			minX = two.getX();
+			maxX = one.getX();
+		} else {
+			maxX = two.getX();
+			minX = one.getX();
+		}
+		if(one.getY() > two.getY()) {
+			minY = two.getY();
+			maxY = one.getY();
+		} else {
+			maxY = two.getY();
+			minY = one.getY();
+		}
+		if(one.getZ() > two.getZ()) {
+			minZ = two.getZ();
+			maxZ = one.getZ();
+		} else {
+			maxZ = two.getZ();
+			minZ = one.getZ();
+		}
+		return new BlockBox(minX, minY, minZ, maxX, maxY, maxZ);
 	}
 }
