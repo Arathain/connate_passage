@@ -38,11 +38,11 @@ public class ConnatePassage implements ModInitializer {
 		if(QuiltLoader.isDevelopmentEnvironment()) {
 			ClientTickEvents.START.register((client -> {
 				if(client.world != null) {
-					if(client.options.sprintKey.isPressed()) {
-						funStuff += 0.03f;
-					} else if(client.options.sneakKey.isPressed()) {
-						funStuff -= 0.03f;
-					}
+//					if(client.options.sprintKey.isPressed()) {
+//						funStuff += 0.03f;
+//					} else if(client.options.sneakKey.isPressed()) {
+//						funStuff -= 0.03f;
+//					}
 					c.moveLoop(funStuff);
 					Vec3d vec = c.getPos(1);
 					client.world.addParticle(ParticleTypes.EXPLOSION, vec.x, vec.y, vec.z, 0, 0, 0);

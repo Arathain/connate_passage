@@ -3,12 +3,11 @@ package arathain.connatepassage.content.item;
 import arathain.connatepassage.ConnatePassage;
 import arathain.connatepassage.content.block.HingeBlock;
 import arathain.connatepassage.content.cca.ConnateWorldComponents;
+import arathain.connatepassage.content.cca.WorldshellComponent;
 import arathain.connatepassage.init.ConnateWorldshells;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BowItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
@@ -19,8 +18,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -43,6 +40,15 @@ public class ConnateBracerItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack s = user.getStackInHand(hand);
+		if(user.isSneaking() && user.isSprinting() && !world.isClient && !s.hasNbt()) {
+			WorldshellComponent w = world.getComponent(ConnateWorldComponents.WORLDSHELLS);
+			w.getWorldshells().forEach(shell -> {
+				if(shell.getPos().distanceTo(user.getPos()) < 8) {
+					w.snapWorldshell(shell);
+				}
+			});
+			ConnateWorldComponents.WORLDSHELLS.sync(world);
+		}
 		return TypedActionResult.consume(s);
 	}
 

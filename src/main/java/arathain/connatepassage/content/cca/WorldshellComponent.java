@@ -10,6 +10,8 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -61,5 +63,13 @@ public class WorldshellComponent implements AutoSyncedComponent, ServerTickingCo
 		if(obj instanceof ServerWorld s) {
 			WorldshellUpdatePacket.send(s.getPlayers(), worldshells);
 		}
+	}
+
+	public void snapWorldshell(Worldshell w) {
+		BlockPos origin = new BlockPos(MathHelper.floor(w.getPos().x), MathHelper.floor(w.getPos().y), MathHelper.floor(w.getPos().z));
+		w.getContained().forEach((b, s) -> {
+			obj.setBlockState(origin.add(b.subtract(w.getPivot())), s);
+		});
+		boolean bl = worldshells.remove(w);
 	}
 }

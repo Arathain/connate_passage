@@ -32,9 +32,15 @@ public abstract class Worldshell {
 	}
 
 	public Quaternionf getRotation() {
-		return rotation;
+		return getRotation(1);
 	}
 	public Quaternionf getRotation(float tickDelta) {
+		if(rotation == null) {
+			rotation = new Quaternionf();
+		}
+		if(prevRotation == null) {
+			prevRotation = new Quaternionf();
+		}
 		return prevRotation.slerp(rotation, tickDelta);
 	}
 

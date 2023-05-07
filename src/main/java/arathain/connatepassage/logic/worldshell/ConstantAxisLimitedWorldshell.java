@@ -22,7 +22,7 @@ public class ConstantAxisLimitedWorldshell extends AxisLimitedWorldshell {
 	public void tick() {
 		//TODO temp
 		super.tick();
-		this.prevRotation = this.rotation;
+		this.prevRotation = this.getRotation();
 		this.rotation.rotateAxis(0.05f, this.axis);
 	}
 
