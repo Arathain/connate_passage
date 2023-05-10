@@ -17,7 +17,7 @@ import java.util.Map;
 public abstract class Worldshell {
 	protected final Map<BlockPos, BlockState> contained;
 	protected Quaternionf rotation, prevRotation = new Quaternionf();
-	protected Vec3d pos;
+	protected Vec3d prevPos, pos;
 	protected final BlockPos pivot;
 
 	public Worldshell(Map<BlockPos, BlockState> contained, Vec3d initialPos, BlockPos pivot) {
@@ -28,7 +28,7 @@ public abstract class Worldshell {
 	public abstract Identifier getId();
 
 	public void tick() {
-
+		this.prevPos = pos;
 	}
 
 	public Quaternionf getRotation() {
@@ -61,6 +61,9 @@ public abstract class Worldshell {
 	public Vec3d getPos() {
 		return pos;
 	}
+	public Vec3d getPos(float tickDelta) {
+		return prevPos.lerp(pos, tickDelta);
+	}
 
 	public Map<BlockPos, BlockState> getContained() {
 		return contained;
@@ -92,12 +95,16 @@ public abstract class Worldshell {
 		nbt.putDouble("posX", pos.x);
 		nbt.putDouble("posY", pos.y);
 		nbt.putDouble("posZ", pos.z);
+		nbt.putDouble("prevPosX", prevPos.x);
+		nbt.putDouble("prevPosY", prevPos.y);
+		nbt.putDouble("prevPosZ", prevPos.z);
 		return nbt;
 	}
 	public void readUpdateNbt(NbtCompound nbt) {
 		this.prevRotation = new Quaternionf(nbt.getFloat("pQuatX"), nbt.getFloat("pQuatY"), nbt.getFloat("pQuatZ"), nbt.getFloat("pQuatW"));
 		this.rotation = new Quaternionf(nbt.getFloat("quatX"), nbt.getFloat("quatY"), nbt.getFloat("quatZ"), nbt.getFloat("quatW"));
 		this.pos = new Vec3d(nbt.getDouble("posX"), nbt.getDouble("posY"), nbt.getDouble("posZ"));
+		this.prevPos = new Vec3d(nbt.getDouble("prevPosX"), nbt.getDouble("prevPosY"), nbt.getDouble("prevPosZ"));
 	}
 	public void readNbt(NbtCompound nbt) {
 		readUpdateNbt(nbt);

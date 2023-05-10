@@ -24,6 +24,7 @@ public class WorldshellComponent implements AutoSyncedComponent, ServerTickingCo
 	public WorldshellComponent(World world) {
 		this.obj = world;
 	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void readFromNbt(NbtCompound nbt) {
@@ -65,11 +66,11 @@ public class WorldshellComponent implements AutoSyncedComponent, ServerTickingCo
 		}
 	}
 
-	public void snapWorldshell(Worldshell w) {
+	public boolean snapWorldshell(Worldshell w) {
 		BlockPos origin = new BlockPos(MathHelper.floor(w.getPos().x), MathHelper.floor(w.getPos().y), MathHelper.floor(w.getPos().z));
 		w.getContained().forEach((b, s) -> {
 			obj.setBlockState(origin.add(b.subtract(w.getPivot())), s);
 		});
-		boolean bl = worldshells.remove(w);
+		return worldshells.remove(w);
 	}
 }

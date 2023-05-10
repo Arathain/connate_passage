@@ -7,13 +7,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class CatmullRomSplineCurve {
+public class CatmullRomCurveSpline {
 	private final List<Vec3d> points;
 	private final List<Float> distances = new ArrayList<>();
 	public float pos = 0;
 	public float prevPos = 0;
 
-	public CatmullRomSplineCurve(Vec3d... points) {
+	public CatmullRomCurveSpline(Vec3d... points) {
 		List<Vec3d> l = Arrays.stream(points).toList();
 		this.points = new ArrayList<>();
 		this.points.add(l.get(0).add(l.get(0).subtract(l.get(1))));

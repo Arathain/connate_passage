@@ -1,11 +1,13 @@
 package arathain.connatepassage;
 
 import arathain.connatepassage.content.cca.ConnateWorldComponents;
+import arathain.connatepassage.init.ConnateBlocks;
 import arathain.connatepassage.logic.worldshell.Worldshell;
 import arathain.connatepassage.logic.worldshell.WorldshellUpdatePacket;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.OverlayTexture;
@@ -52,7 +54,7 @@ public class ConnatePassageClient implements ClientModInitializer {
 
 					matrices.translate(blockPos.getX()-0.5, blockPos.getY()-0.5, blockPos.getZ()-0.5);
 
-					blockRenderManager.getModelRenderer().render(world, model, state, blockPos, matrices, drawer, true, r, state.getRenderingSeed(blockPos), OverlayTexture.DEFAULT_UV);
+					blockRenderManager.getModelRenderer().render(world, model, state, entry.getKey(), matrices, drawer, true, r, state.getRenderingSeed(entry.getKey()), OverlayTexture.DEFAULT_UV);
 					matrices.pop();
 				}
 			}

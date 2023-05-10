@@ -4,6 +4,7 @@ import arathain.connatepassage.ConnatePassage;
 import arathain.connatepassage.content.block.HingeBlock;
 import arathain.connatepassage.content.cca.ConnateWorldComponents;
 import arathain.connatepassage.content.cca.WorldshellComponent;
+import arathain.connatepassage.init.ConnateItems;
 import arathain.connatepassage.init.ConnateWorldshells;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -40,14 +41,19 @@ public class ConnateBracerItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack s = user.getStackInHand(hand);
-		if(user.isSneaking() && user.isSprinting() && !world.isClient && !s.hasNbt()) {
+		if(user.isSneaking() && !world.isClient) {
 			WorldshellComponent w = world.getComponent(ConnateWorldComponents.WORLDSHELLS);
+			boolean[] bl = new boolean[1];
 			w.getWorldshells().forEach(shell -> {
 				if(shell.getPos().distanceTo(user.getPos()) < 8) {
-					w.snapWorldshell(shell);
+					if(w.snapWorldshell(shell)) {
+						bl[0] = true;
+					}
 				}
 			});
+
 			ConnateWorldComponents.WORLDSHELLS.sync(world);
+
 		}
 		return TypedActionResult.consume(s);
 	}
@@ -79,10 +85,12 @@ public class ConnateBracerItem extends Item {
 					forEachBlockPos(b, blockPos -> {
 						if(!stateMap.containsKey(blockPos)) {
 							BlockState st = context.getWorld().getBlockState(blockPos);
-							stateMap.put(blockPos, st);
-							context.getWorld().removeBlock(blockPos, false);
-							if(blockPos.equals(pos)) {
-								state.set(st);
+							if(!st.isAir()) {
+								stateMap.put(blockPos, st);
+								context.getWorld().removeBlock(blockPos, false);
+								if (blockPos.equals(pos)) {
+									state.set(st);
+								}
 							}
 						}
 					});
@@ -97,9 +105,12 @@ public class ConnateBracerItem extends Item {
 					case Y -> axis = new Vector3f(0, 1, 0);
 					default -> axis = new Vector3f(0, 0, 1);
 				}
+				s.getNbt().remove("first");
+				s.getNbt().remove("boxes");
+				context.getPlayer().setStackInHand(context.getHand(), new ItemStack(ConnateItems.CONNATE_BRACER));
 				context.getWorld().getComponent(ConnateWorldComponents.WORLDSHELLS).getWorldshells().add(ConnateWorldshells.AXIS_LIMITED.create(stateMap, Vec3d.ofCenter(pos), pos).putAxis(axis));
 				ConnateWorldComponents.WORLDSHELLS.sync(context.getWorld());
-				context.getWorld().setBlockState(pos, Blocks.AIR.getDefaultState());
+				//context.getWorld().setBlockState(pos, Blocks.AIR.getDefaultState());
 				return ActionResult.CONSUME;
 			}
 		}

@@ -3,16 +3,12 @@ package arathain.connatepassage;
 import arathain.connatepassage.init.ConnateBlocks;
 import arathain.connatepassage.init.ConnateItems;
 import arathain.connatepassage.init.ConnateWorldshells;
-import arathain.connatepassage.logic.spline.CatmullRomSpline;
-import arathain.connatepassage.logic.spline.CatmullRomSplineCurve;
+import arathain.connatepassage.logic.spline.CatmullRomCurveSpline;
 import com.google.common.reflect.Reflection;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.entity.damage.DamageSources;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.loader.api.QuiltLoader;
@@ -28,7 +24,7 @@ public class ConnatePassage implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger("Connate Passage");
 	public static String MODID = " ";
 	public static float funStuff = 0;
-	private static final CatmullRomSplineCurve c = new CatmullRomSplineCurve(new Vec3d(-10, -50, -10), new Vec3d(-5, -50, 15), new Vec3d(-10, -50, 30), new Vec3d(10, -50, 20), new Vec3d(15, -50, 0), new Vec3d(20, -60, -10), new Vec3d(30, -60, -10), new Vec3d(12.5, -55, 0), new Vec3d(-10, -50, 30), new Vec3d(-5, -50, 15), new Vec3d(-10, -50, -10));
+	private static final CatmullRomCurveSpline c = new CatmullRomCurveSpline(new Vec3d(-10, -50, -10), new Vec3d(-5, -50, 15), new Vec3d(-10, -50, 30), new Vec3d(10, -50, 20), new Vec3d(15, -50, 0), new Vec3d(20, -60, -10), new Vec3d(30, -60, -10), new Vec3d(12.5, -55, 0), new Vec3d(-10, -50, 30), new Vec3d(-5, -50, 15), new Vec3d(-10, -50, -10));
 
 	@Override
 	public void onInitialize(ModContainer mod) {
