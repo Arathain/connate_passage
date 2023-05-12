@@ -1,5 +1,7 @@
 package arathain.connatepassage.logic.spline;
 
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
@@ -23,9 +25,41 @@ public class CatmullRomCurveSpline {
 
 		generateDistances();
 	}
+	public static CatmullRomCurveSpline fromExisting(Vec3d... points) {
+		CatmullRomCurveSpline s = new CatmullRomCurveSpline(points);
+		s.points.remove(0);
+		s.points.remove(s.points.size()-1);
+		s.generateDistances();
+		return s;
+	}
 	public void move(float dist) {
 		this.prevPos = this.pos;
 		this.pos += dist;
+	}
+	public void writeNbt(NbtCompound nbt) {
+		NbtList list = new NbtList();
+		points.forEach(v -> {
+			NbtCompound nbtC = new NbtCompound();
+			nbtC.putDouble("posX", v.x);
+			nbtC.putDouble("posY", v.y);
+			nbtC.putDouble("posZ", v.z);
+			list.add(nbtC);
+		});
+		nbt.put("points", list);
+		nbt.putFloat("splinePos", pos);
+		nbt.putFloat("prevSplinePos", prevPos);
+	}
+	public static CatmullRomCurveSpline readNbt(NbtCompound nbt) {
+		List<Vec3d> points = new ArrayList<>();
+		nbt.getList("points", 10).forEach(n -> {
+					NbtCompound nbtC = (NbtCompound) n;
+					points.add(new Vec3d(nbtC.getDouble("posX"), nbtC.getDouble("posY"), nbtC.getDouble("posX")));
+				}
+		);
+		CatmullRomCurveSpline s = fromExisting(points.toArray(new Vec3d[0]));
+		s.pos = nbt.getFloat("splinePos");
+		s.prevPos = nbt.getFloat("prevSplinePos");
+		return s;
 	}
 	public void moveLoop(float dist) {
 		move(dist);
@@ -55,6 +89,17 @@ public class CatmullRomCurveSpline {
 		}
 		float delta = mapDistToDelta(distance-distances.get(index), index);
 		return getPos(index, delta);
+	}
+	public Vec3d getVelocity(float tickDelta) {
+		float distance = MathHelper.lerp(tickDelta, prevPos, pos);
+		int index = 0;
+		for(int target = 0; target < distances.size(); target++) {
+			if(distances.get(target) < distance && distances.get(index) < distances.get(target)) {
+				index = target;
+			}
+		}
+		float delta = mapDistToDelta(distance-distances.get(index), index);
+		return getVelocity(index, delta);
 	}
 
 	private float arcLength(float t, int index) {
