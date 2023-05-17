@@ -1,0 +1,27 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "connatepassage:block/spline_carriage",
+      "x": 90
+    },
+    "facing=east": {
+      "model": "connatepassage:block/spline_carriage",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "connatepassage:block/spline_carriage"
+    },
+    "facing=south": {
+      "model": "connatepassage:block/spline_carriage",
+      "y": 180
+    },
+    "facing=up": {
+      "model": "connatepassage:block/spline_carriage",
+      "x": 270
+    },
+    "facing=west": {
+      "model": "connatepassage:block/spline_carriage",
+      "y": 270
+    }
+  }
+}

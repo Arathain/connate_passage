@@ -3,13 +3,10 @@ package arathain.connatepassage.logic.worldshell;
 import arathain.connatepassage.logic.spline.CatmullRomCurveSpline;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Vector3f;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public class SplineFollowingAxisLimitedWorldshell extends AxisLimitedWorldshell {
@@ -36,10 +33,12 @@ public class SplineFollowingAxisLimitedWorldshell extends AxisLimitedWorldshell 
 	@Override
 	public void tick() {
 		super.tick();
-		this.prevPos = this.pos;
-		this.pos = this.spline.getPos(1);
-		if(this.prevPos != null) {
-			this.axis = this.spline.getVelocity(1).normalize().toVector3f();
+		if(spline.pos != spline.prevPos) {
+			this.prevPos = this.pos;
+			this.pos = this.spline.getPos(1);
+			if (this.prevPos != null) {
+				this.axis = this.spline.getVelocity(1).normalize().toVector3f();
+			}
 		}
 		this.spline.moveLoop(0.05f);
 	}

@@ -2,6 +2,7 @@ package arathain.connatepassage.init;
 
 import arathain.connatepassage.ConnatePassage;
 import arathain.connatepassage.content.block.HingeBlock;
+import arathain.connatepassage.content.block.SplineBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.BlockItem;
@@ -21,7 +22,7 @@ public interface ConnateBlocks {
 		return register(id, block, true);
 	}
 	Block HINGE = register("hinge", new HingeBlock(QuiltBlockSettings.copyOf(Blocks.COPPER_BLOCK).nonOpaque()));
-
+	Block SPLINE = register("spline_carriage", new SplineBlock(QuiltBlockSettings.copyOf(Blocks.COPPER_BLOCK)));
 	static <T extends Block> T register(String id, T block, boolean createItem) {
 		Identifier identity = new Identifier(ConnatePassage.MODID, id);
 		BLOCKS.put(identity, block);
