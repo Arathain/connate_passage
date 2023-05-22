@@ -9,7 +9,7 @@ import org.joml.Vector3f;
 
 import java.util.Map;
 
-public class AxisLimitedWorldshell extends Worldshell {
+public abstract class AxisLimitedWorldshell extends Worldshell {
 	protected Vector3f axis;
 	public AxisLimitedWorldshell(Map<BlockPos, BlockState> contained, Vec3d initialPos, BlockPos pivot, Vector3f initialAxis) {
 		super(contained, initialPos, pivot);
@@ -23,10 +23,5 @@ public class AxisLimitedWorldshell extends Worldshell {
 
 	public Vector3f getAxis() {
 		return axis;
-	}
-
-	@Override
-	public Identifier getId() {
-		return new Identifier(ConnatePassage.MODID, "axis_limited");
 	}
 }

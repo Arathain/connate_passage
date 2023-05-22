@@ -71,6 +71,6 @@ public class WorldshellComponent implements AutoSyncedComponent, ServerTickingCo
 		w.getContained().forEach((b, s) -> {
 			obj.setBlockState(origin.add(b.subtract(w.getPivot())), s);
 		});
-		return worldshells.remove(w);
+		return true;
 	}
 }

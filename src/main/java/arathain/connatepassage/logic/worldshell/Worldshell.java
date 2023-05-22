@@ -24,6 +24,7 @@ public abstract class Worldshell {
 		this.contained = contained;
 		this.pos = initialPos;
 		this.pivot = pivot;
+		this.prevPos = pos;
 	}
 	public abstract Identifier getId();
 

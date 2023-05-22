@@ -1,7 +1,9 @@
 package arathain.connatepassage.logic.worldshell;
 
+import arathain.connatepassage.ConnatePassage;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Vector3f;
@@ -24,6 +26,11 @@ public class ConstantAxisLimitedWorldshell extends AxisLimitedWorldshell {
 		super.tick();
 		this.prevRotation = this.getRotation();
 		this.rotation.rotateAxis(0.05f, this.axis);
+	}
+
+	@Override
+	public Identifier getId() {
+		return new Identifier(ConnatePassage.MODID, "axis_limited");
 	}
 
 	@Override

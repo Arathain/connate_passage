@@ -2,6 +2,7 @@ package arathain.connatepassage.content.item;
 
 import arathain.connatepassage.ConnatePassage;
 import arathain.connatepassage.content.block.HingeBlock;
+import arathain.connatepassage.content.block.SplineBlock;
 import arathain.connatepassage.content.cca.ConnateWorldComponents;
 import arathain.connatepassage.content.cca.WorldshellComponent;
 import arathain.connatepassage.init.ConnateItems;
@@ -15,10 +16,8 @@ import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.UseAction;
+import net.minecraft.text.Text;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -41,21 +40,49 @@ public class ConnateBracerItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack s = user.getStackInHand(hand);
-		if(user.isSneaking() && !world.isClient) {
+		if(user.isSneaking()) {
 			WorldshellComponent w = world.getComponent(ConnateWorldComponents.WORLDSHELLS);
 			boolean[] bl = new boolean[1];
-			w.getWorldshells().forEach(shell -> {
-				if(shell.getPos().distanceTo(user.getPos()) < 8) {
-					if(w.snapWorldshell(shell)) {
-						bl[0] = true;
-					}
+			w.getWorldshells().removeIf(shell -> {
+				if(shell != null && shell.getPos().distanceTo(user.getPos()) < 8) {
+					bl[0] = true;
+					return w.snapWorldshell(shell);
 				}
+				return false;
 			});
-
+			if(!bl[0]) {
+				Text msg = Text.literal("Block selection mode activated").formatted(Formatting.AQUA);
+				if(switchMode(s)) {
+					msg = Text.literal("Trail selection mode activated").formatted(Formatting.AQUA);
+				}
+				user.sendMessage(msg, true);
+			}
 			ConnateWorldComponents.WORLDSHELLS.sync(world);
-
+			return TypedActionResult.consume(s);
 		}
-		return TypedActionResult.consume(s);
+		if(isPositionMode(s)) {
+			List<BlockPos> list = getTrailBlocks(s);
+			if(list.contains(user.getBlockPos()) && !(list.stream().filter(b -> b.equals(list.get(0))).toList().size() == 1)) {
+				list.remove(user.getBlockPos());
+				s.getNbt().remove("trailBlocks");
+				putTrailBlock(s, list.toArray(new BlockPos[]{}));
+			} else {
+				putTrailBlock(s, user.getBlockPos());
+			}
+		}
+		return TypedActionResult.pass(s);
+	}
+	private static boolean switchMode(ItemStack s) {
+		if(isPositionMode(s)) {
+			s.getOrCreateNbt().remove("mode");
+			return false;
+		} else {
+			s.getOrCreateNbt().putBoolean("mode", true);
+			return true;
+		}
+	}
+	public static boolean isPositionMode(ItemStack s) {
+		return s.hasNbt() && s.getNbt().contains("mode");
 	}
 
 //	@Override
@@ -74,9 +101,8 @@ public class ConnateBracerItem extends Item {
 		ItemStack s = context.getStack();
 		BlockPos pos = context.getBlockPos();
 		if(!context.getPlayer().isSneaking()) {
-			if (!s.hasNbt() || s.getNbt().contains("first")) {
+			if(!isPositionMode(s))
 				putBlock(s, context.getBlockPos());
-			}
 		} else {
 			if(context.getWorld().getBlockState(context.getBlockPos()).getBlock() instanceof HingeBlock) {
 				HashMap<BlockPos, BlockState> stateMap = new HashMap<>();
@@ -110,7 +136,34 @@ public class ConnateBracerItem extends Item {
 				context.getPlayer().setStackInHand(context.getHand(), new ItemStack(ConnateItems.CONNATE_BRACER));
 				context.getWorld().getComponent(ConnateWorldComponents.WORLDSHELLS).getWorldshells().add(ConnateWorldshells.AXIS_LIMITED.create(stateMap, Vec3d.ofCenter(pos), pos).putAxis(axis));
 				ConnateWorldComponents.WORLDSHELLS.sync(context.getWorld());
-				//context.getWorld().setBlockState(pos, Blocks.AIR.getDefaultState());
+				return ActionResult.CONSUME;
+			} else if(context.getWorld().getBlockState(context.getBlockPos()).getBlock() instanceof SplineBlock) {
+				HashMap<BlockPos, BlockState> stateMap = new HashMap<>();
+				AtomicReference<BlockState> state = new AtomicReference<>();
+				for(BlockBox b : getBlockBoxes(s)) {
+					forEachBlockPos(b, blockPos -> {
+						if(!stateMap.containsKey(blockPos)) {
+							BlockState st = context.getWorld().getBlockState(blockPos);
+							if(!st.isAir()) {
+								stateMap.put(blockPos, st);
+								context.getWorld().removeBlock(blockPos, false);
+								if (blockPos.equals(pos)) {
+									state.set(st);
+								}
+							}
+						}
+					});
+				}
+				if(!stateMap.containsKey(pos)) {
+					return ActionResult.FAIL;
+				}
+
+				Vector3f axis = state.get().get(SplineBlock.FACING).getUnitVector();
+				s.getNbt().remove("first");
+				s.getNbt().remove("boxes");
+				context.getPlayer().setStackInHand(context.getHand(), new ItemStack(ConnateItems.CONNATE_BRACER));
+				context.getWorld().getComponent(ConnateWorldComponents.WORLDSHELLS).getWorldshells().add(ConnateWorldshells.SPLINE.create(stateMap, Vec3d.ofCenter(pos), pos).constructSpline(getTrailBlocks(s).stream().map(Vec3d::ofCenter).toList().toArray(new Vec3d[]{})).putAxis(axis));
+				ConnateWorldComponents.WORLDSHELLS.sync(context.getWorld());
 				return ActionResult.CONSUME;
 			}
 		}
@@ -134,6 +187,15 @@ public class ConnateBracerItem extends Item {
 		n.forEach(nbt -> b.add(getBlockBox((NbtCompound) nbt)));
 		return b;
 	}
+	public static List<BlockPos> getTrailBlocks(ItemStack stack) {
+		NbtList n = getBlockList(stack);
+		List<BlockPos> b = new ArrayList<>();
+		if(n == null) {
+			return b;
+		}
+		n.forEach(nbt -> b.add(NbtHelper.toBlockPos((NbtCompound) nbt)));
+		return b;
+	}
 	private static BlockBox getBlockBox(NbtCompound nbt) {
 		return ConnatePassage.makeBlockBoxIndiscriminate(NbtHelper.toBlockPos(nbt.getCompound("first")), NbtHelper.toBlockPos(nbt.getCompound("second")));
 	}
@@ -152,8 +214,20 @@ public class ConnateBracerItem extends Item {
 			blocks.put("second", NbtHelper.fromBlockPos(pos));
 			l.add(blocks);
 			putBoxList(nbt, l);
+			nbt.remove("first");
 			return stack;
 		}
+	}
+	public static void putTrailBlock(ItemStack stack, BlockPos... pos) {
+		NbtCompound nbt = stack.getOrCreateNbt();
+		NbtList l = getBlockList(stack);
+		if(l == null) {
+			l = new NbtList();
+		}
+		for(BlockPos position : pos) {
+			l.add(NbtHelper.fromBlockPos(position));
+		}
+		putBlockList(nbt, l);
 	}
 
 	public static NbtList getBoxList(ItemStack stack) {
@@ -166,6 +240,17 @@ public class ConnateBracerItem extends Item {
 	}
 	public static void putBoxList(NbtCompound nbt, NbtList list) {
 		nbt.put("boxes", list);
+	}
+	public static NbtList getBlockList(ItemStack stack) {
+		if(stack.hasNbt()) {
+			if(stack.getNbt().contains("trailBlocks")) {
+				return stack.getNbt().getList("trailBlocks", 10);
+			}
+		}
+		return null;
+	}
+	public static void putBlockList(NbtCompound nbt, NbtList list) {
+		nbt.put("trailBlocks", list);
 	}
 
 	public int getMaxUseTime(ItemStack stack) {

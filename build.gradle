@@ -9,8 +9,16 @@ group = project.maven_group
 
 repositories {
 	maven {
-		name = 'Ladysnake Mods'
-		url = 'https://ladysnake.jfrog.io/artifactory/mods'
+		name = "Ladysnake"
+		url = "https://ladysnake.jfrog.io/artifactory/mods"
+	}
+	maven { url 'https://masa.dy.fi/maven' }
+	maven { url 'https://maven.terraformersmc.com' }
+	maven { url = "https://jitpack.io" }
+	maven {
+		name = "Modrinth"
+		url = "https://api.modrinth.com/maven"
+		content { includeGroup "maven.modrinth" }
 	}
 }
 
@@ -40,6 +48,8 @@ dependencies {
 		exclude(group: "net.fabricmc")
 		exclude(group: "net.fabricmc.fabric-api")
 	}
+
+	modImplementation include ('com.github.Arathain:LodestoneLib-Quilt:1.19.3-SNAPSHOT')
 
 }
 

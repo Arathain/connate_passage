@@ -13,13 +13,21 @@ import java.util.function.Function;
 import static net.minecraft.util.math.MathHelper.catmullRom;
 
 public abstract class CatmullRomSpline {
+
 	//for remembering the godsforsaken maths behind it all
 	private static final Matrix4d IDENTITY_MATRIX = new Matrix4d( -0.5, 1.5, -1.5, 0.5,
 			1, -2.5, 2, -0.5,
 			-0.5, 0, 0.5, 0,
 			0, 1, 0, 0);
+	/**
+	 * @author Alexey Karamyshev
+	 * <a href="https://medium.com/@ommand/movement-along-the-curve-with-constant-speed-4fa383941507">...</a>
+	 **/
 	private static final Vec2f[] cubicQuadrature = new Vec2f[]{new Vec2f(-0.7745966F, 0.5555556F), new Vec2f(0, 0.8888889F), new Vec2f(0.7745966F, 0.5555556F)};
-
+	/**
+	 * @author Alexey Karamyshev
+	 * <a href="https://medium.com/@ommand/movement-along-the-curve-with-constant-speed-4fa383941507">...</a>
+	 **/
 	public static float integrate(Function<Float, Float> f, float min, float max) {
 		float sum = 0f;
 		for(Vec2f vec : cubicQuadrature) {

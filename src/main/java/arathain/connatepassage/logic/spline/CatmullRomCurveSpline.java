@@ -53,7 +53,7 @@ public class CatmullRomCurveSpline {
 		List<Vec3d> points = new ArrayList<>();
 		nbt.getList("points", 10).forEach(n -> {
 					NbtCompound nbtC = (NbtCompound) n;
-					points.add(new Vec3d(nbtC.getDouble("posX"), nbtC.getDouble("posY"), nbtC.getDouble("posX")));
+					points.add(new Vec3d(nbtC.getDouble("posX"), nbtC.getDouble("posY"), nbtC.getDouble("posZ")));
 				}
 		);
 		CatmullRomCurveSpline s = fromExisting(points.toArray(new Vec3d[0]));
@@ -105,7 +105,10 @@ public class CatmullRomCurveSpline {
 	private float arcLength(float t, int index) {
 		return CatmullRomSpline.integrate((x) -> (float)getVelocity(index, x).length(), 0, t);
 	}
-
+	/**
+	 * @author Alexey Karamyshev
+	 * <a href="https://medium.com/@ommand/movement-along-the-curve-with-constant-speed-4fa383941507">...</a>
+	 **/
 	private float mapDistToDelta(float length, int index) {
 		float t = 0 + length / arcLength(1, index);
 		float min = 0;
