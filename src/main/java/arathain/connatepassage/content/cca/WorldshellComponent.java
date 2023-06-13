@@ -55,7 +55,7 @@ public class WorldshellComponent implements AutoSyncedComponent, ServerTickingCo
 
 	@Override
 	public void clientTick() {
-
+		worldshells.forEach(Worldshell::tick);
 	}
 
 	@Override

@@ -62,7 +62,7 @@ public class ConnateBracerItem extends Item {
 		}
 		if(isPositionMode(s)) {
 			List<BlockPos> list = getTrailBlocks(s);
-			if(list.contains(user.getBlockPos()) && !(list.stream().filter(b -> b.equals(list.get(0))).toList().size() == 1)) {
+			if(user.getBlockPos().equals(list.get(0)) && !(list.stream().filter(b -> b.equals(list.get(0))).toList().size() == 1)) {
 				list.remove(user.getBlockPos());
 				s.getNbt().remove("trailBlocks");
 				putTrailBlock(s, list.toArray(new BlockPos[]{}));
@@ -187,8 +187,26 @@ public class ConnateBracerItem extends Item {
 		n.forEach(nbt -> b.add(getBlockBox((NbtCompound) nbt)));
 		return b;
 	}
+	public static List<BlockBox> getBlockBoxes(NbtCompound comp) {
+		NbtList n = getBoxList(comp);
+		List<BlockBox> b = new ArrayList<>();
+		if(n == null) {
+			return b;
+		}
+		n.forEach(nbt -> b.add(getBlockBox((NbtCompound) nbt)));
+		return b;
+	}
 	public static List<BlockPos> getTrailBlocks(ItemStack stack) {
 		NbtList n = getBlockList(stack);
+		List<BlockPos> b = new ArrayList<>();
+		if(n == null) {
+			return b;
+		}
+		n.forEach(nbt -> b.add(NbtHelper.toBlockPos((NbtCompound) nbt)));
+		return b;
+	}
+	public static List<BlockPos> getTrailBlocks(NbtCompound comp) {
+		NbtList n = getBlockList(comp);
 		List<BlockPos> b = new ArrayList<>();
 		if(n == null) {
 			return b;
@@ -238,6 +256,12 @@ public class ConnateBracerItem extends Item {
 		}
 		return null;
 	}
+	public static NbtList getBoxList(NbtCompound nbt) {
+		if(nbt.contains("boxes")) {
+			return nbt.getList("boxes", 10);
+		}
+		return null;
+	}
 	public static void putBoxList(NbtCompound nbt, NbtList list) {
 		nbt.put("boxes", list);
 	}
@@ -246,6 +270,12 @@ public class ConnateBracerItem extends Item {
 			if(stack.getNbt().contains("trailBlocks")) {
 				return stack.getNbt().getList("trailBlocks", 10);
 			}
+		}
+		return null;
+	}
+	public static NbtList getBlockList(NbtCompound nbt) {
+		if(nbt.contains("trailBlocks")) {
+			return nbt.getList("trailBlocks", 10);
 		}
 		return null;
 	}

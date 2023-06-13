@@ -2,25 +2,19 @@ package arathain.connatepassage;
 
 import arathain.connatepassage.content.cca.ConnateWorldComponents;
 import arathain.connatepassage.content.item.ConnateBracerItem;
-import arathain.connatepassage.init.ConnateBlocks;
 import arathain.connatepassage.init.ConnateItems;
 import arathain.connatepassage.logic.worldshell.Worldshell;
 import arathain.connatepassage.logic.worldshell.WorldshellUpdatePacket;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.sammy.lodestone.setup.LodestoneRenderLayers;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.BlockRenderManager;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
@@ -61,33 +55,39 @@ public class ConnatePassageClient implements ClientModInitializer {
 		matrices.pop();
 		//WorldRenderer.drawBox();
 	}
+	private static void renderWorldshell(MinecraftClient c, BlockRenderManager b, ClientWorld world, MatrixStack matrices, VertexConsumerProvider consumer, Worldshell shell, RandomGenerator  r, float tickDelta) {
+		matrices.push();
+		Vec3d pos = shell.getPos(tickDelta);
+		matrices.translate(pos.x, pos.y, pos.z);
+		matrices.multiply(shell.getRotation(tickDelta));
+		for(Map.Entry<BlockPos, BlockState> entry : shell.getContained().entrySet()) {
+			BlockPos blockPos = entry.getKey().subtract(shell.getPivot());
+			BlockState state = entry.getValue();
+			VertexConsumer drawer = consumer.getBuffer(RenderLayers.getBlockLayer(state));
+			BakedModel model = c.getBakedModelManager().getBlockModels().getModel(state);
+
+			if(!state.isAir()) {
+				matrices.push();
+
+				matrices.translate(blockPos.getX()-0.5, blockPos.getY()-0.5, blockPos.getZ()-0.5);
+
+				b.getModelRenderer().render(world, model, state, entry.getKey(), matrices, drawer, true, r, state.getRenderingSeed(entry.getKey()), OverlayTexture.DEFAULT_UV);
+				matrices.pop();
+			}
+		}
+		matrices.pop();
+
+	}
 	private static void renderWorldshells(ClientWorld world, MatrixStack matrices, VertexConsumerProvider consumer, List<Worldshell> shells, Camera camera, float tickDelta) {
 		MinecraftClient c = MinecraftClient.getInstance();
 		BlockRenderManager blockRenderManager = c.getBlockRenderManager();
 		RandomGenerator r = RandomGenerator.createLegacy();
+		matrices.push();
+		Vec3d vec = camera.getPos();
+		matrices.translate(-vec.getX(), -vec.getY(), -vec.getZ());
 		for(Worldshell shell : shells) {
-			matrices.push();
-			Vec3d pos = shell.getPos(tickDelta);
-			matrices.translate(-camera.getPos().getX(), -camera.getPos().getY(), -camera.getPos().getZ());
-			matrices.translate(pos.x, pos.y, pos.z);
-			matrices.multiply(shell.getRotation(tickDelta));
-			for(Map.Entry<BlockPos, BlockState> entry : shell.getContained().entrySet()) {
-				BlockPos blockPos = entry.getKey().subtract(shell.getPivot());
-				BlockState state = entry.getValue();
-				VertexConsumer drawer = consumer.getBuffer(RenderLayers.getBlockLayer(state));
-				BakedModel model = c.getBakedModelManager().getBlockModels().getModel(state);
-
-				if(!state.isAir()) {
-					matrices.push();
-
-					matrices.translate(blockPos.getX()-0.5, blockPos.getY()-0.5, blockPos.getZ()-0.5);
-
-					blockRenderManager.getModelRenderer().render(world, model, state, entry.getKey(), matrices, drawer, true, r, state.getRenderingSeed(entry.getKey()), OverlayTexture.DEFAULT_UV);
-					matrices.pop();
-				}
-			}
-			matrices.pop();
-
+			renderWorldshell(c, blockRenderManager, world, matrices, consumer, shell, r, tickDelta);
 		}
+		matrices.pop();
 	}
 }

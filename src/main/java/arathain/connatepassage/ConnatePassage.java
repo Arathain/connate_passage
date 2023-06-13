@@ -23,28 +23,13 @@ public class ConnatePassage implements ModInitializer {
 	// That way, it's clear which mod wrote info, warnings, and errors.
 	public static final Logger LOGGER = LoggerFactory.getLogger("Connate Passage");
 	public static String MODID = " ";
-	public static float funStuff = 0;
-	private static final CatmullRomCurveSpline c = new CatmullRomCurveSpline(new Vec3d(-10, -50, -10), new Vec3d(-5, -50, 15), new Vec3d(-10, -50, 30), new Vec3d(10, -50, 20), new Vec3d(15, -50, 0), new Vec3d(20, -60, -10), new Vec3d(30, -60, -10), new Vec3d(12.5, -55, 0), new Vec3d(-10, -50, 30), new Vec3d(-5, -50, 15), new Vec3d(-10, -50, -10));
+	//private static final CatmullRomCurveSpline c = new CatmullRomCurveSpline(new Vec3d(-10, -50, -10), new Vec3d(-5, -50, 15), new Vec3d(-10, -50, 30), new Vec3d(10, -50, 20), new Vec3d(15, -50, 0), new Vec3d(20, -60, -10), new Vec3d(30, -60, -10), new Vec3d(12.5, -55, 0), new Vec3d(-10, -50, 30), new Vec3d(-5, -50, 15), new Vec3d(-10, -50, -10));
 
 	@Override
 	public void onInitialize(ModContainer mod) {
 		MODID = mod.metadata().id();
 		ConnateBlocks.init();
 		ConnateItems.init();
-		if(QuiltLoader.isDevelopmentEnvironment()) {
-			ClientTickEvents.START.register((client -> {
-				if(client.world != null) {
-//					if(client.options.sprintKey.isPressed()) {
-//						funStuff += 0.03f;
-//					} else if(client.options.sneakKey.isPressed()) {
-//						funStuff -= 0.03f;
-//					}
-					c.moveLoop(funStuff);
-					Vec3d vec = c.getPos(1);
-					client.world.addParticle(ParticleTypes.EXPLOSION, vec.x, vec.y, vec.z, 0, 0, 0);
-				}
-			}));
-		}
 		Reflection.initialize(ConnateWorldshells.class);
 	}
 	public static Identifier id(String name) {

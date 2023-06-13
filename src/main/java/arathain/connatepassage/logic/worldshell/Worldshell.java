@@ -9,7 +9,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Quaternionf;
-import org.quiltmc.qsl.tag.impl.client.QuiltHolderReferenceHooks;
 
 import java.util.HashMap;
 import java.util.Map;
