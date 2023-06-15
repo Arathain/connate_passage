@@ -5,7 +5,6 @@ import arathain.connatepassage.content.cca.ConnateWorldComponents;
 import arathain.connatepassage.content.cca.WorldshellComponent;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -23,20 +22,20 @@ public class WorldshellUpdatePacket {
 		if(shells.size() > 0) {
 			PacketByteBuf buf = PacketByteBufs.create();
 
-			for (Worldshell shell : shells) {
-				buf.writeNbt(shell.writeUpdateNbt(new NbtCompound()));
+			for (int i = 0; i < shells.size(); i++) {
+				buf.writeNbt(shells.get(i).writeUpdateNbt(new NbtCompound()));
+				buf.writeInt(i);
+				ServerPlayNetworking.send(players, ID, buf);
 			}
-
-			ServerPlayNetworking.send(players, ID, buf);
 		}
 	}
 
 	public static void apply(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf payload, PacketSender responseSender) {
 		WorldshellComponent c = handler.getWorld().getComponent(ConnateWorldComponents.WORLDSHELLS);
-		int i = 0;
-		while(payload.isReadable() && c.getWorldshells().size() > 0) {
+		if(c.getWorldshells().size() > 0){
 			NbtCompound toRead = payload.readUnlimitedNbt();
-			c.getWorldshells().get(i++).readUpdateNbt(toRead);
+			int i = payload.readInt();
+			c.getWorldshells().get(i).readUpdateNbt(toRead);
 		}
 	}
 }

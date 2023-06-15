@@ -35,12 +35,7 @@ public abstract class Worldshell {
 		return getRotation(1);
 	}
 	public Quaternionf getRotation(float tickDelta) {
-		if(rotation == null) {
-			rotation = new Quaternionf();
-		}
-		if(prevRotation == null) {
-			prevRotation = new Quaternionf();
-		}
+		checkRotation();
 		return prevRotation.slerp(rotation, tickDelta);
 	}
 
@@ -83,28 +78,28 @@ public abstract class Worldshell {
 		nbt.put("pivot", NbtHelper.fromBlockPos(pivot));
 	}
 	public NbtCompound writeUpdateNbt(NbtCompound nbt) {
-		nbt.putFloat("quatX", rotation.x);
-		nbt.putFloat("quatY", rotation.y);
-		nbt.putFloat("quatZ", rotation.z);
-		nbt.putFloat("quatW", rotation.w);
-		nbt.putFloat("pQuatX", prevRotation.x);
-		nbt.putFloat("pQuatY", prevRotation.y);
-		nbt.putFloat("pQuatZ", prevRotation.z);
-		nbt.putFloat("pQuatW", prevRotation.w);
+		checkRotation();
+		nbt.putFloat("qX", rotation.x);
+		nbt.putFloat("qY", rotation.y);
+		nbt.putFloat("qZ", rotation.z);
+		nbt.putFloat("qW", rotation.w);
 
-		nbt.putDouble("posX", pos.x);
-		nbt.putDouble("posY", pos.y);
-		nbt.putDouble("posZ", pos.z);
-		nbt.putDouble("prevPosX", prevPos.x);
-		nbt.putDouble("prevPosY", prevPos.y);
-		nbt.putDouble("prevPosZ", prevPos.z);
+		nbt.putDouble("pX", pos.x);
+		nbt.putDouble("pY", pos.y);
+		nbt.putDouble("pZ", pos.z);
 		return nbt;
 	}
+	protected void checkRotation() {
+		if(rotation == null) {
+			rotation = new Quaternionf();
+		}
+		if(prevRotation == null) {
+			prevRotation = new Quaternionf();
+		}
+	}
 	public void readUpdateNbt(NbtCompound nbt) {
-		this.prevRotation = new Quaternionf(nbt.getFloat("pQuatX"), nbt.getFloat("pQuatY"), nbt.getFloat("pQuatZ"), nbt.getFloat("pQuatW"));
-		this.rotation = new Quaternionf(nbt.getFloat("quatX"), nbt.getFloat("quatY"), nbt.getFloat("quatZ"), nbt.getFloat("quatW"));
-		this.pos = new Vec3d(nbt.getDouble("posX"), nbt.getDouble("posY"), nbt.getDouble("posZ"));
-		this.prevPos = new Vec3d(nbt.getDouble("prevPosX"), nbt.getDouble("prevPosY"), nbt.getDouble("prevPosZ"));
+		this.rotation = new Quaternionf(nbt.getFloat("qX"), nbt.getFloat("qY"), nbt.getFloat("qZ"), nbt.getFloat("qW"));
+		this.pos = new Vec3d(nbt.getDouble("pX"), nbt.getDouble("pY"), nbt.getDouble("pZ"));
 	}
 	public void readNbt(NbtCompound nbt) {
 		readUpdateNbt(nbt);

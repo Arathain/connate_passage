@@ -5,6 +5,7 @@ import arathain.connatepassage.content.block.HingeBlock;
 import arathain.connatepassage.content.block.SplineBlock;
 import arathain.connatepassage.content.cca.ConnateWorldComponents;
 import arathain.connatepassage.content.cca.WorldshellComponent;
+import arathain.connatepassage.init.ConnateBlocks;
 import arathain.connatepassage.init.ConnateItems;
 import arathain.connatepassage.init.ConnateWorldshells;
 import net.minecraft.block.BlockState;
@@ -62,7 +63,7 @@ public class ConnateBracerItem extends Item {
 		}
 		if(isPositionMode(s)) {
 			List<BlockPos> list = getTrailBlocks(s);
-			if(user.getBlockPos().equals(list.get(0)) && !(list.stream().filter(b -> b.equals(list.get(0))).toList().size() == 1)) {
+			if(!list.isEmpty() && user.getBlockPos().equals(list.get(0)) && !(list.stream().filter(b -> b.equals(list.get(0))).toList().size() == 1)) {
 				list.remove(user.getBlockPos());
 				s.getNbt().remove("trailBlocks");
 				putTrailBlock(s, list.toArray(new BlockPos[]{}));
@@ -104,7 +105,29 @@ public class ConnateBracerItem extends Item {
 			if(!isPositionMode(s))
 				putBlock(s, context.getBlockPos());
 		} else {
-			if(context.getWorld().getBlockState(context.getBlockPos()).getBlock() instanceof HingeBlock) {
+			if(context.getWorld().getBlockState(context.getBlockPos()).getBlock().equals(ConnateBlocks.CHASSIS)) {
+				HashMap<BlockPos, BlockState> stateMap = new HashMap<>();
+				for(BlockBox b : getBlockBoxes(s)) {
+					forEachBlockPos(b, blockPos -> {
+						if(!stateMap.containsKey(blockPos)) {
+							BlockState st = context.getWorld().getBlockState(blockPos);
+							if(!st.isAir()) {
+								stateMap.put(blockPos, st);
+								context.getWorld().removeBlock(blockPos, false);
+							}
+						}
+					});
+				}
+				if(!stateMap.containsKey(pos)) {
+					return ActionResult.FAIL;
+				}
+				s.getNbt().remove("first");
+				s.getNbt().remove("boxes");
+				context.getPlayer().setStackInHand(context.getHand(), new ItemStack(ConnateItems.CONNATE_BRACER));
+				context.getWorld().getComponent(ConnateWorldComponents.WORLDSHELLS).getWorldshells().add(ConnateWorldshells.FREE.create(stateMap, Vec3d.ofCenter(pos), pos));
+				ConnateWorldComponents.WORLDSHELLS.sync(context.getWorld());
+				return ActionResult.CONSUME;
+			} else if(context.getWorld().getBlockState(context.getBlockPos()).getBlock() instanceof HingeBlock) {
 				HashMap<BlockPos, BlockState> stateMap = new HashMap<>();
 				AtomicReference<BlockState> state = new AtomicReference<>();
 				for(BlockBox b : getBlockBoxes(s)) {

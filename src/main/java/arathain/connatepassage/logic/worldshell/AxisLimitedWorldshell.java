@@ -1,8 +1,6 @@
 package arathain.connatepassage.logic.worldshell;
 
-import arathain.connatepassage.ConnatePassage;
 import net.minecraft.block.BlockState;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Vector3f;
@@ -24,4 +22,12 @@ public abstract class AxisLimitedWorldshell extends Worldshell {
 	public Vector3f getAxis() {
 		return axis;
 	}
+
+//	@Override
+//	public NbtCompound writeUpdateNbt(NbtCompound nbt) {
+//		nbt.putFloat("axisX", axis.x);
+//		nbt.putFloat("axisY", axis.y);
+//		nbt.putFloat("axisZ", axis.z);
+//		return super.writeUpdateNbt(nbt);
+//	}
 }

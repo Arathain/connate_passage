@@ -1,6 +1,7 @@
 package arathain.connatepassage.logic.worldshell;
 
 import arathain.connatepassage.ConnatePassage;
+import arathain.connatepassage.logic.spline.CatmullRomCurveSpline;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
@@ -11,6 +12,7 @@ import org.joml.Vector3f;
 import java.util.Map;
 
 public class ConstantAxisLimitedWorldshell extends AxisLimitedWorldshell {
+	private float speed = 1f;
 	public ConstantAxisLimitedWorldshell(Map<BlockPos, BlockState> contained, Vec3d initialPos, BlockPos pivot, Vector3f initialAxis) {
 		super(contained, initialPos, pivot, initialAxis);
 	}
@@ -25,19 +27,23 @@ public class ConstantAxisLimitedWorldshell extends AxisLimitedWorldshell {
 		//TODO temp
 		super.tick();
 		this.prevRotation = this.getRotation();
-		this.rotation.rotateAxis(0.05f, this.axis);
+		this.rotation.rotateAxis(speed, this.axis);
+	}
+
+	@Override
+	public void writeNbt(NbtCompound nbt) {
+		super.writeNbt(nbt);
+		nbt.putFloat("speed", speed);
+	}
+
+	@Override
+	public void readNbt(NbtCompound nbt) {
+		super.readNbt(nbt);
+		this.speed = nbt.getFloat("speed");
 	}
 
 	@Override
 	public Identifier getId() {
 		return new Identifier(ConnatePassage.MODID, "axis_limited");
-	}
-
-	@Override
-	public NbtCompound writeUpdateNbt(NbtCompound nbt) {
-		nbt.putFloat("axisX", axis.x);
-		nbt.putFloat("axisY", axis.y);
-		nbt.putFloat("axisZ", axis.z);
-		return super.writeUpdateNbt(nbt);
 	}
 }

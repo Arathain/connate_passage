@@ -6,16 +6,14 @@ import net.minecraft.block.BlockState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import org.joml.AxisAngle4d;
-import org.joml.AxisAngle4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import java.util.Map;
 
 public class SplineFollowingAxisLimitedWorldshell extends AxisLimitedWorldshell {
+	private float speed = 1f;
 	private CatmullRomCurveSpline spline;
 	public SplineFollowingAxisLimitedWorldshell(Map<BlockPos, BlockState> contained, Vec3d initialPos, BlockPos pivot, Vector3f initialAxis) {
 		super(contained, initialPos, pivot, initialAxis);
@@ -25,6 +23,7 @@ public class SplineFollowingAxisLimitedWorldshell extends AxisLimitedWorldshell 
 	public void writeNbt(NbtCompound nbt) {
 		super.writeNbt(nbt);
 		spline.writeNbt(nbt);
+		nbt.putFloat("speed", speed);
 	}
 
 	@Override
@@ -36,6 +35,7 @@ public class SplineFollowingAxisLimitedWorldshell extends AxisLimitedWorldshell 
 	public void readNbt(NbtCompound nbt) {
 		super.readNbt(nbt);
 		this.spline = CatmullRomCurveSpline.readNbt(nbt);
+		this.speed = nbt.getFloat("speed");
 	}
 
 	public SplineFollowingAxisLimitedWorldshell constructSpline(Vec3d... points) {
@@ -46,16 +46,13 @@ public class SplineFollowingAxisLimitedWorldshell extends AxisLimitedWorldshell 
 	@Override
 	public void tick() {
 		super.tick();
-		this.spline.moveLoop(0.25f);
+		this.spline.moveLoop(speed);
 		this.prevPos = this.pos;
 		this.pos = this.spline.getPos(1);
 		Vec3d prod = this.spline.getVelocity(1).normalize();
-		//float angleChange = (float) (MathHelper.atan2(prod.x, prod.z) - MathHelper.atan2(this.axis.x, this.axis.z)) * 20;
-		if(rotation == null) {
-			rotation = new Quaternionf();
-		}
+		checkRotation();
 		this.prevRotation = rotation;
-		this.rotation = new Quaternionf().rotateTo(new Vector3f(1, 0,0), axis);
 		this.axis = prod.toVector3f();
+		this.rotation = new Quaternionf().rotateTo(new Vector3f(1, 0,0), axis);
 	}
 }
