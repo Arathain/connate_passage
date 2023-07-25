@@ -5,13 +5,12 @@ import arathain.connatepassage.content.item.ConnateBracerItem;
 import arathain.connatepassage.init.ConnateItems;
 import arathain.connatepassage.logic.worldshell.Worldshell;
 import arathain.connatepassage.logic.worldshell.WorldshellUpdatePacket;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.BlockRenderManager;
-import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
@@ -19,6 +18,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.random.RandomGenerator;
+import org.joml.Quaterniond;
+import org.joml.Quaternionf;
+import org.joml.Vector3d;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.client.ClientModInitializer;
 import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
@@ -27,9 +29,10 @@ import java.util.List;
 import java.util.Map;
 
 public class ConnatePassageClient implements ClientModInitializer {
+	private static final List<RenderLayer> blockRenderLayers = RenderLayer.getBlockLayers();
 	@Override
 	public void onInitializeClient(ModContainer mod) {
-		WorldRenderEvents.AFTER_ENTITIES.register((a) -> {
+		WorldRenderEvents.BEFORE_ENTITIES.register((a) -> {
 			renderSelected(a.world(), a.matrixStack(), a.consumers(), a.camera());
 			renderWorldshells(a.world(), a.matrixStack(), a.consumers(), a.world().getComponent(ConnateWorldComponents.WORLDSHELLS).getWorldshells(), a.camera(), a.tickDelta());
 		});
@@ -53,7 +56,11 @@ public class ConnatePassageClient implements ClientModInitializer {
 			}
 		}
 		matrices.pop();
-		//WorldRenderer.drawBox();
+	}
+
+	private static Vec3d rotateViaQuat(Vec3d transform, Quaternionf quat) {
+		Vector3d temp = new Vector3d(transform.x, transform.y, transform.z).rotate(new Quaterniond(quat));
+		return new Vec3d(temp.x, temp.y, temp.z);
 	}
 	private static void renderWorldshell(MinecraftClient c, BlockRenderManager b, ClientWorld world, MatrixStack matrices, VertexConsumerProvider consumer, Worldshell shell, RandomGenerator  r, float tickDelta) {
 		matrices.push();
@@ -63,20 +70,18 @@ public class ConnatePassageClient implements ClientModInitializer {
 		for(Map.Entry<BlockPos, BlockState> entry : shell.getContained().entrySet()) {
 			BlockPos blockPos = entry.getKey().subtract(shell.getPivot());
 			BlockState state = entry.getValue();
-			VertexConsumer drawer = consumer.getBuffer(RenderLayers.getBlockLayer(state));
-			BakedModel model = c.getBakedModelManager().getBlockModels().getModel(state);
 
-			if(!state.isAir()) {
+			if(state.getRenderType() != BlockRenderType.INVISIBLE) {
 				matrices.push();
+				BlockPos actualPos = BlockPos.fromPosition(new Vec3d(pos.x, pos.y, pos.z).add(rotateViaQuat(Vec3d.ofCenter(blockPos), shell.getRotation(tickDelta))));
 
 				matrices.translate(blockPos.getX()-0.5, blockPos.getY()-0.5, blockPos.getZ()-0.5);
 
-				b.getModelRenderer().render(world, model, state, entry.getKey(), matrices, drawer, true, r, state.getRenderingSeed(entry.getKey()), OverlayTexture.DEFAULT_UV);
+				b.renderBlock(state, actualPos, world, matrices, consumer.getBuffer(RenderLayers.getBlockLayer(state)), false, r);
 				matrices.pop();
 			}
 		}
 		matrices.pop();
-
 	}
 	private static void renderWorldshells(ClientWorld world, MatrixStack matrices, VertexConsumerProvider consumer, List<Worldshell> shells, Camera camera, float tickDelta) {
 		MinecraftClient c = MinecraftClient.getInstance();

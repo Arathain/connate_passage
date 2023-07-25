@@ -25,6 +25,7 @@ public abstract class Worldshell {
 		this.pivot = pivot;
 		this.prevPos = pos;
 	}
+
 	public abstract Identifier getId();
 
 	public void tick() {

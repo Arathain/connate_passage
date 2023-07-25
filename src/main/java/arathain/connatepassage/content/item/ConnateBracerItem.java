@@ -8,6 +8,7 @@ import arathain.connatepassage.content.cca.WorldshellComponent;
 import arathain.connatepassage.init.ConnateBlocks;
 import arathain.connatepassage.init.ConnateItems;
 import arathain.connatepassage.init.ConnateWorldshells;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
@@ -113,7 +114,7 @@ public class ConnateBracerItem extends Item {
 							BlockState st = context.getWorld().getBlockState(blockPos);
 							if(!st.isAir()) {
 								stateMap.put(blockPos, st);
-								context.getWorld().removeBlock(blockPos, false);
+								context.getWorld().setBlockState(blockPos, Blocks.AIR.getDefaultState(), Block.UPDATE_NONE);
 							}
 						}
 					});

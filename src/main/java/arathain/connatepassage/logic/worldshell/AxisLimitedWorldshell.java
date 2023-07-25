@@ -23,11 +23,5 @@ public abstract class AxisLimitedWorldshell extends Worldshell {
 		return axis;
 	}
 
-//	@Override
-//	public NbtCompound writeUpdateNbt(NbtCompound nbt) {
-//		nbt.putFloat("axisX", axis.x);
-//		nbt.putFloat("axisY", axis.y);
-//		nbt.putFloat("axisZ", axis.z);
-//		return super.writeUpdateNbt(nbt);
-//	}
+
 }
