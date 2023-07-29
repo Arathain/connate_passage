@@ -62,7 +62,9 @@ public class WorldshellComponent implements AutoSyncedComponent, ServerTickingCo
 	public void serverTick() {
 		worldshells.forEach(Worldshell::tick);
 		if(obj instanceof ServerWorld s /*&& s.getTime() % 20 == 0*/) {
-			WorldshellUpdatePacket.send(s.getPlayers(), worldshells);
+			for (int i = 0; i < worldshells.size(); i++) {
+				WorldshellUpdatePacket.send(s.getPlayers(), worldshells, i);
+			}
 		}
 	}
 

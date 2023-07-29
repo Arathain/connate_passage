@@ -18,17 +18,14 @@ public class CatmullRomCurveSpline {
 	public CatmullRomCurveSpline(Vec3d... points) {
 		List<Vec3d> l = Arrays.stream(points).toList();
 		this.points = new ArrayList<>();
-		this.points.add(l.get(0).add(l.get(0).subtract(l.get(1))));
 		this.points.addAll(l);
-		int s = l.size()-1;
-		this.points.add(l.get(s).add(l.get(s).subtract(l.get(s-1))));
 
 		generateDistances();
 	}
 	public static CatmullRomCurveSpline fromExisting(Vec3d... points) {
 		CatmullRomCurveSpline s = new CatmullRomCurveSpline(points);
-		s.points.remove(0);
-		s.points.remove(s.points.size()-1);
+//		s.points.remove(0);
+//		s.points.remove(s.points.size()-1);
 		s.generateDistances();
 		return s;
 	}

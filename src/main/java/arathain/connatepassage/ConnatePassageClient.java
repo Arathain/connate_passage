@@ -9,6 +9,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Mouse;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.util.math.MatrixStack;
@@ -29,10 +30,10 @@ import java.util.List;
 import java.util.Map;
 
 public class ConnatePassageClient implements ClientModInitializer {
-	private static final List<RenderLayer> blockRenderLayers = RenderLayer.getBlockLayers();
+	private static final boolean INDIVIDUAL_BLOCK_LIGHT_UPDATE = true;
 	@Override
 	public void onInitializeClient(ModContainer mod) {
-		WorldRenderEvents.BEFORE_ENTITIES.register((a) -> {
+		WorldRenderEvents.AFTER_ENTITIES.register((a) -> {
 			renderSelected(a.world(), a.matrixStack(), a.consumers(), a.camera());
 			renderWorldshells(a.world(), a.matrixStack(), a.consumers(), a.world().getComponent(ConnateWorldComponents.WORLDSHELLS).getWorldshells(), a.camera(), a.tickDelta());
 		});
@@ -71,9 +72,12 @@ public class ConnatePassageClient implements ClientModInitializer {
 			BlockPos blockPos = entry.getKey().subtract(shell.getPivot());
 			BlockState state = entry.getValue();
 
+			BlockPos actualPos = BlockPos.fromPosition(new Vec3d(pos.x, pos.y, pos.z));
+
 			if(state.getRenderType() != BlockRenderType.INVISIBLE) {
 				matrices.push();
-				BlockPos actualPos = BlockPos.fromPosition(new Vec3d(pos.x, pos.y, pos.z).add(rotateViaQuat(Vec3d.ofCenter(blockPos), shell.getRotation(tickDelta))));
+				if(INDIVIDUAL_BLOCK_LIGHT_UPDATE)
+					actualPos = BlockPos.fromPosition(new Vec3d(pos.x, pos.y, pos.z).add(rotateViaQuat(Vec3d.ofCenter(blockPos), shell.getRotation(tickDelta))));
 
 				matrices.translate(blockPos.getX()-0.5, blockPos.getY()-0.5, blockPos.getZ()-0.5);
 

@@ -3,17 +3,14 @@ package arathain.connatepassage;
 import arathain.connatepassage.init.ConnateBlocks;
 import arathain.connatepassage.init.ConnateItems;
 import arathain.connatepassage.init.ConnateWorldshells;
-import arathain.connatepassage.logic.spline.CatmullRomCurveSpline;
+import arathain.connatepassage.logic.worldshell.WorldshellAddSpeedPacket;
 import com.google.common.reflect.Reflection;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import org.quiltmc.loader.api.ModContainer;
-import org.quiltmc.loader.api.QuiltLoader;
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
-import org.quiltmc.qsl.lifecycle.api.client.event.ClientTickEvents;
+import org.quiltmc.qsl.networking.api.ServerPlayNetworking;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +28,7 @@ public class ConnatePassage implements ModInitializer {
 		ConnateBlocks.init();
 		ConnateItems.init();
 		Reflection.initialize(ConnateWorldshells.class);
+		ServerPlayNetworking.registerGlobalReceiver(WorldshellAddSpeedPacket.ID, WorldshellAddSpeedPacket::apply);
 	}
 	public static Identifier id(String name) {
 		return new Identifier(MODID, name);

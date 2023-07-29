@@ -99,7 +99,7 @@ public abstract class Worldshell {
 		}
 	}
 	public void readUpdateNbt(NbtCompound nbt) {
-		this.rotation = new Quaternionf(nbt.getFloat("qX"), nbt.getFloat("qY"), nbt.getFloat("qZ"), nbt.getFloat("qW"));
+		this.prevRotation = new Quaternionf(nbt.getFloat("qX"), nbt.getFloat("qY"), nbt.getFloat("qZ"), nbt.getFloat("qW"));
 		this.pos = new Vec3d(nbt.getDouble("pX"), nbt.getDouble("pY"), nbt.getDouble("pZ"));
 	}
 	public void readNbt(NbtCompound nbt) {
