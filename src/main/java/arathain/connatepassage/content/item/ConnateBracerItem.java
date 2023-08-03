@@ -125,7 +125,7 @@ public class ConnateBracerItem extends Item {
 				s.getNbt().remove("first");
 				s.getNbt().remove("boxes");
 				context.getPlayer().setStackInHand(context.getHand(), new ItemStack(ConnateItems.CONNATE_BRACER));
-				context.getWorld().getComponent(ConnateWorldComponents.WORLDSHELLS).getWorldshells().add(ConnateWorldshells.FREE.create(stateMap, Vec3d.ofCenter(pos), pos));
+				context.getWorld().getComponent(ConnateWorldComponents.WORLDSHELLS).addWorldshell(ConnateWorldshells.FREE.create(stateMap, Vec3d.ofCenter(pos), pos));
 				ConnateWorldComponents.WORLDSHELLS.sync(context.getWorld());
 				return ActionResult.CONSUME;
 			} else if(context.getWorld().getBlockState(context.getBlockPos()).getBlock() instanceof HingeBlock) {
@@ -158,7 +158,7 @@ public class ConnateBracerItem extends Item {
 				s.getNbt().remove("first");
 				s.getNbt().remove("boxes");
 				context.getPlayer().setStackInHand(context.getHand(), new ItemStack(ConnateItems.CONNATE_BRACER));
-				context.getWorld().getComponent(ConnateWorldComponents.WORLDSHELLS).getWorldshells().add(ConnateWorldshells.AXIS_LIMITED.create(stateMap, Vec3d.ofCenter(pos), pos).putAxis(axis));
+				context.getWorld().getComponent(ConnateWorldComponents.WORLDSHELLS).addWorldshell(ConnateWorldshells.AXIS_LIMITED.create(stateMap, Vec3d.ofCenter(pos), pos).putAxis(axis));
 				ConnateWorldComponents.WORLDSHELLS.sync(context.getWorld());
 				return ActionResult.CONSUME;
 			} else if(context.getWorld().getBlockState(context.getBlockPos()).getBlock() instanceof SplineBlock) {
@@ -186,7 +186,7 @@ public class ConnateBracerItem extends Item {
 				s.getNbt().remove("first");
 				s.getNbt().remove("boxes");
 				context.getPlayer().setStackInHand(context.getHand(), new ItemStack(ConnateItems.CONNATE_BRACER));
-				context.getWorld().getComponent(ConnateWorldComponents.WORLDSHELLS).getWorldshells().add(ConnateWorldshells.SPLINE.create(stateMap, Vec3d.ofCenter(pos), pos).constructSpline(getTrailBlocks(s).stream().map(Vec3d::ofCenter).toList().toArray(new Vec3d[]{})).putAxis(axis));
+				context.getWorld().getComponent(ConnateWorldComponents.WORLDSHELLS).addWorldshell(ConnateWorldshells.SPLINE.create(stateMap, Vec3d.ofCenter(pos), pos).constructSpline(getTrailBlocks(s).stream().map(Vec3d::ofCenter).toList().toArray(new Vec3d[]{})).putAxis(axis));
 				ConnateWorldComponents.WORLDSHELLS.sync(context.getWorld());
 				return ActionResult.CONSUME;
 			}

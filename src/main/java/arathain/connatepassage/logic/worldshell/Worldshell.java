@@ -1,19 +1,33 @@
 package arathain.connatepassage.logic.worldshell;
 
+import arathain.connatepassage.logic.ConnateMathUtil;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.client.color.biome.BiomeColorProvider;
+import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.BlockRenderView;
+import net.minecraft.world.LightType;
+import net.minecraft.world.World;
+import net.minecraft.world.chunk.light.LightingProvider;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
-public abstract class Worldshell {
+public abstract class Worldshell implements BlockRenderView {
+	private Supplier<World> worldGetter = null;
 	protected final Map<BlockPos, BlockState> contained;
 	protected Quaternionf rotation, prevRotation = new Quaternionf();
 	protected Vec3d prevPos, pos;
@@ -24,6 +38,9 @@ public abstract class Worldshell {
 		this.pos = initialPos;
 		this.pivot = pivot;
 		this.prevPos = pos;
+	}
+	public void setWorld(World world) {
+		worldGetter = () -> world;
 	}
 
 	public abstract Identifier getId();
@@ -99,7 +116,7 @@ public abstract class Worldshell {
 		}
 	}
 	public void readUpdateNbt(NbtCompound nbt) {
-		this.prevRotation = new Quaternionf(nbt.getFloat("qX"), nbt.getFloat("qY"), nbt.getFloat("qZ"), nbt.getFloat("qW"));
+		this.rotation = new Quaternionf(nbt.getFloat("qX"), nbt.getFloat("qY"), nbt.getFloat("qZ"), nbt.getFloat("qW"));
 		this.pos = new Vec3d(nbt.getDouble("pX"), nbt.getDouble("pY"), nbt.getDouble("pZ"));
 	}
 	public void readNbt(NbtCompound nbt) {
@@ -117,4 +134,62 @@ public abstract class Worldshell {
 		});
 		return map;
 	}
+
+	//the janky zone
+
+	@Override
+	public float getBrightness(Direction direction, boolean shaded) {
+		return worldGetter == null ? 0 : worldGetter.get().getBrightness(direction, shaded);
+	}
+
+	@Override
+	public LightingProvider getLightingProvider() {
+		return worldGetter == null ? null : worldGetter.get().getLightingProvider();
+	}
+
+	@Override
+	public int getColor(BlockPos pos, BiomeColorProvider biomeColorProvider) {
+		return worldGetter == null ? -64 : worldGetter.get().getColor(getLocalPos(pos), biomeColorProvider);
+	}
+
+	@Nullable
+	@Override
+	public BlockEntity getBlockEntity(BlockPos pos) {
+		return null;
+	}
+
+	@Override
+	public BlockState getBlockState(BlockPos pos) {
+		return contained.getOrDefault(pos, Blocks.AIR.getDefaultState());
+	}
+
+	@Override
+	public FluidState getFluidState(BlockPos pos) {
+		return contained.containsKey(pos) ? contained.get(pos).getFluidState() : Fluids.EMPTY.getDefaultState();
+	}
+
+	@Override
+	public int getHeight() {
+		return worldGetter == null ? 256 : worldGetter.get().getHeight();
+	}
+
+	@Override
+	public int getBottomY() {
+		return worldGetter == null ? -64 : worldGetter.get().getBottomY();
+	}
+
+	private BlockPos getLocalPos(BlockPos bPos) {
+		return BlockPos.fromPosition(new Vec3d(pos.x, pos.y, pos.z).add(ConnateMathUtil.rotateViaQuat(Vec3d.ofCenter(bPos), rotation)));
+	}
+
+	@Override
+	public int getLightLevel(LightType type, BlockPos pos) {
+		return worldGetter == null ? 0 : worldGetter.get().getLightLevel(type, getLocalPos(pos));
+	}
+
+	@Override
+	public int getBaseLightLevel(BlockPos pos, int ambientDarkness) {
+		return worldGetter == null ? 0 : worldGetter.get().getBaseLightLevel(getLocalPos(pos), ambientDarkness);
+	}
+
 }

@@ -32,7 +32,7 @@ public class WorldshellUpdatePacket {
 		WorldshellComponent c = handler.getWorld().getComponent(ConnateWorldComponents.WORLDSHELLS);
 		NbtCompound toRead = payload.readUnlimitedNbt();
 		int i = payload.readInt();
-		if(c.getWorldshells().size() > 0){
+		if(c.getWorldshells().size() > i){
 			client.execute(() -> c.getWorldshells().get(i).readUpdateNbt(toRead));
 		}
 	}

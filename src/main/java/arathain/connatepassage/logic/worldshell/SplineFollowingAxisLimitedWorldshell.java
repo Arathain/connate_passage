@@ -29,7 +29,8 @@ public class SplineFollowingAxisLimitedWorldshell extends AxisLimitedWorldshell 
 	@Override
 	public void readUpdateNbt(NbtCompound nbt) {
 		//super.readUpdateNbt(nbt);
-		this.spline.prevPos = nbt.getFloat("pos");
+		if(this.spline != null)
+			this.spline.prevPos = nbt.getFloat("pos");
 		this.speed = nbt.getFloat("speed");
 	}
 	@Override

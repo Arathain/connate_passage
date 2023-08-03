@@ -34,12 +34,17 @@ public class WorldshellComponent implements AutoSyncedComponent, ServerTickingCo
 			NbtCompound worldshellNbt = (NbtCompound) wNbt;
 			Worldshell shell = ConnateWorldshells.WORLDSHELLS.get(new Identifier(worldshellNbt.getString("id"))).create(Worldshell.getBlocksFromNbt(worldshellNbt), Vec3d.ZERO, Worldshell.getBlockPosFromNbt(worldshellNbt));
 			shell.readNbt(worldshellNbt);
+			shell.setWorld(obj);
 			worldshells.add(shell);
 		});
 	}
 
 	public List<Worldshell> getWorldshells() {
 		return worldshells;
+	}
+	public void addWorldshell(Worldshell shell) {
+		shell.setWorld(obj);
+		worldshells.add(shell);
 	}
 
 	@Override

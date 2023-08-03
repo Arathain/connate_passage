@@ -1,10 +1,13 @@
 package arathain.connatepassage;
 
+import arathain.connatepassage.config.ConnateConfig;
 import arathain.connatepassage.content.cca.ConnateWorldComponents;
 import arathain.connatepassage.content.item.ConnateBracerItem;
 import arathain.connatepassage.init.ConnateItems;
+import arathain.connatepassage.logic.ConnateMathUtil;
 import arathain.connatepassage.logic.worldshell.Worldshell;
 import arathain.connatepassage.logic.worldshell.WorldshellUpdatePacket;
+import eu.midnightdust.lib.config.MidnightConfig;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -30,7 +33,6 @@ import java.util.List;
 import java.util.Map;
 
 public class ConnatePassageClient implements ClientModInitializer {
-	private static final boolean INDIVIDUAL_BLOCK_LIGHT_UPDATE = true;
 	@Override
 	public void onInitializeClient(ModContainer mod) {
 		WorldRenderEvents.AFTER_ENTITIES.register((a) -> {
@@ -38,6 +40,7 @@ public class ConnatePassageClient implements ClientModInitializer {
 			renderWorldshells(a.world(), a.matrixStack(), a.consumers(), a.world().getComponent(ConnateWorldComponents.WORLDSHELLS).getWorldshells(), a.camera(), a.tickDelta());
 		});
 		ClientPlayNetworking.registerGlobalReceiver(WorldshellUpdatePacket.ID, WorldshellUpdatePacket::apply);
+		MidnightConfig.init("connatepassage", ConnateConfig.class);
 	}
 	private static void renderSelected(ClientWorld world, MatrixStack matrices, VertexConsumerProvider consumer, Camera camera) {
 		MinecraftClient c = MinecraftClient.getInstance();
@@ -59,10 +62,7 @@ public class ConnatePassageClient implements ClientModInitializer {
 		matrices.pop();
 	}
 
-	private static Vec3d rotateViaQuat(Vec3d transform, Quaternionf quat) {
-		Vector3d temp = new Vector3d(transform.x, transform.y, transform.z).rotate(new Quaterniond(quat));
-		return new Vec3d(temp.x, temp.y, temp.z);
-	}
+
 	private static void renderWorldshell(MinecraftClient c, BlockRenderManager b, ClientWorld world, MatrixStack matrices, VertexConsumerProvider consumer, Worldshell shell, RandomGenerator  r, float tickDelta) {
 		matrices.push();
 		Vec3d pos = shell.getPos(tickDelta);
@@ -72,16 +72,11 @@ public class ConnatePassageClient implements ClientModInitializer {
 			BlockPos blockPos = entry.getKey().subtract(shell.getPivot());
 			BlockState state = entry.getValue();
 
-			BlockPos actualPos = BlockPos.fromPosition(new Vec3d(pos.x, pos.y, pos.z));
-
 			if(state.getRenderType() != BlockRenderType.INVISIBLE) {
 				matrices.push();
-				if(INDIVIDUAL_BLOCK_LIGHT_UPDATE)
-					actualPos = BlockPos.fromPosition(new Vec3d(pos.x, pos.y, pos.z).add(rotateViaQuat(Vec3d.ofCenter(blockPos), shell.getRotation(tickDelta))));
-
 				matrices.translate(blockPos.getX()-0.5, blockPos.getY()-0.5, blockPos.getZ()-0.5);
 
-				b.renderBlock(state, actualPos, world, matrices, consumer.getBuffer(RenderLayers.getBlockLayer(state)), false, r);
+				b.renderBlock(state, blockPos, shell, matrices, consumer.getBuffer(RenderLayers.getBlockLayer(state)), true, r);
 				matrices.pop();
 			}
 		}

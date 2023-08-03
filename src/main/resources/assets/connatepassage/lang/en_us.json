@@ -1,3 +1,8 @@
 {
-  "block.connatepassage.hinge": "Passage Hinge"
+  "block.connatepassage.hinge": "Passage Hinge",
+  "block.connatepassage.spline_carriage": "Passage Carriage",
+  "block.connatepassage.chassis": "Passage Chassis",
+  "item.connatepassage.copper_bracers": "Copper Bracers",
+  "connatepassage.midnightconfig.title":"Connate Passage",
+  "connatepassage.midnightconfig.individualLightBlockUpdate":"Determines whether worldshells should query light per-block."
 }

@@ -49,6 +49,8 @@ dependencies {
 		exclude(group: "net.fabricmc.fabric-api")
 	}
 
+	modImplementation include ("maven.modrinth:midnightlib:${project.midnightlib_version}")
+
 	modImplementation include ('com.github.Arathain:LodestoneLib-Quilt:1.19.3-SNAPSHOT')
 
 }
