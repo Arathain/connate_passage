@@ -1,6 +1,7 @@
 package arathain.connatepassage.init;
 
 import arathain.connatepassage.ConnatePassage;
+import arathain.connatepassage.content.block.ConnateBatteryBlock;
 import arathain.connatepassage.content.block.HingeBlock;
 import arathain.connatepassage.content.block.SplineBlock;
 import arathain.connatepassage.content.block.entity.WorldshellBlockEntity;
@@ -27,6 +28,7 @@ public interface ConnateBlocks {
 	}
 	Block HINGE = register("hinge", new HingeBlock(QuiltBlockSettings.copyOf(Blocks.COPPER_BLOCK).nonOpaque()));
 	Block SPLINE = register("spline_carriage", new SplineBlock(QuiltBlockSettings.copyOf(Blocks.COPPER_BLOCK)));
+	Block BATTERY = register("battery", new ConnateBatteryBlock(QuiltBlockSettings.copyOf(Blocks.COPPER_BLOCK)));
 	Block CHASSIS = register("chassis", new Block(QuiltBlockSettings.copyOf(Blocks.COPPER_BLOCK)));
 
 	BlockEntityType<WorldshellBlockEntity> HINGE_BLOCK_ENTITY = register("hinge", QuiltBlockEntityTypeBuilder.create(WorldshellBlockEntity::hinge, HINGE).build());

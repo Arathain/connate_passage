@@ -2,21 +2,29 @@ package arathain.connatepassage;
 
 import arathain.connatepassage.config.ConnateConfig;
 import arathain.connatepassage.content.cca.ConnateWorldComponents;
+import arathain.connatepassage.content.cca.WorldshellComponent;
 import arathain.connatepassage.content.item.ConnateBracerItem;
 import arathain.connatepassage.init.ConnateItems;
 import arathain.connatepassage.logic.ConnateMathUtil;
+import arathain.connatepassage.logic.worldshell.ConstantAxisLimitedWorldshell;
+import arathain.connatepassage.logic.worldshell.ScrollableWorldshell;
 import arathain.connatepassage.logic.worldshell.Worldshell;
 import arathain.connatepassage.logic.worldshell.WorldshellUpdatePacket;
 import eu.midnightdust.lib.config.MidnightConfig;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.Mouse;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ingame.EnchantmentScreen;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -38,6 +46,36 @@ public class ConnatePassageClient implements ClientModInitializer {
 		WorldRenderEvents.AFTER_ENTITIES.register((a) -> {
 			renderSelected(a.world(), a.matrixStack(), a.consumers(), a.camera());
 			renderWorldshells(a.world(), a.matrixStack(), a.consumers(), a.world().getComponent(ConnateWorldComponents.WORLDSHELLS).getWorldshells(), a.camera(), a.tickDelta());
+		});
+		HudRenderCallback.EVENT.register((guiGraphics, tickDelta) -> {
+			PlayerEntity player = MinecraftClient.getInstance().player;
+
+			if(player != null && !player.isSpectator()) {
+
+				if(player.getMainHandStack().getItem() instanceof ConnateBracerItem) {
+					WorldshellComponent c = player.getWorld().getComponent(ConnateWorldComponents.WORLDSHELLS);
+					Worldshell worldshell = null;
+					for (int i = 0; i < c.getWorldshells().size(); i++) {
+						Worldshell shell = c.getWorldshells().get(i);
+						if (shell instanceof ScrollableWorldshell s ) {
+							Vec3d diff = shell.getPos().subtract(player.getPos());
+							float length = (float) diff.length();
+							if(length < 128) {
+								diff = diff.normalize();
+								if (diff.dotProduct(player.getRotationVecClient()) > 1 - (0.1 / Math.pow(length, 1 / 2f))) {
+									worldshell = shell;
+								}
+							}
+						}
+					}
+					if(worldshell instanceof ConstantAxisLimitedWorldshell constShell) {
+						TextRenderer r = MinecraftClient.getInstance().textRenderer;
+						int x  = guiGraphics.getScaledWindowWidth()/2;
+						int y  = guiGraphics.getScaledWindowHeight()/2;
+						guiGraphics.drawText(r, constShell.getSpeedHz() + "Hz", x+10, y, 0x99E6FF, true);
+					}
+				}
+			}
 		});
 		ClientPlayNetworking.registerGlobalReceiver(WorldshellUpdatePacket.ID, WorldshellUpdatePacket::apply);
 		MidnightConfig.init("connatepassage", ConnateConfig.class);

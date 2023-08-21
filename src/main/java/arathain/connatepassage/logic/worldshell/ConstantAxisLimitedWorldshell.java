@@ -13,7 +13,8 @@ import org.joml.Vector3f;
 import java.util.Map;
 
 public class ConstantAxisLimitedWorldshell extends AxisLimitedWorldshell implements ScrollableWorldshell {
-	private float speed = 0.1f;
+	//show on hover
+	private int speed = 1;
 	public ConstantAxisLimitedWorldshell(Map<BlockPos, BlockState> contained, Vec3d initialPos, BlockPos pivot, Vector3f initialAxis) {
 		super(contained, initialPos, pivot, initialAxis);
 	}
@@ -21,11 +22,11 @@ public class ConstantAxisLimitedWorldshell extends AxisLimitedWorldshell impleme
 	public void readUpdateNbt(NbtCompound nbt) {
 		super.readUpdateNbt(nbt);
 		this.putAxis(new Vector3f(nbt.getFloat("axisX"), nbt.getFloat("axisY"), nbt.getFloat("axisZ")));
-		this.speed = nbt.getFloat("speed");
+		this.speed = nbt.getInt("speed");
 	}
 	@Override
 	public NbtCompound writeUpdateNbt(NbtCompound nbt) {
-		nbt.putFloat("speed", speed);
+		nbt.putInt("speed", speed);
 		nbt.putFloat("axisX", axis.x);
 		nbt.putFloat("axisY", axis.y);
 		nbt.putFloat("axisZ", axis.z);
@@ -33,11 +34,21 @@ public class ConstantAxisLimitedWorldshell extends AxisLimitedWorldshell impleme
 	}
 
 	public void setSpeed(float spd) {
-		speed = MathHelper.clamp(spd, -1, 1);
+		speed = MathHelper.clamp((int)spd, -32, 32);
+	}
+	public void addSpeed(double speed) {
+		if(speed > 0)
+			speed = 1;
+		else
+			speed = -1;
+		setSpeed(getSpeed()+(float)speed);
 	}
 
 	public float getSpeed() {
 		return speed;
+	}
+	public float getSpeedHz() {
+		return speed/8f * (this.invertedMotion ? -1 : 1);
 	}
 
 	@Override
@@ -45,7 +56,10 @@ public class ConstantAxisLimitedWorldshell extends AxisLimitedWorldshell impleme
 		super.tick();
 
 		this.prevRotation = this.getRotation();
-		this.rotation.rotateAxis(speed, this.axis);
+		if(this.shutdownTickCountdown > 0) {
+			this.shutdownTickCountdown--;
+			this.rotation.rotateAxis(getSpeedHz() * MathHelper.TAU / 20f, this.axis);
+		}
 
 		if(this.speed == 0) {
 			this.rotation = this.prevRotation;

@@ -14,6 +14,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockRenderView;
 import net.minecraft.world.LightType;
@@ -27,6 +28,8 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 public abstract class Worldshell implements BlockRenderView {
+	protected boolean invertedMotion;
+	public int shutdownTickCountdown = 0;
 	private Supplier<World> worldGetter = null;
 	protected final Map<BlockPos, BlockState> contained;
 	protected Quaternionf rotation, prevRotation = new Quaternionf();
@@ -48,7 +51,13 @@ public abstract class Worldshell implements BlockRenderView {
 	public void tick() {
 		this.prevPos = pos;
 	}
-
+	public void outerTick() {
+		this.tick();
+	}
+	public void activate(int countdown, boolean invert) {
+		this.invertedMotion = invert;
+		this.shutdownTickCountdown = countdown;
+	}
 	public Quaternionf getRotation() {
 		return getRotation(1);
 	}
@@ -105,6 +114,9 @@ public abstract class Worldshell implements BlockRenderView {
 		nbt.putDouble("pX", pos.x);
 		nbt.putDouble("pY", pos.y);
 		nbt.putDouble("pZ", pos.z);
+
+		nbt.putInt("sCd", shutdownTickCountdown);
+		nbt.putBoolean("invM", invertedMotion);
 		return nbt;
 	}
 	protected void checkRotation() {
@@ -118,6 +130,8 @@ public abstract class Worldshell implements BlockRenderView {
 	public void readUpdateNbt(NbtCompound nbt) {
 		this.rotation = new Quaternionf(nbt.getFloat("qX"), nbt.getFloat("qY"), nbt.getFloat("qZ"), nbt.getFloat("qW"));
 		this.pos = new Vec3d(nbt.getDouble("pX"), nbt.getDouble("pY"), nbt.getDouble("pZ"));
+		this.shutdownTickCountdown = nbt.getInt("sCd");
+		this.invertedMotion = nbt.getBoolean("invM");
 	}
 	public void readNbt(NbtCompound nbt) {
 		readUpdateNbt(nbt);
@@ -179,7 +193,8 @@ public abstract class Worldshell implements BlockRenderView {
 	}
 
 	private BlockPos getLocalPos(BlockPos bPos) {
-		return BlockPos.fromPosition(new Vec3d(pos.x, pos.y, pos.z).add(ConnateMathUtil.rotateViaQuat(Vec3d.ofCenter(bPos), rotation)));
+		Vec3d vec = new Vec3d(pos.x, pos.y, pos.z).add(ConnateMathUtil.rotateViaQuat(Vec3d.ofCenter(bPos), rotation));
+		return new BlockPos(MathHelper.ceil(vec.getX()), MathHelper.ceil(vec.getY()), MathHelper.ceil(vec.getZ())).add(-1, -1, 0);
 	}
 
 	@Override

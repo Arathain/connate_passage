@@ -18,14 +18,16 @@ import net.minecraft.util.random.RandomGenerator;
 import net.minecraft.world.World;
 
 public class ConnateBatteryBlock extends FacingBlock {
+	//rotation in Hz, spline in actual speed
+	//
 	public static final BooleanProperty TRIGGERED = Properties.TRIGGERED;
-	protected ConnateBatteryBlock(Settings settings) {
+	public ConnateBatteryBlock(Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.SOUTH).with(TRIGGERED, false));
 	}
 
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
-		return this.getDefaultState().with(FACING, ctx.getPlayerLookDirection().getOpposite().getOpposite());
+		return this.getDefaultState().with(FACING, ctx.getPlayerLookDirection());
 	}
 
 	public BlockState rotate(BlockState state, BlockRotation rotation) {
@@ -44,17 +46,17 @@ public class ConnateBatteryBlock extends FacingBlock {
 		boolean bl2 = state.get(TRIGGERED);
 		if (bl && !bl2) {
 			world.scheduleBlockTick(pos, this, 4);
-			world.setBlockState(pos, state.with(TRIGGERED, true), 4);
+			world.setBlockState(pos, state.with(TRIGGERED, true), 2);
 		} else if (!bl && bl2) {
-			world.setBlockState(pos, state.with(TRIGGERED, false), 4);
+			world.setBlockState(pos, state.with(TRIGGERED, false), 2);
 		}
 
 	}
 
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, RandomGenerator random) {
 		for(Worldshell worldshell : world.getComponent(ConnateWorldComponents.WORLDSHELLS).getWorldshells()) {
-			if(Vec3d.ofCenter(pos.add(state.get(FACING).getVector())).distanceTo(worldshell.getPos()) < 2) {
-				//spin goes here
+			if(Vec3d.ofCenter(pos.add(state.get(FACING).getVector())).distanceTo(worldshell.getPos()) < 4) {
+				worldshell.activate(40, world.getBlockState(pos.add(state.get(FACING).getOpposite().getVector())).isOf(Blocks.IRON_BLOCK));
 			}
 		}
 	}

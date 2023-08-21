@@ -37,7 +37,7 @@ public class MouseMixin {
 					Vec3d diff = shell.getPos().subtract(client.player.getPos());
 					float length = (float) diff.length();
 					diff = diff.normalize();
-					if (diff.dotProduct(client.player.getRotationVecClient()) > 1 - 0.2 / Math.pow(length, 1 / 4f)) {
+					if (diff.dotProduct(client.player.getRotationVecClient()) > 1 - (0.1 / Math.pow(length, 1 / 2f))) {
 						select = i;
 					}
 				}

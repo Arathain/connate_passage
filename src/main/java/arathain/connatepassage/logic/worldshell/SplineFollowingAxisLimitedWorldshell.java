@@ -28,15 +28,18 @@ public class SplineFollowingAxisLimitedWorldshell extends AxisLimitedWorldshell 
 
 	@Override
 	public void readUpdateNbt(NbtCompound nbt) {
-		//super.readUpdateNbt(nbt);
 		if(this.spline != null)
 			this.spline.prevPos = nbt.getFloat("pos");
 		this.speed = nbt.getFloat("speed");
+		this.shutdownTickCountdown = nbt.getInt("sCd");
+		this.invertedMotion = nbt.getBoolean("invM");
 	}
 	@Override
 	public NbtCompound writeUpdateNbt(NbtCompound nbt) {
 		nbt.putFloat("speed", speed);
 		nbt.putFloat("pos", this.spline.pos);
+		nbt.putInt("sCd", shutdownTickCountdown);
+		nbt.putBoolean("invM", invertedMotion);
 		return nbt;
 	}
 	@Override
@@ -66,13 +69,16 @@ public class SplineFollowingAxisLimitedWorldshell extends AxisLimitedWorldshell 
 	@Override
 	public void tick() {
 		super.tick();
-		this.spline.moveLoop(speed);
-		this.prevPos = this.pos;
-		this.pos = this.spline.getPos(1);
-		Vec3d prod = this.spline.getVelocity(1).normalize();
-		checkRotation();
-		this.prevRotation = rotation;
-		this.axis = prod.toVector3f();
-		this.rotation = new Quaternionf().rotateTo(new Vector3f(1, 0,0), axis);
+		if(this.shutdownTickCountdown > 0) {
+			this.shutdownTickCountdown--;
+			this.spline.moveLoop(speed);
+			this.prevPos = this.pos;
+			this.pos = this.spline.getPos(1);
+			Vec3d prod = this.spline.getVelocity(1).normalize();
+			checkRotation();
+			this.prevRotation = rotation;
+			this.axis = prod.toVector3f();
+			this.rotation = new Quaternionf().rotateTo(new Vector3f(0, 0, -1), axis);
+		}
 	}
 }

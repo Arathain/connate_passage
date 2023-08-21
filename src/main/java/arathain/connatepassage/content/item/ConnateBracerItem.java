@@ -170,13 +170,16 @@ public class ConnateBracerItem extends Item {
 							BlockState st = context.getWorld().getBlockState(blockPos);
 							if(!st.isAir()) {
 								stateMap.put(blockPos, st);
-								context.getWorld().removeBlock(blockPos, false);
+
 								if (blockPos.equals(pos)) {
 									state.set(st);
 								}
 							}
 						}
 					});
+				}
+				for(BlockPos toRemove : stateMap.keySet()) {
+					context.getWorld().removeBlock(toRemove, false);
 				}
 				if(!stateMap.containsKey(pos)) {
 					return ActionResult.FAIL;
