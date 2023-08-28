@@ -48,7 +48,7 @@ public class ConstantAxisLimitedWorldshell extends AxisLimitedWorldshell impleme
 		return speed;
 	}
 	public float getSpeedHz() {
-		return speed/8f * (this.invertedMotion ? -1 : 1);
+		return speed/8f;
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class ConstantAxisLimitedWorldshell extends AxisLimitedWorldshell impleme
 		this.prevRotation = this.getRotation();
 		if(this.shutdownTickCountdown > 0) {
 			this.shutdownTickCountdown--;
-			this.rotation.rotateAxis(getSpeedHz() * MathHelper.TAU / 20f, this.axis);
+			this.rotation.rotateAxis(getSpeedHz() * (this.invertedMotion ? -1 : 1) * MathHelper.PI / 20f, this.axis);
 		}
 
 		if(this.speed == 0) {

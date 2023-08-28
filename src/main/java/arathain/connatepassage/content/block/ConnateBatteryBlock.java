@@ -2,17 +2,20 @@ package arathain.connatepassage.content.block;
 
 import arathain.connatepassage.content.cca.ConnateWorldComponents;
 import arathain.connatepassage.logic.worldshell.Worldshell;
-import net.minecraft.block.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.FacingBlock;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.state.property.Property;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.random.RandomGenerator;
 import net.minecraft.world.World;
@@ -42,21 +45,26 @@ public class ConnateBatteryBlock extends FacingBlock {
 		builder.add(FACING, TRIGGERED);
 	}
 	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
-		boolean bl = world.isReceivingRedstonePower(pos) || world.isReceivingRedstonePower(pos.up());
+		int g = world.getReceivedRedstonePower(pos);
+		if(g == 0) {
+			g = world.getReceivedRedstonePower(pos.up());
+		}
+
 		boolean bl2 = state.get(TRIGGERED);
-		if (bl && !bl2) {
-			world.scheduleBlockTick(pos, this, 4);
+		if (g != 0 && !bl2) {
+			world.scheduleBlockTick(pos, this, 2);
 			world.setBlockState(pos, state.with(TRIGGERED, true), 2);
-		} else if (!bl && bl2) {
+		} else if (g == 0 && bl2) {
 			world.setBlockState(pos, state.with(TRIGGERED, false), 2);
 		}
 
 	}
 
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, RandomGenerator random) {
+		int g = world.getReceivedRedstonePower(pos);
 		for(Worldshell worldshell : world.getComponent(ConnateWorldComponents.WORLDSHELLS).getWorldshells()) {
 			if(Vec3d.ofCenter(pos.add(state.get(FACING).getVector())).distanceTo(worldshell.getPos()) < 4) {
-				worldshell.activate(40, world.getBlockState(pos.add(state.get(FACING).getOpposite().getVector())).isOf(Blocks.IRON_BLOCK));
+				worldshell.activate(10 * MathHelper.clamp(g, 0, 12), world.getBlockState(pos.add(state.get(FACING).getOpposite().getVector())).isOf(Blocks.IRON_BLOCK));
 			}
 		}
 	}
