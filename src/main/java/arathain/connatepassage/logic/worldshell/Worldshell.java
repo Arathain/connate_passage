@@ -21,10 +21,14 @@ import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.light.LightingProvider;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Quaterniond;
 import org.joml.Quaternionf;
+import org.joml.Vector3d;
+import org.joml.Vector3f;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 public abstract class Worldshell implements BlockRenderView {
@@ -35,12 +39,25 @@ public abstract class Worldshell implements BlockRenderView {
 	protected Quaternionf rotation, prevRotation = new Quaternionf();
 	protected Vec3d prevPos, pos;
 	protected final BlockPos pivot;
+	public final double maxDistance;
 
 	public Worldshell(Map<BlockPos, BlockState> contained, Vec3d initialPos, BlockPos pivot) {
 		this.contained = contained;
 		this.pos = initialPos;
 		this.pivot = pivot;
 		this.prevPos = pos;
+		this.maxDistance = computeSize();
+	}
+	protected double computeSize() {
+		AtomicReference<Double> size = new AtomicReference<>((double) 1);
+		contained.keySet().forEach(c -> {
+			double dist = Math.sqrt(c.getSquaredDistance(pivot));
+			if(dist > size.get()) {
+				size.set(dist);
+			}
+		});
+		size.set(size.get() + 2);
+		return size.get();
 	}
 	public void setWorld(World world) {
 		worldGetter = () -> world;
@@ -153,7 +170,13 @@ public abstract class Worldshell implements BlockRenderView {
 
 	@Override
 	public float getBrightness(Direction direction, boolean shaded) {
-		return worldGetter == null ? 0 : worldGetter.get().getBrightness(direction, shaded);
+		return worldGetter == null ? 0 : worldGetter.get().getBrightness(getLocal(direction), shaded);
+	}
+
+	private Direction getLocal(Direction dir) {
+		Vector3f v = dir.getUnitVector();
+		v.rotate(this.getRotation());
+		return Direction.getFacing(v.x, v.y, v.z);
 	}
 
 	@Override
@@ -174,7 +197,7 @@ public abstract class Worldshell implements BlockRenderView {
 
 	@Override
 	public BlockState getBlockState(BlockPos pos) {
-		return contained.getOrDefault(pos, Blocks.AIR.getDefaultState());
+		return contained.getOrDefault(pos.add(pivot), Blocks.AIR.getDefaultState());
 	}
 
 	@Override
@@ -192,9 +215,22 @@ public abstract class Worldshell implements BlockRenderView {
 		return worldGetter == null ? -64 : worldGetter.get().getBottomY();
 	}
 
+	public Vec3d getLocalPos(Vec3d bPos) {
+		return new Vec3d(pos.x, pos.y, pos.z).add(ConnateMathUtil.rotateViaQuat(bPos, rotation));
+	}
+	public Vec3d getLocalPos(Vec3d bPos, float tickDelta) {
+		return new Vec3d(pos.x, pos.y, pos.z).add(ConnateMathUtil.rotateViaQuat(bPos, getRotation(tickDelta)));
+	}
+	public Vector3d getLocalPos(Vector3d bPos) {
+		return new Vector3d(pos.x, pos.y, pos.z).add(bPos.rotate(rotation.get(new Quaterniond())));
+	}
+	public Vector3d getLocalPos(Vector3d bPos, float tickDelta) {
+		return new Vector3d(pos.x, pos.y, pos.z).add(bPos.rotate(getRotation(tickDelta).get(new Quaterniond())));
+	}
+
 	private BlockPos getLocalPos(BlockPos bPos) {
-		Vec3d vec = new Vec3d(pos.x, pos.y, pos.z).add(ConnateMathUtil.rotateViaQuat(Vec3d.ofCenter(bPos), rotation));
-		return new BlockPos(MathHelper.ceil(vec.getX()), MathHelper.ceil(vec.getY()), MathHelper.ceil(vec.getZ())).add(-1, -1, 0);
+		Vec3d vec = new Vec3d(pos.x, pos.y, pos.z).add(ConnateMathUtil.rotateViaQuat(new Vec3d(bPos.getX(), bPos.getY(), bPos.getZ()), rotation));
+		return new BlockPos(MathHelper.floor(vec.getX()), MathHelper.floor(vec.getY()), MathHelper.floor(vec.getZ()));
 	}
 
 	@Override

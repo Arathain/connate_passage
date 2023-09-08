@@ -20,10 +20,7 @@ repositories {
 		url = "https://api.modrinth.com/maven"
 		content { includeGroup "maven.modrinth" }
 	}
-	//need to figure out the hell of github packages
-	maven {
-		url = "https://maven.pkg.github.com/ValkyrienSkies/vs-core"
-	}
+
 }
 
 // All the dependencies are declared at gradle/libs.version.toml and referenced with "libs.<id>"
@@ -55,12 +52,10 @@ dependencies {
 
 	modImplementation include ("maven.modrinth:midnightlib:${project.midnightlib_version}")
 
+	include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:0.2.0-rc.2")))
 
-	implementation include ("org.valkyrienskies.core:impl:1.1.0+1a7b5863c1") {
-		exclude module: "netty-buffer"
-		exclude module: "fastutil"
-		exclude module: "kotlin-stdlib-jdk8"
-	}
+	modImplementation "maven.modrinth:sodium:${project.sodium_version}"
+
 	//modImplementation include ('com.github.Arathain:LodestoneLib-Quilt:1.19.3-SNAPSHOT')
 
 }
