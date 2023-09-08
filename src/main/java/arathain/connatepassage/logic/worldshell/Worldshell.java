@@ -80,7 +80,7 @@ public abstract class Worldshell implements BlockRenderView {
 	}
 	public Quaternionf getRotation(float tickDelta) {
 		checkRotation();
-		return prevRotation.slerp(rotation, tickDelta);
+		return prevRotation.slerp(rotation, tickDelta, new Quaternionf());
 	}
 
 	public BlockPos getPivot() {

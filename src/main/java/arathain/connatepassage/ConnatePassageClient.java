@@ -106,7 +106,8 @@ public class ConnatePassageClient implements ClientModInitializer {
 		matrices.push();
 		Vec3d pos = shell.getPos(tickDelta);
 		matrices.translate(pos.x, pos.y, pos.z);
-		matrices.multiply(shell.getRotation(tickDelta));
+		Quaternionf q = shell.getRotation(tickDelta);
+		matrices.multiply(q);
 		for(Map.Entry<BlockPos, BlockState> entry : shell.getContained().entrySet()) {
 			BlockPos blockPos = entry.getKey().subtract(shell.getPivot());
 			BlockState state = entry.getValue();

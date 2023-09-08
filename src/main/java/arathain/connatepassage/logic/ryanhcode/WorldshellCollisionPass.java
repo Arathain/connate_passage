@@ -38,15 +38,16 @@ public class WorldshellCollisionPass {
 		Vector3d pos = new Vector3d(cent.x, cent.y, cent.z);
 		Vector3d collisionEffect = new Vector3d();
 
-		double xztolerance = 0.025;
+		double xztolerance = 0.045;
 		double ytolerance = 0.01;
-		pos.add(0, shellDir.y, 0);
+
 		QuaternionOrientedBoundingBox entityBox = new QuaternionOrientedBoundingBox(
 			pos,
 			new Vector3d(box.getXLength(), box.getYLength(), box.getZLength()),
 			new Quaterniond().identity()
 		);
 
+		pos.add(0, shellDir.y, 0);
 		collisionPass(shapes, shell, collisionIterator, entityBox, pos, collisionEffect);
 		tolerance(shellDir, backup, xztolerance, ytolerance);
 
@@ -99,7 +100,10 @@ public class WorldshellCollisionPass {
 		}
 
 	}
-	protected static void tolerance(@NotNull Vector3d vec1, @NotNull Vector3d vec2, double xztolerance, double ytolerance) {
+	protected static void tolerance(@NotNull Vector3d vec1,
+									@NotNull Vector3d vec2,
+									double xztolerance,
+									double ytolerance) {
 		if (Math.abs(vec1.x - vec2.x) < xztolerance) {
 			vec1.set(vec2.x, vec1.y, vec1.z);
 		}
