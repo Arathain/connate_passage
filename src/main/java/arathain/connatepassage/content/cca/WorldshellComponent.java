@@ -6,10 +6,14 @@ import arathain.connatepassage.logic.worldshell.WorldshellUpdatePacket;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.ClientTickingComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
+import net.minecraft.item.ItemStack;
+import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.ItemScatterer;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -17,7 +21,12 @@ import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+/**
+ * This class is an attached world component used for storing, updating, and synchronising worldshells.
+ * @author Arathain
+ * **/
 public class WorldshellComponent implements AutoSyncedComponent, ServerTickingComponent, ClientTickingComponent {
 	private final List<Worldshell> worldshells = new ArrayList<>();
 	private final World obj;
@@ -58,26 +67,47 @@ public class WorldshellComponent implements AutoSyncedComponent, ServerTickingCo
 		tag.put("worldshells", list);
 	}
 
+	/**
+	 * Updates the worldshell at a rate of 20 Hz on the client side, applying worldshell logic.
+	 * @see arathain.connatepassage.logic.worldshell.Worldshell
+	 * **/
 	@Override
 	public void clientTick() {
 		worldshells.forEach(Worldshell::tick);
 	}
 
+	/**
+	 * Updates the worldshell at a rate of 20 Hz on the server side, applying worldshell logic and synchronising the worldshell data every other frame.
+	 * @see arathain.connatepassage.logic.worldshell.Worldshell
+	 * **/
 	@Override
 	public void serverTick() {
 		worldshells.forEach(Worldshell::outerTick);
-		if(obj instanceof ServerWorld s /*&& s.getTime() % 20 == 0*/) {
+		if(obj instanceof ServerWorld s && s.getTime() % 2 == 0) {
 			for (int i = 0; i < worldshells.size(); i++) {
 				WorldshellUpdatePacket.send(s.getPlayers(), worldshells, i);
 			}
 		}
 	}
 
+	/**
+	 * This method 'snaps' a worldshell's components to the world it's in, and returns a boolean value indicating whether the worldshell should be removed
+	 * @author Arathain
+	 * **/
 	public boolean snapWorldshell(Worldshell w) {
 		BlockPos origin = new BlockPos(MathHelper.floor(w.getPos().x), MathHelper.floor(w.getPos().y), MathHelper.floor(w.getPos().z));
-		w.getContained().forEach((b, s) -> {
-			obj.setBlockState(origin.add(b.subtract(w.getPivot())), s);
-		});
-		return true;
+		if(obj instanceof ServerWorld sWorld) {
+			LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder(sWorld);
+			w.getContained().forEach((b, s) -> {
+				BlockPos pos = origin.add(b.subtract(w.getPivot()));
+				if (obj.getBlockState(pos).isAir()) {
+					obj.setBlockState(pos, s);
+				} else {
+					ItemScatterer.spawn(obj, pos, DefaultedList.copyOf(ItemStack.EMPTY, s.getDroppedStacks(builder).toArray(ItemStack[]::new)));
+				}
+			});
+			return true;
+		}
+		return false;
 	}
 }

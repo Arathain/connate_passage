@@ -17,7 +17,7 @@ import org.quiltmc.qsl.networking.api.ServerPlayNetworking;
 import java.util.List;
 
 public class WorldshellUpdatePacket {
-	public static final Identifier ID = ConnatePassage.id("update_worldshells");
+	public static final Identifier ID = ConnatePassage.id("update_wshells");
 
 	public static void send(List<ServerPlayerEntity> players, List<Worldshell> shells, int i) {
 		if(shells.size() > 0) {

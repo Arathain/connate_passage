@@ -23,11 +23,7 @@ public class CatmullRomCurveSpline {
 		generateDistances();
 	}
 	public static CatmullRomCurveSpline fromExisting(Vec3d... points) {
-		CatmullRomCurveSpline s = new CatmullRomCurveSpline(points);
-//		s.points.remove(0);
-//		s.points.remove(s.points.size()-1);
-		s.generateDistances();
-		return s;
+		return new CatmullRomCurveSpline(points);
 	}
 	public void move(float dist) {
 		this.prevPos = this.pos;
@@ -66,6 +62,18 @@ public class CatmullRomCurveSpline {
 			this.pos = 0;
 		}
 		if(this.pos < 0) {
+			this.prevPos = h;
+			this.pos = h;
+		}
+	}
+	public void moveClamped(float dist) {
+		move(dist);
+		float h = distances.get(distances.size()-1);
+		if(this.pos < 0) {
+			this.prevPos = 0;
+			this.pos = 0;
+		}
+		if(this.pos > h) {
 			this.prevPos = h;
 			this.pos = h;
 		}
@@ -147,6 +155,9 @@ public class CatmullRomCurveSpline {
 			buffer += arcLength(1, i);
 			distances.add(buffer);
 		}
+	}
+	public boolean lastPointsMatch() {
+		return points.get(3).equals(points.get(points.size()-1)) && points.get(2).equals(points.get(points.size()-2)) && points.get(1).equals(points.get(points.size()-3));
 	}
 	public List<Vec3d> getPoints() {
 		return points;

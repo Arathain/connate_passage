@@ -5,6 +5,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.color.biome.BiomeColorProvider;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.nbt.NbtCompound;
@@ -31,6 +32,9 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
+/**
+ * The base class used to represent abstract moving block structures. Also acts as a fake world to simulate block detection and rendering.
+ * **/
 public abstract class Worldshell implements BlockRenderView {
 	protected boolean invertedMotion;
 	public int shutdownTickCountdown = 0;
@@ -167,16 +171,39 @@ public abstract class Worldshell implements BlockRenderView {
 	}
 
 	//the janky zone
-
 	@Override
 	public float getBrightness(Direction direction, boolean shaded) {
-		return worldGetter == null ? 0 : worldGetter.get().getBrightness(getLocal(direction), shaded);
+		boolean bl = worldGetter.get() instanceof ClientWorld c && c.getSkyProperties().isDarkened();
+		Vector3f properDirection = getLocalVec(direction);
+		if (!shaded) {
+			return bl ? 0.9F : 1.0F;
+		} else {
+			float brightness = 0;
+			for(Direction dir : Direction.values()) {
+				brightness += Math.max(dir.getUnitVector().dot(properDirection), 0) * getDirectionBrightness(dir, bl);
+			}
+			return MathHelper.clamp(brightness, 0, 1);
+		}
+	}
+	private float getDirectionBrightness(Direction dir, boolean bl) {
+		return switch (dir) {
+			case DOWN -> bl ? 0.9F : 0.5F;
+			case UP -> bl ? 0.9F : 1.0F;
+			case NORTH, SOUTH -> 0.8F;
+			case WEST, EAST -> 0.6F;
+			default -> 1.0F;
+		};
 	}
 
 	private Direction getLocal(Direction dir) {
 		Vector3f v = dir.getUnitVector();
 		v.rotate(this.getRotation());
 		return Direction.getFacing(v.x, v.y, v.z);
+	}
+	private Vector3f getLocalVec(Direction dir) {
+		Vector3f v = dir.getUnitVector();
+		v.rotate(this.getRotation());
+		return v;
 	}
 
 	@Override

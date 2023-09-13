@@ -15,6 +15,7 @@ import java.util.Map;
 
 public class SplineFollowingAxisLimitedWorldshell extends AxisLimitedWorldshell implements ScrollableWorldshell {
 	private float speed = 1f;
+	private boolean loop = false;
 	private CatmullRomCurveSpline spline;
 	public SplineFollowingAxisLimitedWorldshell(Map<BlockPos, BlockState> contained, Vec3d initialPos, BlockPos pivot, Vector3f initialAxis) {
 		super(contained, initialPos, pivot, initialAxis);
@@ -51,6 +52,7 @@ public class SplineFollowingAxisLimitedWorldshell extends AxisLimitedWorldshell 
 	public void readNbt(NbtCompound nbt) {
 		super.readNbt(nbt);
 		this.spline = CatmullRomCurveSpline.readNbt(nbt);
+		this.loop = spline.lastPointsMatch();
 	}
 
 	public void setSpeed(float spd) {
@@ -63,6 +65,7 @@ public class SplineFollowingAxisLimitedWorldshell extends AxisLimitedWorldshell 
 
 	public SplineFollowingAxisLimitedWorldshell constructSpline(Vec3d... points) {
 		this.spline = new CatmullRomCurveSpline(points);
+		this.loop = spline.lastPointsMatch();
 		return this;
 	}
 
@@ -71,7 +74,11 @@ public class SplineFollowingAxisLimitedWorldshell extends AxisLimitedWorldshell 
 		super.tick();
 		if(this.shutdownTickCountdown > 0) {
 			this.shutdownTickCountdown--;
-			this.spline.moveLoop(speed);
+			if (loop) {
+				this.spline.moveLoop(speed);
+			} else {
+				this.spline.moveClamped(speed);
+			}
 			this.prevPos = this.pos;
 			this.pos = this.spline.getPos(1);
 			Vec3d prod = this.spline.getVelocity(1).normalize();
