@@ -60,32 +60,36 @@ public class SplineFollowingAxisLimitedWorldshell extends AxisLimitedWorldshell 
 	}
 
 	public float getSpeed() {
-		return speed;
+		return speed * (this.invertedMotion ? -1 : 1);
 	}
 
 	public SplineFollowingAxisLimitedWorldshell constructSpline(Vec3d... points) {
 		this.spline = new CatmullRomCurveSpline(points);
 		this.loop = spline.lastPointsMatch();
+		if(!loop) {
+			this.spline = CatmullRomCurveSpline.fromRaw(points);
+		}
 		return this;
 	}
 
 	@Override
 	public void tick() {
 		super.tick();
-		if(this.shutdownTickCountdown > 0) {
+		if(this.shutdownTickCountdown > 0 || this.shutdownTickCountdown == -666) {
 			this.shutdownTickCountdown--;
 			if (loop) {
-				this.spline.moveLoop(speed);
+				this.spline.moveLoop(getSpeed());
 			} else {
-				this.spline.moveClamped(speed);
+				this.spline.moveClamped(getSpeed());
 			}
-			this.prevPos = this.pos;
-			this.pos = this.spline.getPos(1);
-			Vec3d prod = this.spline.getVelocity(1).normalize();
-			checkRotation();
-			this.prevRotation = rotation;
-			this.axis = prod.toVector3f();
-			this.rotation = new Quaternionf().rotateTo(new Vector3f(0, 0, -1), axis);
+
 		}
+		this.prevPos = this.pos;
+		this.pos = this.spline.getPos(1);
+		Vec3d prod = this.spline.getVelocity(1).normalize();
+		checkRotation();
+		this.axis = prod.toVector3f();
+		this.prevRotation = rotation;
+		this.rotation = new Quaternionf().rotateTo(new Vector3f(0, 0, -1), axis);
 	}
 }

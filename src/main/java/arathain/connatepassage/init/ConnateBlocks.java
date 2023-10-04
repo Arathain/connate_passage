@@ -6,6 +6,7 @@ import arathain.connatepassage.content.block.HingeBlock;
 import arathain.connatepassage.content.block.SplineBlock;
 import arathain.connatepassage.content.block.entity.WorldshellBlockEntity;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -19,6 +20,7 @@ import org.quiltmc.qsl.block.extensions.api.QuiltBlockSettings;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.ToIntFunction;
 
 public interface ConnateBlocks {
 	Map<Identifier, Block> BLOCKS = new LinkedHashMap<>();
@@ -28,7 +30,8 @@ public interface ConnateBlocks {
 	}
 	Block HINGE = register("hinge", new HingeBlock(QuiltBlockSettings.copyOf(Blocks.COPPER_BLOCK).nonOpaque()));
 	Block SPLINE = register("spline_carriage", new SplineBlock(QuiltBlockSettings.copyOf(Blocks.COPPER_BLOCK)));
-	Block BATTERY = register("battery", new ConnateBatteryBlock(QuiltBlockSettings.copyOf(Blocks.COPPER_BLOCK)));
+	Block BATTERY = register("battery", new ConnateBatteryBlock(QuiltBlockSettings.copyOf(Blocks.COPPER_BLOCK).luminance(createLightLevelFromLitBlockState(10)), false));
+	Block BATTERY_INVERSE = register("battery_inverse", new ConnateBatteryBlock(QuiltBlockSettings.copyOf(Blocks.COPPER_BLOCK).luminance(createLightLevelFromLitBlockState(1)), true));
 	Block CHASSIS = register("chassis", new Block(QuiltBlockSettings.copyOf(Blocks.COPPER_BLOCK)));
 
 	BlockEntityType<WorldshellBlockEntity> HINGE_BLOCK_ENTITY = register("hinge", QuiltBlockEntityTypeBuilder.create(WorldshellBlockEntity::hinge, HINGE).build());
@@ -45,6 +48,10 @@ public interface ConnateBlocks {
 	private static <T extends BlockEntity> BlockEntityType<T> register(String name, BlockEntityType<T> type) {
 		BLOCK_ENTITY_TYPES.put(new Identifier(ConnatePassage.MODID, name), type);
 		return type;
+	}
+
+	private static ToIntFunction<BlockState> createLightLevelFromLitBlockState(int litLevel) {
+		return (state) -> (Boolean)state.get(ConnateBatteryBlock.TRIGGERED) ? litLevel : 0;
 	}
 	static void init() {
 		BLOCKS.forEach((id, block) -> Registry.register(Registries.BLOCK, id, block));

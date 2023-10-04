@@ -38,8 +38,8 @@ public class WorldshellCollisionPass {
 		Vector3d pos = new Vector3d(cent.x, cent.y, cent.z);
 		Vector3d collisionEffect = new Vector3d();
 
-		double xztolerance = 0.045;
-		double ytolerance = 0.01;
+		double xztolerance = 0.06;
+		double ytolerance = 0.02;
 
 		QuaternionOrientedBoundingBox entityBox = new QuaternionOrientedBoundingBox(
 			pos,

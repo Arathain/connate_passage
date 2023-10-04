@@ -56,7 +56,7 @@ public class ConstantAxisLimitedWorldshell extends AxisLimitedWorldshell impleme
 		super.tick();
 
 		this.prevRotation = this.getRotation();
-		if(this.shutdownTickCountdown > 0) {
+		if(this.shutdownTickCountdown > 0 || this.shutdownTickCountdown == -666) {
 			this.shutdownTickCountdown--;
 			this.rotation.rotateAxis(getSpeedHz() * (this.invertedMotion ? -1 : 1) * MathHelper.PI / 20f, this.axis);
 		}

@@ -21,15 +21,20 @@ import net.minecraft.util.random.RandomGenerator;
 import net.minecraft.world.World;
 
 public class ConnateBatteryBlock extends FacingBlock {
+	private final boolean inverse;
 	//rotation in Hz, spline in actual speed
 	public static final BooleanProperty TRIGGERED = Properties.TRIGGERED;
-	public ConnateBatteryBlock(Settings settings) {
+	public ConnateBatteryBlock(Settings settings, boolean inverse) {
 		super(settings);
+		this.inverse = inverse;
 		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.SOUTH).with(TRIGGERED, false));
 	}
 
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
-		return this.getDefaultState().with(FACING, ctx.getPlayerLookDirection());
+		Direction d = ctx.getPlayerLookDirection();
+		if(ctx.getPlayer().isSneaking())
+			d = d.getOpposite();
+		return this.getDefaultState().with(FACING, d);
 	}
 
 	public BlockState rotate(BlockState state, BlockRotation rotation) {
@@ -51,7 +56,7 @@ public class ConnateBatteryBlock extends FacingBlock {
 
 		boolean bl2 = state.get(TRIGGERED);
 		if (g != 0 && !bl2) {
-			world.scheduleBlockTick(pos, this, 2);
+			world.scheduleBlockTick(pos, this, 0);
 			world.setBlockState(pos, state.with(TRIGGERED, true), 2);
 		} else if (g == 0 && bl2) {
 			world.setBlockState(pos, state.with(TRIGGERED, false), 2);
@@ -63,7 +68,7 @@ public class ConnateBatteryBlock extends FacingBlock {
 		int g = world.getReceivedRedstonePower(pos);
 		for(Worldshell worldshell : world.getComponent(ConnateWorldComponents.WORLDSHELLS).getWorldshells()) {
 			if(Vec3d.ofCenter(pos.add(state.get(FACING).getVector())).distanceTo(worldshell.getPos()) < 2) {
-				worldshell.activate(10 * MathHelper.clamp(g, 0, 12), world.getBlockState(pos.add(state.get(FACING).getOpposite().getVector())).isOf(Blocks.IRON_BLOCK));
+				worldshell.activate(10 * MathHelper.clamp(g, 0, 12), world.getBlockState(pos.add(state.get(FACING).getOpposite().getVector())).isOf(Blocks.IRON_BLOCK) ^ inverse);
 			}
 		}
 	}
