@@ -8,6 +8,10 @@ import net.minecraft.util.math.Vec3d;
 
 import java.util.Map;
 
+/**
+ * A blank implementation of {@link Worldshell}.
+ **/
+
 public class FreeWorldshell extends Worldshell {
 	public FreeWorldshell(Map<BlockPos, BlockState> contained, Vec3d initialPos, BlockPos pivot) {
 		super(contained, initialPos, pivot);

@@ -22,7 +22,6 @@ import net.minecraft.world.World;
 
 public class ConnateBatteryBlock extends FacingBlock {
 	private final boolean inverse;
-	//rotation in Hz, spline in actual speed
 	public static final BooleanProperty TRIGGERED = Properties.TRIGGERED;
 	public ConnateBatteryBlock(Settings settings, boolean inverse) {
 		super(settings);

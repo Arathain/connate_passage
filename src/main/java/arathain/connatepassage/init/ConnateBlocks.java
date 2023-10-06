@@ -35,7 +35,7 @@ public interface ConnateBlocks {
 	Block CHASSIS = register("chassis", new Block(QuiltBlockSettings.copyOf(Blocks.COPPER_BLOCK)));
 
 	BlockEntityType<WorldshellBlockEntity> HINGE_BLOCK_ENTITY = register("hinge", QuiltBlockEntityTypeBuilder.create(WorldshellBlockEntity::hinge, HINGE).build());
-	BlockEntityType<WorldshellBlockEntity> SPLINE_BLOCK_ENTITY = register("spline", QuiltBlockEntityTypeBuilder.create(WorldshellBlockEntity::spline, HINGE).build());
+	BlockEntityType<WorldshellBlockEntity> SPLINE_BLOCK_ENTITY = register("spline", QuiltBlockEntityTypeBuilder.create(WorldshellBlockEntity::spline, SPLINE).build());
 
 	static <T extends Block> T register(String id, T block, boolean createItem) {
 		Identifier identity = new Identifier(ConnatePassage.MODID, id);

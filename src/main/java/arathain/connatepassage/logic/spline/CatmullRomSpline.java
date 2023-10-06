@@ -11,14 +11,17 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static net.minecraft.util.math.MathHelper.catmullRom;
-
+/**
+ * A helper class for interpolating along a three-dimensional catmull-rom curve, as well as containing a modified version of Alexey Karamyshev's <a href="https://medium.com/@ommand/movement-along-the-curve-with-constant-speed-4fa383941507">curve integration algorithm</a>.
+ *
+ **/
 public abstract class CatmullRomSpline {
 
 	//for remembering the godsforsaken maths behind it all
 	private static final Matrix4d IDENTITY_MATRIX = new Matrix4d( -0.5, 1.5, -1.5, 0.5,
-			1, -2.5, 2, -0.5,
-			-0.5, 0, 0.5, 0,
-			0, 1, 0, 0);
+																1, -2.5, 2, -0.5,
+																-0.5, 0, 0.5, 0,
+																0, 1, 0, 0);
 	/**
 	 * @author Alexey Karamyshev
 	 * <a href="https://medium.com/@ommand/movement-along-the-curve-with-constant-speed-4fa383941507">...</a>

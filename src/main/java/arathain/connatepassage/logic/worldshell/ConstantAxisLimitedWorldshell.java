@@ -11,7 +11,9 @@ import net.minecraft.util.math.Vec3d;
 import org.joml.Vector3f;
 
 import java.util.Map;
-
+/**
+ * An implementation of a {@link Worldshell} that rotates the worldshell along a {@link Vector3f} axis at a set speed.
+ **/
 public class ConstantAxisLimitedWorldshell extends AxisLimitedWorldshell implements ScrollableWorldshell {
 	//show on hover
 	private int speed = 1;
@@ -47,6 +49,10 @@ public class ConstantAxisLimitedWorldshell extends AxisLimitedWorldshell impleme
 	public float getSpeed() {
 		return speed;
 	}
+
+	/**
+	 * Gets the rotation speed value of the worldshell in Hertz (rotations per second)
+	 **/
 	public float getSpeedHz() {
 		return speed/8f;
 	}

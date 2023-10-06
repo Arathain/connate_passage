@@ -22,18 +22,6 @@ public abstract class EntityMixin {
 
 	@Shadow
 	public abstract Box getBoundingBox();
-//	@ModifyVariable(method = "adjustMovementForCollisions", at = @At(value = "HEAD"), ordinal = 0, argsOnly = true)
-//	private Vec3d connate$collideWorldshells(Vec3d movement) {
-//		World world = this.getWorld();
-//		WorldshellCollisionPass.WorldshellCollisionResult r = new WorldshellCollisionPass.WorldshellCollisionResult(Vec3d.ZERO, false);
-//		Vector3d original = new Vector3d(movement.x, movement.y, movement.z);
-//		for(Worldshell w : world.getComponent(ConnateWorldComponents.WORLDSHELLS).getWorldshells()) {
-//			if(WorldshellCollisionPass.boxCollidesSphere(this.getBoundingBox(), w.getPos(), w.maxDistance)) {
-//				r = WorldshellCollisionPass.collide(((Entity)(Object)this), r.collision(), w, original);
-//			}
-//		}
-//		return r.hasCollided() ? r.collision() : movement;
-//	}
 
 	@ModifyReturnValue(method = "adjustMovementForCollisions", at = @At(value = "RETURN") )
 	private Vec3d connate$collideWorldshells(Vec3d movement) {

@@ -1,5 +1,6 @@
 package arathain.connatepassage.logic.worldshell;
 
+import arathain.connatepassage.init.ConnateWorldshells;
 import arathain.connatepassage.logic.ConnateMathUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -28,6 +29,7 @@ import org.joml.Vector3d;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
@@ -45,6 +47,11 @@ public abstract class Worldshell implements BlockRenderView {
 	protected final BlockPos pivot;
 	public final double maxDistance;
 
+	@Nullable
+	private Worldshell parent;
+
+	private List<Worldshell> children;
+
 	public Worldshell(Map<BlockPos, BlockState> contained, Vec3d initialPos, BlockPos pivot) {
 		this.contained = contained;
 		this.pos = initialPos;
@@ -52,6 +59,10 @@ public abstract class Worldshell implements BlockRenderView {
 		this.prevPos = pos;
 		this.maxDistance = computeSize();
 	}
+
+	/**
+	 * Computes the maximum radius of a sphere that can encompass the entire worldshell - used for optimising collision checks
+	 **/
 	protected double computeSize() {
 		AtomicReference<Double> size = new AtomicReference<>((double) 1);
 		contained.keySet().forEach(c -> {
@@ -67,6 +78,9 @@ public abstract class Worldshell implements BlockRenderView {
 		worldGetter = () -> world;
 	}
 
+	/**
+	 * Returns the {@link Identifier} of the worldshell to reconstruct from during reload, as taken from {@link ConnateWorldshells}
+	 **/
 	public abstract Identifier getId();
 
 	public void tick() {
@@ -124,6 +138,8 @@ public abstract class Worldshell implements BlockRenderView {
 		nbt.putString("id", getId().toString());
 		nbt.put("containedBlocks", list);
 		nbt.put("pivot", NbtHelper.fromBlockPos(pivot));
+
+
 	}
 	public NbtCompound writeUpdateNbt(NbtCompound nbt) {
 		checkRotation();

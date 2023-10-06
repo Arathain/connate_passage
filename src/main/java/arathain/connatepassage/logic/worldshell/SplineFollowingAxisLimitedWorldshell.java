@@ -13,6 +13,9 @@ import org.joml.Vector3f;
 
 import java.util.Map;
 
+/**
+ * An implementation of a {@link Worldshell} that moves the worldshell along a {@link CatmullRomCurveSpline}.
+ **/
 public class SplineFollowingAxisLimitedWorldshell extends AxisLimitedWorldshell implements ScrollableWorldshell {
 	private float speed = 1f;
 	private boolean loop = false;

@@ -132,10 +132,10 @@ public class WorldshellCollisionPass {
 				case 1 -> a = Direction.Axis.Y;
 				case 2 -> a = Direction.Axis.Z;
 			}
-			if( v < b.getMin(a)) {
+			if(v < b.getMin(a)) {
 				sqDist += (b.getMin(a) - v) * (b.getMin(a) - v);
 			}
-			if( v > b.getMax(a)) {
+			if(v > b.getMax(a)) {
 				sqDist += (v - b.getMax(a)) * (v - b.getMax(a));
 			}
 		}

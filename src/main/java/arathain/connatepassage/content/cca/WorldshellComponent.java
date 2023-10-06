@@ -51,6 +51,10 @@ public class WorldshellComponent implements AutoSyncedComponent, ServerTickingCo
 	public List<Worldshell> getWorldshells() {
 		return worldshells;
 	}
+
+	/**
+	 * Places a worldshell in the world, and updates the worldshell's stored parent world to match.
+	 **/
 	public void addWorldshell(Worldshell shell) {
 		shell.setWorld(obj);
 		worldshells.add(shell);
