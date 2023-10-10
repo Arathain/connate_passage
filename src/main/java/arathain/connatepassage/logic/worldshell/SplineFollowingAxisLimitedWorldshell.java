@@ -79,7 +79,8 @@ public class SplineFollowingAxisLimitedWorldshell extends AxisLimitedWorldshell 
 	public void tick() {
 		super.tick();
 		if(this.shutdownTickCountdown > 0 || this.shutdownTickCountdown == -666) {
-			this.shutdownTickCountdown--;
+			if(this.shutdownTickCountdown != -666)
+				this.shutdownTickCountdown--;
 			if (loop) {
 				this.spline.moveLoop(getSpeed());
 			} else {

@@ -4,6 +4,7 @@ import arathain.connatepassage.config.ConnateConfig;
 import arathain.connatepassage.content.cca.ConnateWorldComponents;
 import arathain.connatepassage.content.cca.WorldshellComponent;
 import arathain.connatepassage.content.item.ConnateBracerItem;
+import arathain.connatepassage.init.ConnateBlocks;
 import arathain.connatepassage.init.ConnateItems;
 import arathain.connatepassage.logic.ConnateMathUtil;
 import arathain.connatepassage.logic.worldshell.ConstantAxisLimitedWorldshell;
@@ -36,6 +37,7 @@ import org.joml.Quaternionf;
 import org.joml.Vector3d;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.client.ClientModInitializer;
+import org.quiltmc.qsl.block.extensions.api.client.BlockRenderLayerMap;
 import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 
 import java.util.List;
@@ -48,6 +50,7 @@ public class ConnatePassageClient implements ClientModInitializer {
 			renderSelected(a.world(), a.matrixStack(), a.consumers(), a.camera());
 			renderWorldshells(a.world(), a.matrixStack(), a.consumers(), a.world().getComponent(ConnateWorldComponents.WORLDSHELLS).getWorldshells(), a.camera(), a.tickDelta());
 		});
+		//BlockRenderLayerMap.put(RenderLayer.getCutout(), ConnateBlocks.PULSE_NODE);
 		HudRenderCallback.EVENT.register((guiGraphics, tickDelta) -> {
 			PlayerEntity player = MinecraftClient.getInstance().player;
 

@@ -2,7 +2,10 @@ package arathain.connatepassage.logic.worldshell;
 
 import arathain.connatepassage.ConnatePassage;
 import arathain.connatepassage.logic.spline.CatmullRomCurveSpline;
+import net.minecraft.block.AbstractButtonBlock;
+import net.minecraft.block.AnvilBlock;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.EndRodBlock;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -26,6 +29,7 @@ public class ConstantAxisLimitedWorldshell extends AxisLimitedWorldshell impleme
 		this.putAxis(new Vector3f(nbt.getFloat("axisX"), nbt.getFloat("axisY"), nbt.getFloat("axisZ")));
 		this.speed = nbt.getInt("speed");
 	}
+
 	@Override
 	public NbtCompound writeUpdateNbt(NbtCompound nbt) {
 		nbt.putInt("speed", speed);
@@ -63,7 +67,8 @@ public class ConstantAxisLimitedWorldshell extends AxisLimitedWorldshell impleme
 
 		this.prevRotation = this.getRotation();
 		if(this.shutdownTickCountdown > 0 || this.shutdownTickCountdown == -666) {
-			this.shutdownTickCountdown--;
+			if(this.shutdownTickCountdown != -666)
+				this.shutdownTickCountdown--;
 			this.rotation.rotateAxis(getSpeedHz() * (this.invertedMotion ? -1 : 1) * MathHelper.PI / 20f, this.axis);
 		}
 
