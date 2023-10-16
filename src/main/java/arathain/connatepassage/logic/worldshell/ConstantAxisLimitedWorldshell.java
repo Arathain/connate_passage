@@ -75,7 +75,6 @@ public class ConstantAxisLimitedWorldshell extends AxisLimitedWorldshell impleme
 		if(this.speed == 0) {
 			this.rotation = this.prevRotation;
 		}
-
 	}
 
 	@Override

@@ -66,6 +66,9 @@ public class SplineFollowingAxisLimitedWorldshell extends AxisLimitedWorldshell 
 		return speed * (this.invertedMotion ? -1 : 1);
 	}
 
+	/**
+	 * Creates a new spline for the worldshell to follow.
+	 **/
 	public SplineFollowingAxisLimitedWorldshell constructSpline(Vec3d... points) {
 		this.spline = new CatmullRomCurveSpline(points);
 		this.loop = spline.lastPointsMatch();

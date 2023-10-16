@@ -1,6 +1,7 @@
 package arathain.connatepassage;
 
 import arathain.connatepassage.config.ConnateConfig;
+import arathain.connatepassage.content.block.ResonanceVFXPacket;
 import arathain.connatepassage.content.cca.ConnateWorldComponents;
 import arathain.connatepassage.content.cca.WorldshellComponent;
 import arathain.connatepassage.content.item.ConnateBracerItem;
@@ -50,7 +51,8 @@ public class ConnatePassageClient implements ClientModInitializer {
 			renderSelected(a.world(), a.matrixStack(), a.consumers(), a.camera());
 			renderWorldshells(a.world(), a.matrixStack(), a.consumers(), a.world().getComponent(ConnateWorldComponents.WORLDSHELLS).getWorldshells(), a.camera(), a.tickDelta());
 		});
-		//BlockRenderLayerMap.put(RenderLayer.getCutout(), ConnateBlocks.PULSE_NODE);
+		ClientPlayNetworking.registerGlobalReceiver(ResonanceVFXPacket.ID, (client, handler, buf, responseSender) -> ResonanceVFXPacket.fromBuf(buf).apply(handler));
+		BlockRenderLayerMap.put(RenderLayer.getCutout(), ConnateBlocks.DERESONATOR);
 		HudRenderCallback.EVENT.register((guiGraphics, tickDelta) -> {
 			PlayerEntity player = MinecraftClient.getInstance().player;
 

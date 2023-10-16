@@ -12,7 +12,10 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.random.RandomGenerator;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -20,7 +23,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.quiltmc.qsl.networking.api.ServerPlayNetworking;
 
-public class ConnatePulseNode extends FacingBlock {
+public class ConnateDeresonator extends FacingBlock {
 	public static final BooleanProperty TRIGGERED = Properties.TRIGGERED;
 
 	private static final VoxelShape BASE_SHAPE_Y = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 3.0, 16.0);
@@ -37,7 +40,7 @@ public class ConnatePulseNode extends FacingBlock {
 	private static final VoxelShape NODE_SHAPE_NZ = Block.createCuboidShape(3.5, 3.5, 1.0, 12.5, 12.5, 13.0);
 	private static final VoxelShape[] FINAL_SHAPE = {VoxelShapes.union(BASE_SHAPE_NY, NODE_SHAPE_NY), VoxelShapes.union(BASE_SHAPE_Y, NODE_SHAPE_Y), VoxelShapes.union(BASE_SHAPE_NZ, NODE_SHAPE_NZ), VoxelShapes.union(BASE_SHAPE_Z, NODE_SHAPE_Z), VoxelShapes.union(BASE_SHAPE_NX, NODE_SHAPE_NX), VoxelShapes.union(BASE_SHAPE_X, NODE_SHAPE_X)};
 
-	public ConnatePulseNode(Settings settings) {
+	public ConnateDeresonator(Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.SOUTH).with(TRIGGERED, false));
 	}
@@ -84,13 +87,13 @@ public class ConnatePulseNode extends FacingBlock {
 		int g = world.getReceivedRedstonePower(pos);
 		for(Worldshell worldshell : world.getComponent(ConnateWorldComponents.WORLDSHELLS).getWorldshells()) {
 			if(Vec3d.ofCenter(pos.add(state.get(FACING).getVector().multiply(2))).distanceTo(worldshell.getPos()) < 2) {
-				worldshell.activate(-666, world.getBlockState(pos.add(state.get(FACING).getOpposite().getVector())).isOf(Blocks.IRON_BLOCK));
+				worldshell.activate(0, false);
 			}
 		}
 		world.getPlayers().stream().filter(players -> players.getWorld().isChunkLoaded(new ChunkPos(pos).x, new ChunkPos(pos).z)).forEach(player -> {
-			PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-			new ResonanceVFXPacket(Vec3d.ofCenter(pos), true).write(buf);
-			ServerPlayNetworking.send(player, ResonanceVFXPacket.ID, buf);
+				PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+				new ResonanceVFXPacket(Vec3d.ofCenter(pos), false).write(buf);
+				ServerPlayNetworking.send(player, ResonanceVFXPacket.ID, buf);
 		});
 	}
 }
