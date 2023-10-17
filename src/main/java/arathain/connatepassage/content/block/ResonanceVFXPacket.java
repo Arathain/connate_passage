@@ -23,7 +23,7 @@ import java.awt.*;
 
 public record ResonanceVFXPacket(Vec3d position, boolean b) implements Packet<ClientPlayPacketListener> {
 	public static final Identifier ID = new Identifier(ConnatePassage.MODID, "resonance_fx");
-	private static final Color parryStart = new Color(120, 235, 255);
+	private static final Color parryStart = Color.CYAN;
 	private static final Color parryEnd = new Color(60, 200, 220);
 
 	@Override

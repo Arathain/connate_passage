@@ -29,6 +29,7 @@ public class WorldshellCollisionPass {
 
 	}
 	public static WorldshellCollisionResult collide(Entity e, Vec3d movement, Worldshell shell, Vector3d backup) {
+		Vec3d yeag = shell.getVelocity();
 		Vector3d shellDir = new Vector3d(movement.x, movement.y, movement.z);
 		List<VoxelShape> shapes = new ArrayList<>();
 		boolean hasCollided = false;
@@ -39,7 +40,7 @@ public class WorldshellCollisionPass {
 		Vector3d collisionEffect = new Vector3d();
 
 		double xztolerance = 0.06;
-		double ytolerance = 0.02;
+		double ytolerance = 0.01;
 
 		QuaternionOrientedBoundingBox entityBox = new QuaternionOrientedBoundingBox(
 			pos,
@@ -60,11 +61,11 @@ public class WorldshellCollisionPass {
 		tolerance(shellDir, backup, xztolerance, ytolerance);
 
 		if(collisionEffect.lengthSquared() > 0.0) {
-			shellDir.set(pos.sub(new Vector3d(cent.x, cent.y, cent.z), new Vector3d()));
+			shellDir.set(pos.sub(new Vector3d(cent.x, cent.y, cent.z).sub(yeag.x, yeag.y, yeag.z), new Vector3d()));
 			hasCollided = true;
 		}
 
-		return new WorldshellCollisionResult(new Vec3d(collisionEffect.x, collisionEffect.y, collisionEffect.z), hasCollided);
+		return new WorldshellCollisionResult(new Vec3d(shellDir.x, shellDir.y, shellDir.z), hasCollided);
 	}
 	protected static void collisionPass(@NotNull List<VoxelShape> shapes,
 										@NotNull Worldshell shell,

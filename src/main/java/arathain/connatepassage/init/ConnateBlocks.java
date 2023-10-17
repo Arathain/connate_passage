@@ -3,6 +3,7 @@ package arathain.connatepassage.init;
 import arathain.connatepassage.ConnatePassage;
 import arathain.connatepassage.content.block.*;
 import arathain.connatepassage.content.block.entity.WorldshellBlockEntity;
+import net.minecraft.block.AbstractButtonBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -31,7 +32,7 @@ public interface ConnateBlocks {
 	Block PULSE_NODE = register("pulse_node", new ConnatePulseNode(QuiltBlockSettings.copyOf(Blocks.COPPER_BLOCK).luminance(createLightLevelFromLitBlockState(10)).nonOpaque()));
 	Block DERESONATOR = register("deresonator", new ConnateDeresonator(QuiltBlockSettings.copyOf(Blocks.COPPER_BLOCK).nonOpaque()));
 	Block BATTERY = register("battery", new ConnateBatteryBlock(QuiltBlockSettings.copyOf(Blocks.COPPER_BLOCK).luminance(createLightLevelFromLitBlockState(10)), false));
-	Block BATTERY_INVERSE = register("battery_inverse", new ConnateBatteryBlock(QuiltBlockSettings.copyOf(Blocks.COPPER_BLOCK).luminance(createLightLevelFromLitBlockState(1)), true));
+	Block BATTERY_INVERSE = register("battery_inverse", new ConnateBatteryBlock(QuiltBlockSettings.copyOf(Blocks.COPPER_BLOCK).luminance(createLightLevelFromLitBlockState(2)), true));
 	Block CHASSIS = register("chassis", new Block(QuiltBlockSettings.copyOf(Blocks.COPPER_BLOCK)));
 
 	BlockEntityType<WorldshellBlockEntity> HINGE_BLOCK_ENTITY = register("hinge", QuiltBlockEntityTypeBuilder.create(WorldshellBlockEntity::hinge, HINGE).build());

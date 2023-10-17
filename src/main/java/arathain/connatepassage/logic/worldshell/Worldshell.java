@@ -186,6 +186,10 @@ public abstract class Worldshell implements BlockRenderView {
 		return map;
 	}
 
+	public Vec3d getVelocity() {
+		return pos.subtract(prevPos);
+	}
+
 	//The code below is all 'world' implementation methods, used for Minecraft's underlying code to correctly interact with the worldshell.
 	@Override
 	public float getBrightness(Direction direction, boolean shaded) {

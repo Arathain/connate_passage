@@ -11,6 +11,7 @@ import net.minecraft.util.math.Vec3d;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -78,9 +79,14 @@ public class SplineFollowingAxisLimitedWorldshell extends AxisLimitedWorldshell 
 		return this;
 	}
 
+	public List<Vec3d> getPoints(float tickDelta, int amount, float distance) {
+		return spline.getPointsAroundPos(tickDelta, amount, distance);
+	}
+
 	@Override
 	public void tick() {
 		super.tick();
+
 		if(this.shutdownTickCountdown > 0 || this.shutdownTickCountdown == -666) {
 			if(this.shutdownTickCountdown != -666)
 				this.shutdownTickCountdown--;

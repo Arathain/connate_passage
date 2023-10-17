@@ -8,10 +8,7 @@ import arathain.connatepassage.content.item.ConnateBracerItem;
 import arathain.connatepassage.init.ConnateBlocks;
 import arathain.connatepassage.init.ConnateItems;
 import arathain.connatepassage.logic.ConnateMathUtil;
-import arathain.connatepassage.logic.worldshell.ConstantAxisLimitedWorldshell;
-import arathain.connatepassage.logic.worldshell.ScrollableWorldshell;
-import arathain.connatepassage.logic.worldshell.Worldshell;
-import arathain.connatepassage.logic.worldshell.WorldshellUpdatePacket;
+import arathain.connatepassage.logic.worldshell.*;
 import eu.midnightdust.lib.config.MidnightConfig;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
@@ -29,22 +26,34 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.random.RandomGenerator;
 import org.joml.Quaterniond;
 import org.joml.Quaternionf;
 import org.joml.Vector3d;
+import org.joml.Vector4f;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.client.ClientModInitializer;
 import org.quiltmc.qsl.block.extensions.api.client.BlockRenderLayerMap;
 import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
+import team.lodestar.lodestone.setup.LodestoneRenderLayers;
+import team.lodestar.lodestone.systems.rendering.VFXBuilders;
 
+import java.awt.*;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+
+import static team.lodestar.lodestone.handlers.RenderHandler.DELAYED_RENDER;
 
 public class ConnatePassageClient implements ClientModInitializer {
+	private static final Identifier LIGHT_TRAIL = new Identifier(ConnatePassage.MODID, "textures/vfx/sammy_trail.png");
+	private static final RenderLayer LIGHT_TYPE = LodestoneRenderLayers.SCROLLING_TEXTURE.apply(LIGHT_TRAIL);
+
 	@Override
 	public void onInitializeClient(ModContainer mod) {
 		WorldRenderEvents.AFTER_ENTITIES.register((a) -> {
@@ -80,6 +89,12 @@ public class ConnatePassageClient implements ClientModInitializer {
 						int y  = guiGraphics.getScaledWindowHeight()/2;
 						guiGraphics.drawText(r, constShell.getSpeedHz() + "Hz", x+10, y, 0x99E6FF, true);
 					}
+					if(worldshell instanceof SplineFollowingAxisLimitedWorldshell hell) {
+						TextRenderer r = MinecraftClient.getInstance().textRenderer;
+						int x  = guiGraphics.getScaledWindowWidth()/2;
+						int y  = guiGraphics.getScaledWindowHeight()/2;
+						guiGraphics.drawText(r, hell.getSpeed() + " b/s", x+10, y, 0x99E6FF, true);
+					}
 				}
 			}
 		});
@@ -111,6 +126,37 @@ public class ConnatePassageClient implements ClientModInitializer {
 		matrices.push();
 		Vec3d pos = shell.getPos(tickDelta);
 		matrices.translate(pos.x, pos.y, pos.z);
+		if(shell instanceof SplineFollowingAxisLimitedWorldshell sp) {
+			matrices.push();
+			List<Vec3d> positions = sp.getPoints(tickDelta, 17, 0.6f);
+			VFXBuilders.WorldVFXBuilder builder = VFXBuilders.createWorld().setPosColorTexLightmapDefaultFormat();
+
+			float size = 0.3f;
+			float alpha = 0.9f;
+
+			builder.setColor(Color.CYAN).setOffset((float) -pos.x, (float) -pos.y, (float) -pos.z)
+				.setAlpha(alpha)
+				.renderTrail(
+					DELAYED_RENDER.getBuffer(LIGHT_TYPE),
+					matrices,
+					positions.stream()
+						.map(p -> new Vector4f((float) p.x, (float) p.y, (float) p.z, 1))
+						.toList(),
+					f -> MathHelper.sqrt(0.5f-MathHelper.abs(f - 0.5f)) * size,
+					f -> builder.setAlpha(MathHelper.sqrt(0.5f-MathHelper.abs(f - 0.5f)) * alpha)
+				)
+				.renderTrail(
+					DELAYED_RENDER.getBuffer(LIGHT_TYPE),
+					matrices,
+					positions.stream()
+						.map(p -> new Vector4f((float) p.x, (float) p.y, (float) p.z, 1))
+						.toList(),
+					f -> MathHelper.sqrt(0.5f-MathHelper.abs(f - 0.5f)) * size,
+					f -> builder.setAlpha(MathHelper.sqrt(0.5f-MathHelper.abs(f - 0.5f)) * alpha)
+				);
+
+			matrices.pop();
+		}
 		Quaternionf q = shell.getRotation(tickDelta);
 		matrices.multiply(q);
 		for(Map.Entry<BlockPos, BlockState> entry : shell.getContained().entrySet()) {

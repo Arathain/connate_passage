@@ -43,6 +43,16 @@ public class CatmullRomCurveSpline {
 
 		return new CatmullRomCurveSpline(pts.toArray(Vec3d[]::new));
 	}
+	public List<Vec3d> getPointsAroundPos(float tickDelta, int amount, float dist) {
+		List<Vec3d> l = new ArrayList<>();
+		float dst = MathHelper.lerp(tickDelta, prevPos, pos);
+		for(int i = 0; i < amount; i++) {
+			float offset = (i-(amount-1)/2f)*dist;
+			l.add(getPos(dst, offset));
+		}
+		return l;
+	}
+
 	public void move(float dist) {
 		this.prevPos = this.pos;
 		this.pos += dist;
@@ -121,6 +131,24 @@ public class CatmullRomCurveSpline {
 	 **/
 	public Vec3d getPos(float tickDelta) {
 		float distance = MathHelper.lerp(tickDelta, prevPos, pos);
+		int index = 0;
+		for(int target = 0; target < distances.size(); target++) {
+			if(distances.get(target) < distance && distances.get(index) < distances.get(target)) {
+				index = target;
+			}
+		}
+		float delta = mapDistToDelta(distance-distances.get(index), index);
+		return getPos(index, delta);
+	}
+	public Vec3d getPos(float distance, float add) {
+		distance = distance + add;
+		if(distance < 0) {
+			distance = 0;
+		}
+		float h = distances.get(distances.size()-1);
+		if(distance > h) {
+			distance = h;
+		}
 		int index = 0;
 		for(int target = 0; target < distances.size(); target++) {
 			if(distances.get(target) < distance && distances.get(index) < distances.get(target)) {
@@ -209,7 +237,10 @@ public class CatmullRomCurveSpline {
 	 * Checks whether the spline is able to loop.
 	 **/
 	public boolean lastPointsMatch() {
-		return points.size() >= 4 && points.get(3).equals(points.get(points.size()-1)) && points.get(2).equals(points.get(points.size()-2)) && points.get(1).equals(points.get(points.size()-3));
+		return points.size() >= 4 &&
+			points.get(2).equals(points.get(points.size()-1)) &&
+			points.get(1).equals(points.get(points.size()-2)) &&
+			points.get(0).equals(points.get(points.size()-3));
 	}
 	public List<Vec3d> getPoints() {
 		return points;
