@@ -9,7 +9,7 @@ import net.minecraft.util.math.Vec3d;
 import java.util.Map;
 
 /**
- * A blank implementation of {@link Worldshell}.
+ * A blank implementation of {@link Worldshell} - unused by default.
  **/
 
 public class FreeWorldshell extends Worldshell {

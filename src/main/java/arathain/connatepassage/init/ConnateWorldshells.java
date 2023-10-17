@@ -10,14 +10,14 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public interface ConnateWorldshells {
-	Map<Identifier, WorldshellSupplier> WORLDSHELLS = new LinkedHashMap<>();
+	Map<Identifier, WorldshellSupplier<?>> WORLDSHELLS = new LinkedHashMap<>();
 
 	WorldshellSupplier<AxisLimitedWorldshell> AXIS_LIMITED = register("axis_limited", (map, pos, pivot) -> new ConstantAxisLimitedWorldshell(map, pos, pivot, new Vector3f(0, 0, 1)));
 	WorldshellSupplier<FreeWorldshell> FREE = register("unbound", FreeWorldshell::new);
 	WorldshellSupplier<SplineFollowingAxisLimitedWorldshell> SPLINE = register("spline_following", (map, pos, pivot) -> new SplineFollowingAxisLimitedWorldshell(map, pos, pivot, map.get(pivot).get(FacingBlock.FACING).getUnitVector()));
 
 
-	static <T extends WorldshellSupplier> T register(String id, T shell) {
+	static <T extends WorldshellSupplier<?>> T register(String id, T shell) {
 		WORLDSHELLS.put(new Identifier(ConnatePassage.MODID, id), shell);
 		return shell;
 	}

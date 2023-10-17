@@ -1,10 +1,13 @@
 package arathain.connatepassage.mixin;
 
 import arathain.connatepassage.content.cca.ConnateWorldComponents;
+import arathain.connatepassage.content.cca.WorldshellComponent;
 import arathain.connatepassage.logic.ryanhcode.WorldshellCollisionPass;
 import arathain.connatepassage.logic.worldshell.Worldshell;
+import arathain.connatepassage.logic.worldshell.WorldshellWrapper;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.minecraft.entity.Entity;
+import net.minecraft.registry.Holder;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -15,10 +18,12 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
+import java.util.function.Supplier;
+
 @Mixin(Entity.class)
 public abstract class EntityMixin {
 	@Unique
-	private Worldshell shell = null;
+	private final WorldshellWrapper shell = new WorldshellWrapper();
 
 	@Shadow
 	public abstract World getWorld();
@@ -31,23 +36,7 @@ public abstract class EntityMixin {
 
 	@ModifyReturnValue(method = "adjustMovementForCollisions", at = @At(value = "RETURN") )
 	private Vec3d connate$collideWorldshells(Vec3d movement) {
-		World world = this.getWorld();
-		WorldshellCollisionPass.WorldshellCollisionResult r = new WorldshellCollisionPass.WorldshellCollisionResult(movement, false);
-		Vector3d original = new Vector3d(movement.x, movement.y, movement.z);
-		for(Worldshell w : world.getComponent(ConnateWorldComponents.WORLDSHELLS).getWorldshells()) {
-			if(WorldshellCollisionPass.boxCollidesSphere(this.getBoundingBox(), w.getPos(), w.maxDistance)) {
-				r = WorldshellCollisionPass.collide(((Entity)(Object)this), r.collision(), w, original);
-				if(r.hasCollided() && movement.y != r.collision().y && r.collision().y < 0.0) {
-					shell = w;
-				}
-			}
-		}
-		if(shell != null && !r.hasCollided()) {
-			r = new WorldshellCollisionPass.WorldshellCollisionResult(r.collision().subtract(shell.getVelocity()), false);
-			if(this.isOnGround())
-				shell = null;
-		}
+		return WorldshellCollisionPass.collideWithWorldshells(this.getWorld(), shell, (Entity) (Object) this, movement);
 
-		return r.hasCollided() ? r.collision() : movement;
 	}
 }

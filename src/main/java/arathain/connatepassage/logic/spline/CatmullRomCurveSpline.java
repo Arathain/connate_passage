@@ -43,6 +43,13 @@ public class CatmullRomCurveSpline {
 
 		return new CatmullRomCurveSpline(pts.toArray(Vec3d[]::new));
 	}
+	//TODO annotate
+	/**
+	 * Returns a list of {@link Vec3d} points around the current position.
+	 * @param tickDelta a delta value used to interpolate the position value
+	 * @param amount the amount of points to return
+	 * @param dist the distance between one point and another
+	 **/
 	public List<Vec3d> getPointsAroundPos(float tickDelta, int amount, float dist) {
 		List<Vec3d> l = new ArrayList<>();
 		float dst = MathHelper.lerp(tickDelta, prevPos, pos);
@@ -53,6 +60,10 @@ public class CatmullRomCurveSpline {
 		return l;
 	}
 
+	/**
+	 * Moves the spline position by a certain distance
+	 * @param dist the distance the spline position should be moved by
+	 **/
 	public void move(float dist) {
 		this.prevPos = this.pos;
 		this.pos += dist;
@@ -82,6 +93,9 @@ public class CatmullRomCurveSpline {
 		s.prevPos = nbt.getFloat("prevSplinePos");
 		return s;
 	}
+	/**
+	 * Moves the spline position in a loop, smoothly moving from end to beginning.
+	 **/
 	public void moveLoop(float dist) {
 		move(dist);
 		float h = distances.get(distances.size()-1);
@@ -94,6 +108,9 @@ public class CatmullRomCurveSpline {
 			this.pos = h;
 		}
 	}
+	/**
+	 * Moves the spline assuming it is discontinuous, stopping at either endpoint.
+	 **/
 	public void moveClamped(float dist) {
 		move(dist);
 		float h = distances.get(distances.size()-1);
@@ -187,6 +204,7 @@ public class CatmullRomCurveSpline {
 	 * Maps a distance value to a corresponding 0-1 curve delta value. Used for interpolation.
 	 * <a href="https://medium.com/@ommand/movement-along-the-curve-with-constant-speed-4fa383941507">...</a>
 	 **/
+	//TODO ned to verify citation style
 	private float mapDistToDelta(float length, int index) {
 		float t = 0 + length / arcLength(1, index);
 		float min = 0;

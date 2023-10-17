@@ -33,7 +33,7 @@ public class MouseMixin {
 			int select = -1;
 			for (int i = 0; i < c.getWorldshells().size(); i++) {
 				Worldshell shell = c.getWorldshells().get(i);
-				if (shell instanceof ScrollableWorldshell s) {
+				if (shell instanceof ScrollableWorldshell) {
 					Vec3d diff = shell.getPos().subtract(client.player.getPos());
 					float length = (float) diff.length();
 					diff = diff.normalize();

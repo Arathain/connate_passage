@@ -15,7 +15,7 @@ import org.joml.Vector3f;
 
 import java.util.Map;
 /**
- * An implementation of a {@link Worldshell} that rotates the worldshell along a {@link Vector3f} axis at a set speed.
+ * An implementation of a {@link Worldshell} that rotates the worldshell along a {@link Vector3f} axis at a set speed, without movement.
  **/
 public class ConstantAxisLimitedWorldshell extends AxisLimitedWorldshell implements ScrollableWorldshell {
 	//show on hover

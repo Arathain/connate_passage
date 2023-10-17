@@ -31,6 +31,7 @@ public abstract class CatmullRomSpline {
 	 * @author Alexey Karamyshev
 	 * <a href="https://medium.com/@ommand/movement-along-the-curve-with-constant-speed-4fa383941507">...</a>
 	 **/
+	//TODO need to verify citation style
 	public static float integrate(Function<Float, Float> f, float min, float max) {
 		float sum = 0f;
 		for(Vec2f vec : cubicQuadrature) {

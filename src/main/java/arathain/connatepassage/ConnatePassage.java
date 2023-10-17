@@ -20,7 +20,6 @@ public class ConnatePassage implements ModInitializer {
 	// That way, it's clear which mod wrote info, warnings, and errors.
 	public static final Logger LOGGER = LoggerFactory.getLogger("Connate Passage");
 	public static String MODID = " ";
-	//private static final CatmullRomCurveSpline c = new CatmullRomCurveSpline(new Vec3d(-10, -50, -10), new Vec3d(-5, -50, 15), new Vec3d(-10, -50, 30), new Vec3d(10, -50, 20), new Vec3d(15, -50, 0), new Vec3d(20, -60, -10), new Vec3d(30, -60, -10), new Vec3d(12.5, -55, 0), new Vec3d(-10, -50, 30), new Vec3d(-5, -50, 15), new Vec3d(-10, -50, -10));
 
 	@Override
 	public void onInitialize(ModContainer mod) {
@@ -33,6 +32,10 @@ public class ConnatePassage implements ModInitializer {
 	public static Identifier id(String name) {
 		return new Identifier(MODID, name);
 	}
+
+	/**
+	 * Creates a {@link BlockBox} with two block positions, automatically checking for correct order.
+	 **/
 	public static BlockBox makeBlockBoxIndiscriminate(BlockPos one, BlockPos two) {
 		int minX, maxX, minY, maxY, minZ, maxZ;
 		if(one.getX() > two.getX()) {

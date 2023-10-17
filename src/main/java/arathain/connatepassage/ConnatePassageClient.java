@@ -54,6 +54,7 @@ public class ConnatePassageClient implements ClientModInitializer {
 	private static final Identifier LIGHT_TRAIL = new Identifier(ConnatePassage.MODID, "textures/vfx/sammy_trail.png");
 	private static final RenderLayer LIGHT_TYPE = LodestoneRenderLayers.SCROLLING_TEXTURE.apply(LIGHT_TRAIL);
 
+	//TODO annotate
 	@Override
 	public void onInitializeClient(ModContainer mod) {
 		WorldRenderEvents.AFTER_ENTITIES.register((a) -> {
@@ -101,6 +102,9 @@ public class ConnatePassageClient implements ClientModInitializer {
 		ClientPlayNetworking.registerGlobalReceiver(WorldshellUpdatePacket.ID, WorldshellUpdatePacket::apply);
 		MidnightConfig.init("connatepassage", ConnateConfig.class);
 	}
+	/**
+	 * Renders all boxes selected via the {@link ConnateBracerItem}
+	 **/
 	private static void renderSelected(ClientWorld world, MatrixStack matrices, VertexConsumerProvider consumer, Camera camera) {
 		MinecraftClient c = MinecraftClient.getInstance();
 		matrices.push();
@@ -122,6 +126,9 @@ public class ConnatePassageClient implements ClientModInitializer {
 	}
 
 
+	/**
+	 * Renders a {@link Worldshell} based off of its attributes
+	 **/
 	private static void renderWorldshell(MinecraftClient c, BlockRenderManager b, ClientWorld world, MatrixStack matrices, VertexConsumerProvider consumer, Worldshell shell, RandomGenerator  r, float tickDelta) {
 		matrices.push();
 		Vec3d pos = shell.getPos(tickDelta);

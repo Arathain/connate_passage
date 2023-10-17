@@ -16,6 +16,9 @@ import org.quiltmc.qsl.networking.api.ServerPlayNetworking;
 
 import java.util.List;
 
+/**
+ * A packet responsible for updating all trivial parameters of a worldshell.
+ **/
 public class WorldshellUpdatePacket {
 	public static final Identifier ID = ConnatePassage.id("update_wshells");
 

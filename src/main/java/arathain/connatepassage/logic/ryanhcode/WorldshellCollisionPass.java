@@ -1,6 +1,8 @@
 package arathain.connatepassage.logic.ryanhcode;
 
+import arathain.connatepassage.content.cca.ConnateWorldComponents;
 import arathain.connatepassage.logic.worldshell.Worldshell;
+import arathain.connatepassage.logic.worldshell.WorldshellWrapper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Axis;
@@ -9,6 +11,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Quaterniond;
 import org.joml.Vector3d;
@@ -27,6 +30,28 @@ import java.util.stream.Collectors;
 public class WorldshellCollisionPass {
 	public record WorldshellCollisionResult(Vec3d collision, boolean hasCollided) {
 
+	}
+	/**
+	 * Only part not made by Ryan; iterates over all worldshells to check for collision.
+	 **/
+	public static Vec3d collideWithWorldshells(World world, WorldshellWrapper velocityShell, Entity e, Vec3d movement) {
+		WorldshellCollisionPass.WorldshellCollisionResult r = new WorldshellCollisionPass.WorldshellCollisionResult(movement, false);
+		Vector3d original = new Vector3d(movement.x, movement.y, movement.z);
+		for(Worldshell w : world.getComponent(ConnateWorldComponents.WORLDSHELLS).getWorldshells()) {
+			if(WorldshellCollisionPass.boxCollidesSphere(e.getBoundingBox(), w.getPos(), w.maxDistance)) {
+				r = collide(e, r.collision(), w, original);
+				if(r.hasCollided() && movement.y != r.collision().y && r.collision().y < 0.0) {
+					velocityShell.shell = w;
+				}
+			}
+		}
+		if(velocityShell.shell != null && !r.hasCollided()) {
+			r = new WorldshellCollisionPass.WorldshellCollisionResult(r.collision().subtract(velocityShell.shell.getVelocity()), false);
+			if(e.isOnGround())
+				velocityShell.shell = null;
+		}
+
+		return r.hasCollided() ? r.collision() : movement;
 	}
 	public static WorldshellCollisionResult collide(Entity e, Vec3d movement, Worldshell shell, Vector3d backup) {
 		Vec3d yeag = shell.getVelocity();

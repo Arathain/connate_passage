@@ -12,6 +12,9 @@ import org.quiltmc.qsl.networking.api.PacketByteBufs;
 import org.quiltmc.qsl.networking.api.PacketSender;
 import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 
+/**
+ * A packet responsible for updating worldshell speed.
+ **/
 public class WorldshellAddSpeedPacket {
 	public static final Identifier ID = ConnatePassage.id("wshell_add_speed");
 
