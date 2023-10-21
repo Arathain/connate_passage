@@ -5,6 +5,9 @@ import org.joml.Quaterniond;
 import org.joml.Quaternionf;
 import org.joml.Vector3d;
 
+/**
+ * Math utility class.
+ **/
 public interface ConnateMathUtil {
 	/**
 	 * Rotates a {@link Vec3d} by a quaternion.

@@ -1,14 +1,13 @@
 package arathain.connatepassage.logic.worldshell;
 
 import arathain.connatepassage.ConnatePassage;
-import arathain.connatepassage.content.cca.ConnateWorldComponents;
+import arathain.connatepassage.init.ConnateWorldComponents;
 import arathain.connatepassage.content.cca.WorldshellComponent;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import org.quiltmc.qsl.networking.api.PacketByteBufs;
 import org.quiltmc.qsl.networking.api.PacketSender;

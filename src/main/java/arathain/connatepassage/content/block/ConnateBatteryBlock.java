@@ -1,6 +1,6 @@
 package arathain.connatepassage.content.block;
 
-import arathain.connatepassage.content.cca.ConnateWorldComponents;
+import arathain.connatepassage.init.ConnateWorldComponents;
 import arathain.connatepassage.logic.worldshell.Worldshell;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -20,6 +20,9 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.random.RandomGenerator;
 import net.minecraft.world.World;
 
+/**
+ * Block implementation for a 'timed worldshell activation' component, making the worldshell move for a limited amount of time.
+ **/
 public class ConnateBatteryBlock extends FacingBlock {
 	private final boolean inverse;
 	public static final BooleanProperty TRIGGERED = Properties.TRIGGERED;

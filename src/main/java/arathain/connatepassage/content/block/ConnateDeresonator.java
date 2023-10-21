@@ -1,6 +1,6 @@
 package arathain.connatepassage.content.block;
 
-import arathain.connatepassage.content.cca.ConnateWorldComponents;
+import arathain.connatepassage.init.ConnateWorldComponents;
 import arathain.connatepassage.logic.worldshell.Worldshell;
 import io.netty.buffer.Unpooled;
 import net.minecraft.block.*;
@@ -23,6 +23,9 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.quiltmc.qsl.networking.api.ServerPlayNetworking;
 
+/**
+ * Block implementation for a 'worldshell deactivation' component.
+ **/
 public class ConnateDeresonator extends FacingBlock {
 	public static final BooleanProperty TRIGGERED = Properties.TRIGGERED;
 

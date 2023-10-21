@@ -1,16 +1,13 @@
 package arathain.connatepassage.logic.ryanhcode;
 
-import arathain.connatepassage.content.cca.ConnateWorldComponents;
+import arathain.connatepassage.init.ConnateWorldComponents;
 import arathain.connatepassage.logic.worldshell.Worldshell;
 import arathain.connatepassage.logic.worldshell.WorldshellWrapper;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.Axis;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Quaterniond;

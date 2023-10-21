@@ -13,6 +13,9 @@ import org.quiltmc.qsl.item.setting.api.QuiltItemSettings;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * Initialisation interface used for registering in-game items.
+ **/
 public interface ConnateItems {
 	Map<Identifier, Item> ITEMS = new LinkedHashMap<>();
 	Item CONNATE_BRACER = register("copper_bracers", new ConnateBracerItem(new QuiltItemSettings().maxCount(1).rarity(Rarity.RARE)));

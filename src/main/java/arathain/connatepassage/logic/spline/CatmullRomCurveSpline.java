@@ -68,6 +68,9 @@ public class CatmullRomCurveSpline {
 		this.prevPos = this.pos;
 		this.pos += dist;
 	}
+	/**
+	 * Saves all spline data to a Named Binary Tag for server-to-client synchronisation and saving to disk.
+	 **/
 	public void writeNbt(NbtCompound nbt) {
 		NbtList list = new NbtList();
 		points.forEach(v -> {
@@ -81,6 +84,10 @@ public class CatmullRomCurveSpline {
 		nbt.putFloat("splinePos", pos);
 		nbt.putFloat("prevSplinePos", prevPos);
 	}
+
+	/**
+	 * Reads all spline data from a Named Binary Tag for server-to-client synchronisation and reading from disk.
+	 **/
 	public static CatmullRomCurveSpline readNbt(NbtCompound nbt) {
 		List<Vec3d> points = new ArrayList<>();
 		nbt.getList("points", 10).forEach(n -> {
@@ -260,6 +267,9 @@ public class CatmullRomCurveSpline {
 			points.get(1).equals(points.get(points.size()-2)) &&
 			points.get(0).equals(points.get(points.size()-3));
 	}
+	/**
+	 * Returns the spline's control points.
+	 **/
 	public List<Vec3d> getPoints() {
 		return points;
 	}

@@ -2,12 +2,11 @@ package arathain.connatepassage;
 
 import arathain.connatepassage.config.ConnateConfig;
 import arathain.connatepassage.content.block.ResonanceVFXPacket;
-import arathain.connatepassage.content.cca.ConnateWorldComponents;
+import arathain.connatepassage.init.ConnateWorldComponents;
 import arathain.connatepassage.content.cca.WorldshellComponent;
 import arathain.connatepassage.content.item.ConnateBracerItem;
 import arathain.connatepassage.init.ConnateBlocks;
 import arathain.connatepassage.init.ConnateItems;
-import arathain.connatepassage.logic.ConnateMathUtil;
 import arathain.connatepassage.logic.worldshell.*;
 import eu.midnightdust.lib.config.MidnightConfig;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
@@ -15,13 +14,9 @@ import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.Mouse;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ingame.EnchantmentScreen;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.BlockRenderManager;
-import net.minecraft.client.render.block.entity.SignBlockEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
@@ -32,9 +27,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.random.RandomGenerator;
-import org.joml.Quaterniond;
 import org.joml.Quaternionf;
-import org.joml.Vector3d;
 import org.joml.Vector4f;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.client.ClientModInitializer;
@@ -46,7 +39,6 @@ import team.lodestar.lodestone.systems.rendering.VFXBuilders;
 import java.awt.*;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 
 import static team.lodestar.lodestone.handlers.RenderHandler.DELAYED_RENDER;
 
@@ -133,7 +125,7 @@ public class ConnatePassageClient implements ClientModInitializer {
 		matrices.push();
 		Vec3d pos = shell.getPos(tickDelta);
 		matrices.translate(pos.x, pos.y, pos.z);
-		if(shell instanceof SplineFollowingAxisLimitedWorldshell sp) {
+		if(shell instanceof SplineFollowingAxisLimitedWorldshell sp && ConnateConfig.renderCarriage) {
 			matrices.push();
 			List<Vec3d> positions = sp.getPoints(tickDelta, 17, 0.6f);
 			VFXBuilders.WorldVFXBuilder builder = VFXBuilders.createWorld().setPosColorTexLightmapDefaultFormat();

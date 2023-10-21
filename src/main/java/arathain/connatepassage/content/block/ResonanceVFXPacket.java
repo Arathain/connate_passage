@@ -21,6 +21,9 @@ import team.lodestar.lodestone.systems.rendering.particle.data.SpinParticleData;
 
 import java.awt.*;
 
+/**
+ * Server-to-client packet used for {@link ConnateDeresonator} and {@link ConnatePulseNode} visual effects.
+ **/
 public record ResonanceVFXPacket(Vec3d position, boolean b) implements Packet<ClientPlayPacketListener> {
 	public static final Identifier ID = new Identifier(ConnatePassage.MODID, "resonance_fx");
 	private static final Color parryStart = Color.CYAN;
@@ -44,7 +47,6 @@ public record ResonanceVFXPacket(Vec3d position, boolean b) implements Packet<Cl
 	public void apply(ClientPlayPacketListener listener) {
 		if (listener instanceof ClientPlayNetworkHandler handler) {
 			PlayerEntity player = MinecraftClient.getInstance().player;
-			RandomGenerator random = player.getRandom();
 
 			WorldParticleBuilder.create(LodestoneParticles.STAR_PARTICLE)
 					.setScaleData(GenericParticleData.create(b ? 0.01f : 3f, b ? 3f : 0.01f).build())

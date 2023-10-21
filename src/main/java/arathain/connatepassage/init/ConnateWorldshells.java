@@ -9,6 +9,9 @@ import org.joml.Vector3f;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * Initialisation interface used for storing all worldshell types.
+ **/
 public interface ConnateWorldshells {
 	Map<Identifier, WorldshellSupplier<?>> WORLDSHELLS = new LinkedHashMap<>();
 

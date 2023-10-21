@@ -1,6 +1,6 @@
 package arathain.connatepassage.mixin;
 
-import arathain.connatepassage.content.cca.ConnateWorldComponents;
+import arathain.connatepassage.init.ConnateWorldComponents;
 import arathain.connatepassage.content.cca.WorldshellComponent;
 import arathain.connatepassage.init.ConnateItems;
 import arathain.connatepassage.logic.worldshell.ScrollableWorldshell;

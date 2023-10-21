@@ -1,5 +1,7 @@
 package arathain.connatepassage.content.block;
 
+import arathain.connatepassage.logic.spline.CatmullRomCurveSpline;
+import arathain.connatepassage.logic.worldshell.SplineFollowingAxisLimitedWorldshell;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FacingBlock;
@@ -9,6 +11,10 @@ import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.Direction;
 
+/**
+ * Worldshell core component; used to move the worldshell around a {@link CatmullRomCurveSpline}.
+ * @see SplineFollowingAxisLimitedWorldshell
+ **/
 public class SplineBlock extends FacingBlock {
 	public SplineBlock(Settings settings) {
 		super(settings);

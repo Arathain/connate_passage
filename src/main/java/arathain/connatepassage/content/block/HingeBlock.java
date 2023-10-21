@@ -1,11 +1,7 @@
 package arathain.connatepassage.content.block;
 
-import arathain.connatepassage.content.cca.ConnateWorldComponents;
-import arathain.connatepassage.content.item.ConnateBracerItem;
-import arathain.connatepassage.init.ConnateWorldshells;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -18,14 +14,14 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import org.joml.Vector3f;
-
-import java.util.HashMap;
-
+import arathain.connatepassage.logic.worldshell.ConstantAxisLimitedWorldshell;
+/**
+ * Worldshell core component; used to rotate the entire worldshell around a specific point, in one axis.
+ * @see ConstantAxisLimitedWorldshell
+ **/
 public class HingeBlock extends Block {
 
 	protected static final VoxelShape X_SHAPE = Block.createCuboidShape(5.0, 0.0, 0.0, 11.0, 16.0, 16.0);

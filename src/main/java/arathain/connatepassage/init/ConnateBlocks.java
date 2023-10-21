@@ -21,6 +21,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.ToIntFunction;
 
+/**
+ * Initialisation interface used for registering in-game blocks.
+ **/
 public interface ConnateBlocks {
 	Map<Identifier, Block> BLOCKS = new LinkedHashMap<>();
 	Map<Identifier, BlockEntityType<?>> BLOCK_ENTITY_TYPES = new LinkedHashMap<>();

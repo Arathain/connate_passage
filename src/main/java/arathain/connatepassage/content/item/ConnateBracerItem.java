@@ -3,7 +3,7 @@ package arathain.connatepassage.content.item;
 import arathain.connatepassage.ConnatePassage;
 import arathain.connatepassage.content.block.HingeBlock;
 import arathain.connatepassage.content.block.SplineBlock;
-import arathain.connatepassage.content.cca.ConnateWorldComponents;
+import arathain.connatepassage.init.ConnateWorldComponents;
 import arathain.connatepassage.content.cca.WorldshellComponent;
 import arathain.connatepassage.init.ConnateBlocks;
 import arathain.connatepassage.init.ConnateItems;
@@ -39,6 +39,9 @@ public class ConnateBracerItem extends Item {
 		super(settings);
 	}
 
+	/**
+	 * Toggles between regular & spline specific mode, as well as decontructing existing worldshells.
+	 **/
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack s = user.getStackInHand(hand);
@@ -74,6 +77,9 @@ public class ConnateBracerItem extends Item {
 		}
 		return TypedActionResult.pass(s);
 	}
+	/**
+	 * Toggle regular & spline placement mode.
+	 **/
 	private static boolean switchMode(ItemStack s) {
 		if(isPositionMode(s)) {
 			s.getOrCreateNbt().remove("mode");
@@ -98,6 +104,9 @@ public class ConnateBracerItem extends Item {
 //		}
 //	}
 
+	/**
+	 * Called upon using the item while hovering over a block. Main way of managing worldshell creation.
+	 **/
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext context) {
 		ItemStack s = context.getStack();
@@ -196,6 +205,9 @@ public class ConnateBracerItem extends Item {
 		}
 		return super.useOnBlock(context);
 	}
+	/**
+	 * Iterates over all blocks in a block box.
+	 **/
 	private static void forEachBlockPos(BlockBox b, Consumer<BlockPos> hungy) {
 		for(int x = b.getMinX(); x <= b.getMaxX(); x++) {
 			for(int y = b.getMinY(); y <= b.getMaxY(); y++) {
@@ -205,6 +217,9 @@ public class ConnateBracerItem extends Item {
 			}
 		}
 	}
+	/**
+	 *
+	 **/
 	public static List<BlockBox> getBlockBoxes(ItemStack stack) {
 		NbtList n = getBoxList(stack);
 		List<BlockBox> b = new ArrayList<>();
@@ -223,6 +238,9 @@ public class ConnateBracerItem extends Item {
 		n.forEach(nbt -> b.add(getBlockBox((NbtCompound) nbt)));
 		return b;
 	}
+	/**
+	 * Gets all spline trail block positions from an item.
+	 **/
 	public static List<BlockPos> getTrailBlocks(ItemStack stack) {
 		NbtList n = getBlockList(stack);
 		List<BlockPos> b = new ArrayList<>();

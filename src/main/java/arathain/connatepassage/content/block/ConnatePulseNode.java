@@ -1,6 +1,6 @@
 package arathain.connatepassage.content.block;
 
-import arathain.connatepassage.content.cca.ConnateWorldComponents;
+import arathain.connatepassage.init.ConnateWorldComponents;
 import arathain.connatepassage.logic.worldshell.Worldshell;
 import io.netty.buffer.Unpooled;
 import net.minecraft.block.*;
@@ -19,7 +19,9 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.quiltmc.qsl.networking.api.ServerPlayNetworking;
-
+/**
+ * Block implementation for a 'worldshell activation' component.
+ **/
 public class ConnatePulseNode extends FacingBlock {
 	public static final BooleanProperty TRIGGERED = Properties.TRIGGERED;
 

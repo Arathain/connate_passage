@@ -1,7 +1,7 @@
 package arathain.connatepassage.logic.worldshell;
 
 import arathain.connatepassage.ConnatePassage;
-import arathain.connatepassage.content.cca.ConnateWorldComponents;
+import arathain.connatepassage.init.ConnateWorldComponents;
 import arathain.connatepassage.content.cca.WorldshellComponent;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
