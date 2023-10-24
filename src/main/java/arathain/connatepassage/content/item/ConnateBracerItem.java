@@ -324,12 +324,32 @@ public class ConnateBracerItem extends Item {
 		}
 		return null;
 	}
+	public static NbtList makeBlockList(List<BlockBox> boxes) {
+		NbtList list = new NbtList();
+		boxes.forEach(b -> {
+			NbtCompound blocks = new NbtCompound();
+			blocks.put("first", NbtHelper.fromBlockPos(new BlockPos(b.getMinX(), b.getMinY(), b.getMinZ())));
+			blocks.put("second", NbtHelper.fromBlockPos(new BlockPos(b.getMaxX(), b.getMaxY(), b.getMaxZ())));
+			list.add(blocks);
+		});
+		return list;
+	}
 	public static void putBlockList(NbtCompound nbt, NbtList list) {
 		nbt.put("trailBlocks", list);
 	}
 
 	public int getMaxUseTime(ItemStack stack) {
 		return 72000;
+	}
+
+	@Override
+	public boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
+		return !miner.isCreative();
+	}
+
+	@Override
+	public boolean isSuitableFor(BlockState state) {
+		return false;
 	}
 
 	@Override

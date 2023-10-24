@@ -50,12 +50,13 @@ public class CatmullRomCurveSpline {
 	 * @param amount the amount of points to return
 	 * @param dist the distance between one point and another
 	 **/
-	public List<Vec3d> getPointsAroundPos(float tickDelta, int amount, float dist) {
+	public List<Vec3d> getPointsAroundPos(float tickDelta, int amount, float dist, boolean loop) {
 		List<Vec3d> l = new ArrayList<>();
+
 		float dst = MathHelper.lerp(tickDelta, prevPos, pos);
 		for(int i = 0; i < amount; i++) {
 			float offset = (i-(amount-1)/2f)*dist;
-			l.add(getPos(dst, offset));
+			l.add(loop ? getPosLoop(dst, offset) : getPos(dst, offset));
 		}
 		return l;
 	}
@@ -164,12 +165,40 @@ public class CatmullRomCurveSpline {
 		float delta = mapDistToDelta(distance-distances.get(index), index);
 		return getPos(index, delta);
 	}
+
+	/**
+	 * Returns a position vector along the spline, at an additional offset from the actual current position.
+	 **/
 	public Vec3d getPos(float distance, float add) {
 		distance = distance + add;
 		if(distance < 0) {
 			distance = 0;
 		}
 		float h = distances.get(distances.size()-1);
+		if(distance > h) {
+			distance = h;
+		}
+		int index = 0;
+		for(int target = 0; target < distances.size(); target++) {
+			if(distances.get(target) < distance && distances.get(index) < distances.get(target)) {
+				index = target;
+			}
+		}
+		float delta = mapDistToDelta(distance-distances.get(index), index);
+		return getPos(index, delta);
+	}
+	public Vec3d getPosLoop(float distance, float add) {
+		distance = distance + add;
+		float h = distances.get(distances.size()-1);
+		if(distance < 0) {
+			distance += h;
+		}
+		if(distance > h) {
+			distance -= h;
+		}
+		if(distance < 0) {
+			distance = 0;
+		}
 		if(distance > h) {
 			distance = h;
 		}

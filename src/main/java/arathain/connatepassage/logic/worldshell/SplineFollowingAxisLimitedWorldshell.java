@@ -80,7 +80,7 @@ public class SplineFollowingAxisLimitedWorldshell extends AxisLimitedWorldshell 
 	}
 
 	public List<Vec3d> getPoints(float tickDelta, int amount, float distance) {
-		return spline.getPointsAroundPos(tickDelta, amount, distance);
+		return spline.getPointsAroundPos(tickDelta, amount, distance, loop);
 	}
 
 	@Override

@@ -4,6 +4,8 @@ import arathain.connatepassage.init.ConnateWorldComponents;
 import arathain.connatepassage.logic.worldshell.Worldshell;
 import arathain.connatepassage.logic.worldshell.WorldshellWrapper;
 import net.minecraft.entity.Entity;
+import net.minecraft.server.network.ServerPlayNetworkHandler;
+import net.minecraft.util.math.Axis;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
@@ -42,10 +44,10 @@ public class WorldshellCollisionPass {
 				}
 			}
 		}
-		if(velocityShell.shell != null && !r.hasCollided()) {
-			r = new WorldshellCollisionPass.WorldshellCollisionResult(r.collision().subtract(velocityShell.shell.getVelocity()), false);
-			if(e.isOnGround())
-				velocityShell.shell = null;
+		if(velocityShell.shell != null && r.hasCollided()) {
+			r = new WorldshellCollisionPass.WorldshellCollisionResult(r.collision().add(velocityShell.shell.getRotationalVelocity(e.getPos())), true);
+//			if(e.isOnGround())
+//				velocityShell.shell = null;
 		}
 
 		return r.hasCollided() ? r.collision() : movement;

@@ -49,7 +49,7 @@ public record ResonanceVFXPacket(Vec3d position, boolean b) implements Packet<Cl
 			PlayerEntity player = MinecraftClient.getInstance().player;
 
 			WorldParticleBuilder.create(LodestoneParticles.STAR_PARTICLE)
-					.setScaleData(GenericParticleData.create(b ? 0.01f : 3f, b ? 3f : 0.01f).build())
+					.setScaleData(GenericParticleData.create(b ? 0.01f : 3.5f, b ? 3.5f : 0.01f).build())
 					.setLifetime(8)
 					.setColorData(ColorParticleData.create(parryStart, parryEnd).setCoefficient(0.9f).setEasing(Easing.QUAD_IN).build())
 					.setTransparencyData(GenericParticleData.create(b ? 0.8f : 0, b ? 0f : 0.8f).setEasing(Easing.QUAD_OUT).build())

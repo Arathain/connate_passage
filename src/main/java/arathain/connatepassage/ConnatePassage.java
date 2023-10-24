@@ -1,5 +1,6 @@
 package arathain.connatepassage;
 
+import arathain.connatepassage.content.item.ConnateBracerUpdateNBTPacket;
 import arathain.connatepassage.init.ConnateBlocks;
 import arathain.connatepassage.init.ConnateItems;
 import arathain.connatepassage.init.ConnateWorldshells;
@@ -15,11 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ConnatePassage implements ModInitializer {
-	// This logger is used to write text to the console and the log file.
-	// It is considered best practice to use your mod name as the logger's name.
-	// That way, it's clear which mod wrote info, warnings, and errors.
-	public static final Logger LOGGER = LoggerFactory.getLogger("Connate Passage");
-	public static String MODID = " ";
+	public static String MODID = "connate_passage";
 
 	@Override
 	public void onInitialize(ModContainer mod) {
@@ -27,6 +24,7 @@ public class ConnatePassage implements ModInitializer {
 		ConnateBlocks.init();
 		ConnateItems.init();
 		Reflection.initialize(ConnateWorldshells.class);
+		ServerPlayNetworking.registerGlobalReceiver(ConnateBracerUpdateNBTPacket.ID, ConnateBracerUpdateNBTPacket::apply);
 		ServerPlayNetworking.registerGlobalReceiver(WorldshellAddSpeedPacket.ID, WorldshellAddSpeedPacket::apply);
 	}
 	public static Identifier id(String name) {
