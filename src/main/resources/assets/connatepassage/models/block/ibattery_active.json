@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/cube_bottom_top",
-  "textures": {
-    "bottom": "connatepassage:block/ibattery_bottom_active",
-    "side": "connatepassage:block/ibattery_side_active",
-    "top": "connatepassage:block/ibattery_top_active"
-  }
-}

@@ -1,0 +1,14 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "miku_machines:block/hinge"
+    },
+    "axis=y": {
+      "model": "miku_machines:block/hinge_vert"
+    },
+    "axis=z": {
+      "model": "miku_machines:block/hinge",
+      "y": 90
+    }
+  }
+}

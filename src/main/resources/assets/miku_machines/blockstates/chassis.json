@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "" : {
+      "model": "miku_machines:block/chassis"
+    }
+  }
+}

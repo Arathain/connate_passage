@@ -1,0 +1,56 @@
+{
+  "variants": {
+    "facing=down,triggered=true": {
+      "model": "miku_machines:block/pulse_node_active",
+      "x": 180
+    },
+    "facing=east,triggered=true": {
+      "model": "miku_machines:block/pulse_node_active",
+      "x": 90,
+      "y": 90
+    },
+    "facing=north,triggered=true": {
+      "model": "miku_machines:block/pulse_node_active",
+      "x": 90
+    },
+    "facing=south,triggered=true": {
+      "model": "miku_machines:block/pulse_node_active",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up,triggered=true": {
+      "model": "miku_machines:block/pulse_node_active"
+    },
+    "facing=west,triggered=true": {
+      "model": "miku_machines:block/pulse_node_active",
+      "x": 90,
+      "y": 270
+    },
+    "facing=down,triggered=false": {
+      "model": "miku_machines:block/pulse_node",
+      "x": 180
+    },
+    "facing=east,triggered=false": {
+      "model": "miku_machines:block/pulse_node",
+      "x": 90,
+      "y": 90
+    },
+    "facing=north,triggered=false": {
+      "model": "miku_machines:block/pulse_node",
+      "x": 90
+    },
+    "facing=south,triggered=false": {
+      "model": "miku_machines:block/pulse_node",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up,triggered=false": {
+      "model": "miku_machines:block/pulse_node"
+    },
+    "facing=west,triggered=false": {
+      "model": "miku_machines:block/pulse_node",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

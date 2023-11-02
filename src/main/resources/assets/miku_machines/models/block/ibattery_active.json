@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "miku_machines:block/ibattery_bottom_active",
+    "side": "miku_machines:block/ibattery_side_active",
+    "top": "miku_machines:block/ibattery_top_active"
+  }
+}

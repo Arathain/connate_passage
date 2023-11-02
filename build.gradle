@@ -16,6 +16,9 @@ repositories {
 	maven { url 'https://maven.terraformersmc.com' }
 	maven { url = "https://jitpack.io" }
 	maven {
+		url 'https://minecraft.guntram.de/maven/'
+	}
+	maven {
 		name = "Modrinth"
 		url = "https://api.modrinth.com/maven"
 		content { includeGroup "maven.modrinth" }
@@ -57,6 +60,18 @@ dependencies {
 	modImplementation "maven.modrinth:sodium:${project.sodium_version}"
 
 	modImplementation include ('com.github.Arathain:LodestoneLib-Quilt:88282d99f6')
+
+	modImplementation "maven.modrinth:iris:${project.iris_version}"
+
+	modImplementation "de.guntram.mcmod:crowdin-translate:${project.crowdin_translate_version}"
+	include "de.guntram.mcmod:crowdin-translate:${project.crowdin_translate_version}"
+
+	include "com.moandjiezana.toml:toml4j:${project.toml4j_version}"
+	implementation "com.moandjiezana.toml:toml4j:${project.toml4j_version}"
+	implementation include ("org.anarres:jcpp:1.4.14")
+
+	implementation "io.github.douira:glsl-transformer:${project.glsl_transformer_version}"
+
 
 }
 

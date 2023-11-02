@@ -1,8 +1,8 @@
 {
 	"schema_version": 1,
 	"quilt_loader": {
-		"group": "arathain.connatepassage",
-		"id": "connatepassage",
+		"group": "arathain.miku",
+		"id": "miku_machines",
 		"version": "${version}",
 		"metadata": {
 			"name": "Connate Passage",
@@ -14,13 +14,13 @@
 				"issues": "https://github.com/Arathain/connate_passage/issues",
 				"sources": "https://github.com/Arathain/connate_passage"
 			},
-			"icon": "assets/connatepassage/icon.png"
+			"icon": "assets/miku_machines/icon.png"
 		},
 		"intermediate_mappings": "net.fabricmc:intermediary",
 		"entrypoints": {
-			"init": "arathain.connatepassage.ConnatePassage",
-			"client_init": "arathain.connatepassage.ConnatePassageClient",
-			"cardinal-components-world": "arathain.connatepassage.init.ConnateWorldComponents"
+			"init": "arathain.miku_machines.MikuMachines",
+			"client_init": "arathain.miku_machines.MikuMachinesClient",
+			"cardinal-components-world": "arathain.miku_machines.init.ConnateWorldComponents"
 		},
 		"depends": [
 			{
@@ -37,8 +37,8 @@
 			}
 		]
 	},
-	"mixin": "connatepassage.mixin.json",
+	"mixin": "miku_machines.mixin.json",
 	"cardinal-components": [
-		"connatepassage:worldshells"
+		"miku_machines:worldshells"
 	]
 }

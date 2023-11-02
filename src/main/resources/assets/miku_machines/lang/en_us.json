@@ -1,0 +1,12 @@
+{
+  "block.miku_machines.hinge": "Passage Hinge",
+  "block.miku_machines.battery": "Passage Battery",
+  "block.miku_machines.battery_inverse": "Inverted Passage Battery",
+  "block.miku_machines.spline_carriage": "Passage Carriage",
+  "block.miku_machines.chassis": "Passage Chassis",
+  "block.miku_machines.pulse_node": "Passage Resonance Node",
+  "block.miku_machines.deresonator": "Passage Deresonator",
+  "item.miku_machines.copper_bracers": "Copper Bracers",
+  "miku_machines.midnightconfig.title":"Connate Passage",
+  "miku_machines.midnightconfig.individualLightBlockUpdate":"Determines whether worldshells should query light per-block."
+}

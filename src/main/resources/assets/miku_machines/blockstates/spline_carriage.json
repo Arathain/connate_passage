@@ -1,0 +1,27 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "miku_machines:block/spline_carriage",
+      "x": 90
+    },
+    "facing=east": {
+      "model": "miku_machines:block/spline_carriage",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "miku_machines:block/spline_carriage"
+    },
+    "facing=south": {
+      "model": "miku_machines:block/spline_carriage",
+      "y": 180
+    },
+    "facing=up": {
+      "model": "miku_machines:block/spline_carriage",
+      "x": 270
+    },
+    "facing=west": {
+      "model": "miku_machines:block/spline_carriage",
+      "y": 270
+    }
+  }
+}
