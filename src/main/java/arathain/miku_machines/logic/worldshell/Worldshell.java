@@ -197,14 +197,17 @@ public abstract class Worldshell implements BlockRenderView {
 	 **/
 	public Vec3d getRotationalVelocity(Vec3d entityPos) {
 		entityPos = entityPos.subtract(this.pos);
-		return getLocalPos(entityPos, 1).subtract(getLocalPos(entityPos, 0));
+		Quaternionf c = new Quaternionf().identity().mul(rotation.invert(new Quaternionf()));
+		Quaternionf p = new Quaternionf().identity().mul(prevRotation.invert(new Quaternionf()));
+		p.invert().mul(c).normalize();
+		return ConnateMathUtil.rotateViaQuat(entityPos, p).subtract(entityPos);
 	}
 	/**
 	 * Full worldshell velocity implementation, taking rotational velocity into account.
 	 **/
 	public Vec3d getVelocity(Vec3d entityPos) {
 		Vec3d diff = getRotationalVelocity(entityPos);
-		return pos.subtract(prevPos).add(diff);
+		return getVelocity().subtract(diff);
 	}
 
 	//The code below is all 'world' implementation methods, used for Minecraft's underlying code to correctly interact with the worldshell.

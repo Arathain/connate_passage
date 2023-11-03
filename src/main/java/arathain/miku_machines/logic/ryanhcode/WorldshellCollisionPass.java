@@ -37,15 +37,16 @@ public class WorldshellCollisionPass {
 		for(Worldshell w : world.getComponent(ConnateWorldComponents.WORLDSHELLS).getWorldshells()) {
 			if(WorldshellCollisionPass.boxCollidesSphere(e.getBoundingBox(), w.getPos(), w.maxDistance)) {
 				r = collide(e, r.collision(), w, original);
-				if(r.hasCollided() && movement.y != r.collision().y && r.collision().y < 0.0) {
+				if(r.hasCollided()) {
 					velocityShell.shell = w;
 				}
 			}
 		}
 		if(velocityShell.shell != null) {
 			if(r.hasCollided()) {
-				r = new WorldshellCollisionPass.WorldshellCollisionResult(r.collision().add(velocityShell.shell.getRotationalVelocity(e.getPos())), true);
-			} else if(movement.y == 0 || movement.y == -0.0784000015258789) {
+				r = new WorldshellCollisionPass.WorldshellCollisionResult(r.collision().subtract(velocityShell.shell.getRotationalVelocity(e.getPos())), true);
+			}
+			if(movement.y == 0) {
 				velocityShell.shell = null;
 			}
 		}

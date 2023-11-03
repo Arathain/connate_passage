@@ -45,6 +45,17 @@ public class ConnateBracerItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack s = user.getStackInHand(hand);
+		if(isPositionMode(s)) {
+			List<BlockPos> list = getTrailBlocks(s);
+			if(!list.isEmpty() && list.contains(user.getBlockPos()) && user.isSneaking()) {
+				list.remove(user.getBlockPos());
+				s.getNbt().remove("trailBlocks");
+				putTrailBlock(s, list.toArray(new BlockPos[]{}));
+				return TypedActionResult.pass(s);
+			} else if(!user.isSneaking()){
+				putTrailBlock(s, user.getBlockPos());
+			}
+		}
 		if(user.isSneaking()) {
 			WorldshellComponent w = world.getComponent(ConnateWorldComponents.WORLDSHELLS);
 			boolean[] bl = new boolean[1];
@@ -62,18 +73,9 @@ public class ConnateBracerItem extends Item {
 				}
 				user.sendMessage(msg, true);
 			}
-			ConnateWorldComponents.WORLDSHELLS.sync(world);
+			if(bl[0])
+				ConnateWorldComponents.WORLDSHELLS.sync(world);
 			return TypedActionResult.consume(s);
-		}
-		if(isPositionMode(s)) {
-			List<BlockPos> list = getTrailBlocks(s);
-			if(!list.isEmpty() && list.contains(user.getBlockPos())) {
-				list.remove(user.getBlockPos());
-				s.getNbt().remove("trailBlocks");
-				putTrailBlock(s, list.toArray(new BlockPos[]{}));
-			} else {
-				putTrailBlock(s, user.getBlockPos());
-			}
 		}
 		return TypedActionResult.pass(s);
 	}
