@@ -3,9 +3,17 @@ package arathain.miku_machines.logic.ryanhcode;
 import arathain.miku_machines.init.ConnateWorldComponents;
 import arathain.miku_machines.logic.worldshell.Worldshell;
 import arathain.miku_machines.logic.worldshell.WorldshellWrapper;
+import arathain.miku_machines.logic.worldshell.WorldshellWrapperHolder;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.render.Camera;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.World;
@@ -45,6 +53,7 @@ public class WorldshellCollisionPass {
 		if(velocityShell.shell != null) {
 			if(r.hasCollided()) {
 				r = new WorldshellCollisionPass.WorldshellCollisionResult(r.collision().subtract(velocityShell.shell.getRotationalVelocity(e.getPos())), true);
+				e.setYaw(e.getYaw() + velocityShell.shell.getYawVelocity(1));
 			}
 			if(movement.y == 0) {
 				velocityShell.shell = null;

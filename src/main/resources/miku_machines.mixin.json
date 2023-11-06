@@ -9,6 +9,7 @@
     "iris.ShadowRendererMixin"
   ],
   "client": [
+    "ClientPlayerEntityMixin",
     "MinecraftClientMixin",
     "MouseMixin",
     "RenderLayersMixin"

@@ -4,8 +4,10 @@ import arathain.miku_machines.logic.ryanhcode.WorldshellCollisionPass;
 import arathain.miku_machines.logic.worldshell.WorldshellWrapper;
 import arathain.miku_machines.logic.worldshell.WorldshellWrapperHolder;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -26,15 +28,10 @@ public abstract class EntityMixin implements WorldshellWrapperHolder {
 	@Shadow
 	public abstract World getWorld();
 
-	@Shadow
-	public abstract Box getBoundingBox();
-
-	@Shadow
-	public abstract boolean isOnGround();
-
 	@ModifyReturnValue(method = "adjustMovementForCollisions", at = @At(value = "RETURN") )
 	private Vec3d connate$collideWorldshells(Vec3d movement) {
 		return WorldshellCollisionPass.collideWithWorldshells(this.getWorld(), shell, (Entity) (Object) this, movement);
 	}
+
 
 }

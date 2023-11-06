@@ -98,6 +98,7 @@ public class SplineFollowingAxisLimitedWorldshell extends AxisLimitedWorldshell 
 			}
 
 		}
+
 		this.prevPos = this.pos;
 		this.pos = this.spline.getPos(1);
 		Vec3d prod = this.spline.getVelocity(1).normalize();

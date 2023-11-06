@@ -2,11 +2,11 @@ package arathain.miku_machines;
 
 import arathain.miku_machines.config.ConnateConfig;
 import arathain.miku_machines.content.block.ResonanceVFXPacket;
-import arathain.miku_machines.init.ConnateWorldComponents;
 import arathain.miku_machines.content.cca.WorldshellComponent;
 import arathain.miku_machines.content.item.ConnateBracerItem;
 import arathain.miku_machines.init.ConnateBlocks;
 import arathain.miku_machines.init.ConnateItems;
+import arathain.miku_machines.init.ConnateWorldComponents;
 import arathain.miku_machines.logic.worldshell.*;
 import eu.midnightdust.lib.config.MidnightConfig;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
@@ -169,6 +169,9 @@ public class MikuMachinesClient implements ClientModInitializer {
 				matrices.translate(blockPos.getX()-0.5, blockPos.getY()-0.5, blockPos.getZ()-0.5);
 
 				b.renderBlock(state, blockPos, shell, matrices, consumer.getBuffer(RenderLayers.getBlockLayer(state)), true, r);
+				if(state.hasBlockEntity()) {
+
+				}
 				matrices.pop();
 			}
 		}

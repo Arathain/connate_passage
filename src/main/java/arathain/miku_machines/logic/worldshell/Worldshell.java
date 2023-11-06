@@ -23,11 +23,9 @@ import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.light.LightingProvider;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Quaterniond;
-import org.joml.Quaternionf;
-import org.joml.Vector3d;
-import org.joml.Vector3f;
+import org.joml.*;
 
+import java.lang.Math;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +40,7 @@ public abstract class Worldshell implements BlockRenderView {
 	public int shutdownTickCountdown = 0;
 	private Supplier<World> worldGetter = null;
 	protected final Map<BlockPos, BlockState> contained;
+	protected final Map<BlockPos, BlockEntity> containedEntities;
 	protected Quaternionf rotation, prevRotation = new Quaternionf();
 	protected Vec3d prevPos, pos;
 	protected final BlockPos pivot;
@@ -54,6 +53,7 @@ public abstract class Worldshell implements BlockRenderView {
 
 	public Worldshell(Map<BlockPos, BlockState> contained, Vec3d initialPos, BlockPos pivot) {
 		this.contained = contained;
+		containedEntities = new HashMap<>();
 		this.pos = initialPos;
 		this.pivot = pivot;
 		this.prevPos = pos;
@@ -202,6 +202,15 @@ public abstract class Worldshell implements BlockRenderView {
 		p.invert().mul(c).normalize();
 		return ConnateMathUtil.rotateViaQuat(entityPos, p).subtract(entityPos);
 	}
+
+	public float getYawVelocity(float delta) {
+		Quaternionf c = new Quaternionf().identity().mul(prevRotation.slerp(rotation, delta, new Quaternionf()).invert(new Quaternionf()));
+		Quaternionf p = new Quaternionf().identity().mul(prevRotation.invert(new Quaternionf()));
+		p.invert().mul(c).normalize();
+		Vector3f f = p.getEulerAnglesZYX(new Vector3f());
+		return f.y * 180f / MathHelper.PI;
+	}
+
 	/**
 	 * Full worldshell velocity implementation, taking rotational velocity into account.
 	 **/
