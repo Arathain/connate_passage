@@ -17,6 +17,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.BlockRenderManager;
+import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
@@ -160,20 +161,19 @@ public class MikuMachinesClient implements ClientModInitializer {
 		}
 		Quaternionf q = shell.getRotation(tickDelta);
 		matrices.multiply(q);
+		BlockEntityRenderDispatcher d = c.getBlockEntityRenderDispatcher();
 		for(Map.Entry<BlockPos, BlockState> entry : shell.getContained().entrySet()) {
 			BlockPos blockPos = entry.getKey().subtract(shell.getPivot());
 			BlockState state = entry.getValue();
-
+			matrices.push();
+			matrices.translate(blockPos.getX()-0.5, blockPos.getY()-0.5, blockPos.getZ()-0.5);
 			if(state.getRenderType() != BlockRenderType.INVISIBLE) {
-				matrices.push();
-				matrices.translate(blockPos.getX()-0.5, blockPos.getY()-0.5, blockPos.getZ()-0.5);
-
 				b.renderBlock(state, blockPos, shell, matrices, consumer.getBuffer(RenderLayers.getBlockLayer(state)), true, r);
-				if(state.hasBlockEntity()) {
-
-				}
-				matrices.pop();
 			}
+			if(shell.getContainedEntities().containsKey(entry.getKey())) {
+				d.render(shell.getContainedEntities().get(entry.getKey()), tickDelta, matrices, consumer);
+			}
+			matrices.pop();
 		}
 		matrices.pop();
 	}

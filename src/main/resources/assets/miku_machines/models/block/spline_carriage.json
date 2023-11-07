@@ -4,6 +4,42 @@
 		"0": "miku_machines:block/spline_carriage",
         "particle": "minecraft:block/copper_block"
 	},
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [0, 45, 0],
+      "scale": [0.5, 0.5, 0.5]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [0, -45, 0],
+      "scale": [0.5, 0.5, 0.5]
+    },
+    "firstperson_righthand": {
+      "rotation": [0, 45, 0],
+      "translation": [-1, 1, 0]
+    },
+    "firstperson_lefthand": {
+      "rotation": [0, -45, 0],
+      "translation": [-1, 1, 0]
+    },
+    "ground": {
+      "scale": [0.5, 0.5, 0.5]
+    },
+    "gui": {
+      "rotation": [30, 45, 0],
+      "translation": [0, 0.25, 0],
+      "scale": [0.625, 0.625, 0.625]
+    },
+    "head": {
+      "rotation": [180, 0, 0],
+      "translation": [0, 3.5, 0],
+      "scale": [1.5, 1.5, 1.5]
+    },
+    "fixed": {
+      "rotation": [-90, 0, 0],
+      "translation": [0, 0, -9],
+      "scale": [1.6, 1.6, 1.6]
+    }
+  },
 	"elements": [
 		{
 			"from": [0, 0, 0],

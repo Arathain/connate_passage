@@ -11,6 +11,7 @@ import arathain.miku_machines.init.ConnateWorldshells;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -117,30 +118,19 @@ public class ConnateBracerItem extends Item {
 			if(!isPositionMode(s))
 				putBlock(s, context.getBlockPos());
 		} else {
-			if(context.getWorld().getBlockState(context.getBlockPos()).getBlock().equals(ConnateBlocks.CHASSIS)) {
+			Block block = context.getWorld().getBlockState(context.getBlockPos()).getBlock();
+			int i = 0;
+			if(block.equals(ConnateBlocks.CHASSIS)) {
+				i = 1;
+			} else if(block instanceof HingeBlock) {
+				i = 2;
+			} else if(block instanceof SplineBlock) {
+				i = 2;
+			}
+
+			if(i > 0) {
 				HashMap<BlockPos, BlockState> stateMap = new HashMap<>();
-				for(BlockBox b : getBlockBoxes(s)) {
-					forEachBlockPos(b, blockPos -> {
-						if(!stateMap.containsKey(blockPos)) {
-							BlockState st = context.getWorld().getBlockState(blockPos);
-							if(!st.isAir()) {
-								stateMap.put(blockPos, st);
-								context.getWorld().setBlockState(blockPos, Blocks.AIR.getDefaultState(), Block.UPDATE_NONE);
-							}
-						}
-					});
-				}
-				if(!stateMap.containsKey(pos)) {
-					return ActionResult.FAIL;
-				}
-				s.getNbt().remove("first");
-				s.getNbt().remove("boxes");
-				context.getPlayer().setStackInHand(context.getHand(), new ItemStack(ConnateItems.CONNATE_BRACER));
-				context.getWorld().getComponent(ConnateWorldComponents.WORLDSHELLS).addWorldshell(ConnateWorldshells.FREE.create(stateMap, Vec3d.ofCenter(pos), pos));
-				ConnateWorldComponents.WORLDSHELLS.sync(context.getWorld());
-				return ActionResult.CONSUME;
-			} else if(context.getWorld().getBlockState(context.getBlockPos()).getBlock() instanceof HingeBlock) {
-				HashMap<BlockPos, BlockState> stateMap = new HashMap<>();
+				HashMap<BlockPos, BlockEntity> entityMap = new HashMap<>();
 				AtomicReference<BlockState> state = new AtomicReference<>();
 				for(BlockBox b : getBlockBoxes(s)) {
 					forEachBlockPos(b, blockPos -> {
@@ -148,7 +138,10 @@ public class ConnateBracerItem extends Item {
 							BlockState st = context.getWorld().getBlockState(blockPos);
 							if(!st.isAir()) {
 								stateMap.put(blockPos, st);
-
+								BlockEntity bE = context.getWorld().getBlockEntity(blockPos);
+								if(bE != null) {
+									entityMap.put(blockPos, bE);
+								}
 								if (blockPos.equals(pos)) {
 									state.set(st);
 								}
@@ -156,6 +149,7 @@ public class ConnateBracerItem extends Item {
 						}
 					});
 				}
+
 				if(!stateMap.containsKey(pos)) {
 					return ActionResult.FAIL;
 				}
@@ -163,47 +157,25 @@ public class ConnateBracerItem extends Item {
 					context.getWorld().removeBlock(toRemove, false);
 				}
 
-				Vector3f axis;
-				switch (state.get().get(AXIS)) {
-					case X -> axis = new Vector3f(1, 0, 0);
-					case Y -> axis = new Vector3f(0, 1, 0);
-					default -> axis = new Vector3f(0, 0, 1);
+				Vector3f axis = null;
+				if(i == 2) {
+					switch (state.get().get(AXIS)) {
+						case X -> axis = new Vector3f(1, 0, 0);
+						case Y -> axis = new Vector3f(0, 1, 0);
+						default -> axis = new Vector3f(0, 0, 1);
+					}
 				}
+
+
 				s.getNbt().remove("first");
 				s.getNbt().remove("boxes");
 				context.getPlayer().setStackInHand(context.getHand(), new ItemStack(ConnateItems.CONNATE_BRACER));
-				context.getWorld().getComponent(ConnateWorldComponents.WORLDSHELLS).addWorldshell(ConnateWorldshells.AXIS_LIMITED.create(stateMap, Vec3d.ofCenter(pos), pos).putAxis(axis));
-				ConnateWorldComponents.WORLDSHELLS.sync(context.getWorld());
-				return ActionResult.CONSUME;
-			} else if(context.getWorld().getBlockState(context.getBlockPos()).getBlock() instanceof SplineBlock) {
-				HashMap<BlockPos, BlockState> stateMap = new HashMap<>();
-				AtomicReference<BlockState> state = new AtomicReference<>();
-				for(BlockBox b : getBlockBoxes(s)) {
-					forEachBlockPos(b, blockPos -> {
-						if(!stateMap.containsKey(blockPos)) {
-							BlockState st = context.getWorld().getBlockState(blockPos);
-							if(!st.isAir()) {
-								stateMap.put(blockPos, st);
-
-								if (blockPos.equals(pos)) {
-									state.set(st);
-								}
-							}
-						}
-					});
-				}
-				if(!stateMap.containsKey(pos)) {
-					return ActionResult.FAIL;
-				}
-				for(BlockPos toRemove : stateMap.keySet()) {
-					context.getWorld().removeBlock(toRemove, false);
+				switch(i) {
+					case 1 -> context.getWorld().getComponent(ConnateWorldComponents.WORLDSHELLS).addWorldshell(ConnateWorldshells.FREE.create(stateMap, Vec3d.ofCenter(pos), pos));
+					case 2 -> context.getWorld().getComponent(ConnateWorldComponents.WORLDSHELLS).addWorldshell(ConnateWorldshells.AXIS_LIMITED.create(stateMap, Vec3d.ofCenter(pos), pos).putAxis(axis).uploadBlockEntities(entityMap));
+					case 3 -> context.getWorld().getComponent(ConnateWorldComponents.WORLDSHELLS).addWorldshell(ConnateWorldshells.SPLINE.create(stateMap, Vec3d.ofCenter(pos), pos).constructSpline(getTrailBlocks(s).stream().map(Vec3d::ofCenter).toList().toArray(new Vec3d[]{})).putAxis(axis).uploadBlockEntities(entityMap));
 				}
 
-				Vector3f axis = state.get().get(SplineBlock.FACING).getUnitVector();
-				s.getNbt().remove("first");
-				s.getNbt().remove("boxes");
-				context.getPlayer().setStackInHand(context.getHand(), new ItemStack(ConnateItems.CONNATE_BRACER));
-				context.getWorld().getComponent(ConnateWorldComponents.WORLDSHELLS).addWorldshell(ConnateWorldshells.SPLINE.create(stateMap, Vec3d.ofCenter(pos), pos).constructSpline(getTrailBlocks(s).stream().map(Vec3d::ofCenter).toList().toArray(new Vec3d[]{})).putAxis(axis));
 				ConnateWorldComponents.WORLDSHELLS.sync(context.getWorld());
 				return ActionResult.CONSUME;
 			}

@@ -2,6 +2,7 @@ package arathain.miku_machines.logic.worldshell;
 
 import arathain.miku_machines.init.ConnateWorldshells;
 import arathain.miku_machines.logic.ConnateMathUtil;
+import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
@@ -58,6 +59,11 @@ public abstract class Worldshell implements BlockRenderView {
 		this.pivot = pivot;
 		this.prevPos = pos;
 		this.maxDistance = computeSize();
+	}
+
+	public Worldshell uploadBlockEntities(Map<BlockPos, BlockEntity> contained) {
+		containedEntities.putAll(contained);
+		return this;
 	}
 
 	/**
@@ -125,6 +131,9 @@ public abstract class Worldshell implements BlockRenderView {
 	public Map<BlockPos, BlockState> getContained() {
 		return contained;
 	}
+	public Map<BlockPos, BlockEntity> getContainedEntities() {
+		return containedEntities;
+	}
 
 	public void writeNbt(NbtCompound nbt) {
 		writeUpdateNbt(nbt);
@@ -135,8 +144,17 @@ public abstract class Worldshell implements BlockRenderView {
 			compound.put("state", NbtHelper.fromBlockState(value));
 			list.add(compound);
 		});
+		NbtList listE = new NbtList();
+		containedEntities.forEach((key, value) -> {
+			if(value != null) {
+				NbtCompound compound = NbtHelper.fromBlockPos(key);
+				compound.put("entity", value.toIdentifiedNbt());
+				listE.add(compound);
+			}
+		});
 		nbt.putString("id", getId().toString());
 		nbt.put("containedBlocks", list);
+		nbt.put("containedEntities", listE);
 		nbt.put("pivot", NbtHelper.fromBlockPos(pivot));
 
 
@@ -171,6 +189,18 @@ public abstract class Worldshell implements BlockRenderView {
 		this.invertedMotion = nbt.getBoolean("invM");
 	}
 	public void readNbt(NbtCompound nbt) {
+		this.containedEntities.clear();
+		NbtList list = nbt.getList("containedEntities", 10);
+		Map<BlockPos, BlockEntity> map = new HashMap<>();
+		list.forEach(bNbt -> {
+			BlockPos p = NbtHelper.toBlockPos((NbtCompound) bNbt);
+			BlockEntity blockEntity = ((BlockEntityProvider)contained.get(p).getBlock()).createBlockEntity(p, contained.get(p));
+			blockEntity.readNbt((NbtCompound) bNbt);
+			blockEntity.setWorld(this.worldGetter.get());
+			blockEntity.setCachedState(contained.get(p));
+			map.put(p, blockEntity);
+		});
+		this.containedEntities.putAll(map);
 		readUpdateNbt(nbt);
 	}
 	public static BlockPos getBlockPosFromNbt(NbtCompound nbt) {
@@ -229,7 +259,7 @@ public abstract class Worldshell implements BlockRenderView {
 		} else {
 			float brightness = 0;
 			for(Direction dir : Direction.values()) {
-				brightness += Math.max(dir.getUnitVector().dot(properDirection), 0) * getDirectionBrightness(dir, bl);
+				brightness += Math.max(dir.getUnitVector().dot(properDirection), 0) * Math.max(dir.getUnitVector().dot(properDirection), 0) * getDirectionBrightness(dir, bl);
 			}
 			return MathHelper.clamp(brightness, 0, 1);
 		}
@@ -268,7 +298,7 @@ public abstract class Worldshell implements BlockRenderView {
 	@Nullable
 	@Override
 	public BlockEntity getBlockEntity(BlockPos pos) {
-		return null;
+		return containedEntities.getOrDefault(pos, null);
 	}
 
 	@Override

@@ -6,6 +6,12 @@ import arathain.miku_machines.init.ConnateItems;
 import arathain.miku_machines.init.ConnateWorldshells;
 import arathain.miku_machines.logic.worldshell.WorldshellAddSpeedPacket;
 import com.google.common.reflect.Reflection;
+import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
@@ -15,12 +21,20 @@ import org.quiltmc.qsl.networking.api.ServerPlayNetworking;
 
 public class MikuMachines implements ModInitializer {
 	public static String MODID = "miku_machines";
+	public ItemGroup GROUP = FabricItemGroup.builder()
+			.icon(() -> new ItemStack(ConnateBlocks.BATTERY.asItem()))
+			.name(Text.literal("Miku Machines"))
+			.entries((displayParameters, itemStackCollector) -> {
+				itemStackCollector.addStacks(ConnateBlocks.BLOCKS.values().stream().map(b -> new ItemStack(b.asItem())).toList());
+				itemStackCollector.addItem(ConnateItems.CONNATE_BRACER);
+			}).build();
 
 	@Override
 	public void onInitialize(ModContainer mod) {
 		MODID = mod.metadata().id();
 		ConnateBlocks.init();
 		ConnateItems.init();
+		Registry.register(Registries.ITEM_GROUP, new Identifier(MODID, "group"), GROUP);
 		Reflection.initialize(ConnateWorldshells.class);
 		ServerPlayNetworking.registerGlobalReceiver(ConnateBracerUpdateNBTPacket.ID, ConnateBracerUpdateNBTPacket::apply);
 		ServerPlayNetworking.registerGlobalReceiver(WorldshellAddSpeedPacket.ID, WorldshellAddSpeedPacket::apply);
