@@ -83,7 +83,7 @@ public class ConnatePulseNode extends FacingBlock {
 	}
 
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, RandomGenerator random) {
-		int g = world.getReceivedRedstonePower(pos);
+//		int g = world.getReceivedRedstonePower(pos);
 		for(Worldshell worldshell : world.getComponent(ConnateWorldComponents.WORLDSHELLS).getWorldshells()) {
 			if(Vec3d.ofCenter(pos.add(state.get(FACING).getVector().multiply(2))).distanceTo(worldshell.getPos()) < 2) {
 				worldshell.activate(-666, world.getBlockState(pos.add(state.get(FACING).getOpposite().getVector())).isOf(Blocks.IRON_BLOCK));
@@ -91,7 +91,8 @@ public class ConnatePulseNode extends FacingBlock {
 		}
 		world.getPlayers().stream().filter(players -> players.getWorld().isChunkLoaded(new ChunkPos(pos).x, new ChunkPos(pos).z)).forEach(player -> {
 			PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-			new ResonanceVFXPacket(Vec3d.ofCenter(pos), true).write(buf);
+			ResonanceVFXPacket p = new ResonanceVFXPacket(Vec3d.ofCenter(pos), true);
+			p.write(buf);
 			ServerPlayNetworking.send(player, ResonanceVFXPacket.ID, buf);
 		});
 	}

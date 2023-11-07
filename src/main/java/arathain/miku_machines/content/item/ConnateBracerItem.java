@@ -112,6 +112,8 @@ public class ConnateBracerItem extends Item {
 	 **/
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext context) {
+		if(context.getWorld().isClient)
+			return ActionResult.CONSUME;
 		ItemStack s = context.getStack();
 		BlockPos pos = context.getBlockPos();
 		if(!context.getPlayer().isSneaking()) {
@@ -125,7 +127,7 @@ public class ConnateBracerItem extends Item {
 			} else if(block instanceof HingeBlock) {
 				i = 2;
 			} else if(block instanceof SplineBlock) {
-				i = 2;
+				i = 3;
 			}
 
 			if(i > 0) {

@@ -9,6 +9,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.World;
 import org.quiltmc.qsl.networking.api.PacketByteBufs;
 import org.quiltmc.qsl.networking.api.PacketSender;
 import org.quiltmc.qsl.networking.api.ServerPlayNetworking;
@@ -30,12 +31,5 @@ public class WorldshellUpdatePacket {
 		}
 	}
 
-	public static void apply(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf payload, PacketSender responseSender) {
-		WorldshellComponent c = handler.getWorld().getComponent(ConnateWorldComponents.WORLDSHELLS);
-		NbtCompound toRead = payload.readUnlimitedNbt();
-		int i = payload.readInt();
-		if(c.getWorldshells().size() > i){
-			client.execute(() -> c.getWorldshells().get(i).readUpdateNbt(toRead));
-		}
-	}
+
 }

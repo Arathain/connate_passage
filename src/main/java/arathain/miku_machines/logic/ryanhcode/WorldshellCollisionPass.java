@@ -40,6 +40,11 @@ public class WorldshellCollisionPass {
 	 * Only part not made by Ryan; iterates over all worldshells to check for collision.
 	 **/
 	public static Vec3d collideWithWorldshells(World world, WorldshellWrapper velocityShell, Entity e, Vec3d movement) {
+		if(velocityShell.shell != null) {
+			if(movement.y == 0) {
+				velocityShell.shell = null;
+			}
+		}
 		WorldshellCollisionPass.WorldshellCollisionResult r = new WorldshellCollisionPass.WorldshellCollisionResult(movement, false);
 		Vector3d original = new Vector3d(movement.x, movement.y, movement.z);
 		for(Worldshell w : world.getComponent(ConnateWorldComponents.WORLDSHELLS).getWorldshells()) {
@@ -51,14 +56,12 @@ public class WorldshellCollisionPass {
 			}
 		}
 		if(velocityShell.shell != null) {
-			if(r.hasCollided()) {
+			if (r.hasCollided()) {
 				r = new WorldshellCollisionPass.WorldshellCollisionResult(r.collision().subtract(velocityShell.shell.getRotationalVelocity(e.getPos())), true);
 				e.setYaw(e.getYaw() + velocityShell.shell.getYawVelocity(1));
 			}
-			if(movement.y == 0) {
-				velocityShell.shell = null;
-			}
 		}
+
 
 		return r.hasCollided() ? r.collision() : movement;
 	}

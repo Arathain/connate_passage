@@ -15,28 +15,42 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
+import net.minecraft.client.render.block.entity.SignBlockEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.random.RandomGenerator;
+import net.minecraft.world.World;
 import org.joml.Quaternionf;
 import org.joml.Vector4f;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.loader.api.QuiltLoader;
 import org.quiltmc.qsl.base.api.entrypoint.client.ClientModInitializer;
 import org.quiltmc.qsl.block.extensions.api.client.BlockRenderLayerMap;
+import org.quiltmc.qsl.networking.api.PacketSender;
 import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
+import team.lodestar.lodestone.setup.LodestoneParticles;
 import team.lodestar.lodestone.setup.LodestoneRenderLayers;
 import team.lodestar.lodestone.systems.rendering.VFXBuilders;
+import team.lodestar.lodestone.systems.rendering.particle.Easing;
+import team.lodestar.lodestone.systems.rendering.particle.WorldParticleBuilder;
+import team.lodestar.lodestone.systems.rendering.particle.data.ColorParticleData;
+import team.lodestar.lodestone.systems.rendering.particle.data.GenericParticleData;
+import team.lodestar.lodestone.systems.rendering.particle.data.SpinParticleData;
 
 import java.awt.*;
 import java.util.List;
@@ -45,6 +59,8 @@ import java.util.Map;
 import static team.lodestar.lodestone.handlers.RenderHandler.DELAYED_RENDER;
 
 public class MikuMachinesClient implements ClientModInitializer {
+	private static final Color parryStart = Color.CYAN;
+	private static final Color parryEnd = new Color(60, 200, 220);
 	private static final Identifier LIGHT_TRAIL = new Identifier(MikuMachines.MODID, "textures/vfx/sammy_trail.png");
 	private static final RenderLayer LIGHT_TYPE = LodestoneRenderLayers.SCROLLING_TEXTURE.apply(LIGHT_TRAIL);
 	public static boolean isIrisInstalled = QuiltLoader.isModLoaded("iris");
@@ -56,7 +72,7 @@ public class MikuMachinesClient implements ClientModInitializer {
 			renderSelected(a.world(), a.matrixStack(), a.consumers(), a.camera());
 			renderWorldshells(a.world(), a.matrixStack(), a.consumers(), a.world().getComponent(ConnateWorldComponents.WORLDSHELLS).getWorldshells(), a.camera(), a.tickDelta());
 		});
-		ClientPlayNetworking.registerGlobalReceiver(ResonanceVFXPacket.ID, (client, handler, buf, responseSender) -> ResonanceVFXPacket.fromBuf(buf).apply(handler));
+		ClientPlayNetworking.registerGlobalReceiver(ResonanceVFXPacket.ID, (client, handler, buf, responseSender) -> applyResonance(ResonanceVFXPacket.fromBuf(buf), handler));
 		BlockRenderLayerMap.put(RenderLayer.getCutout(), ConnateBlocks.DERESONATOR);
 		HudRenderCallback.EVENT.register((guiGraphics, tickDelta) -> {
 			PlayerEntity player = MinecraftClient.getInstance().player;
@@ -94,9 +110,37 @@ public class MikuMachinesClient implements ClientModInitializer {
 				}
 			}
 		});
-		ClientPlayNetworking.registerGlobalReceiver(WorldshellUpdatePacket.ID, WorldshellUpdatePacket::apply);
+		ClientPlayNetworking.registerGlobalReceiver(WorldshellUpdatePacket.ID, MikuMachinesClient::applyWorldshellUpdate);
 		MidnightConfig.init("miku_machines", ConnateConfig.class);
 	}
+
+	public static void applyResonance(ResonanceVFXPacket p, ClientPlayPacketListener listener) {
+		if (listener instanceof ClientPlayNetworkHandler handler) {
+			ClientPlayerEntity player = MinecraftClient.getInstance().player;
+
+			WorldParticleBuilder.create(LodestoneParticles.STAR_PARTICLE)
+				.setScaleData(GenericParticleData.create(p.b() ? 0.01f : 3.5f, p.b() ? 3.5f : 0.01f).build())
+				.setLifetime(8)
+				.setColorData(ColorParticleData.create(parryStart, parryEnd).setCoefficient(0.9f).setEasing(Easing.QUAD_IN).build())
+				.setTransparencyData(GenericParticleData.create(p.b() ? 0.8f : 0, p.b() ? 0f : 0.8f).setEasing(Easing.QUAD_OUT).build())
+				.enableNoClip()
+				.setSpinData(SpinParticleData.create(player.getRandom().nextFloat()* MathHelper.PI*2).build())
+				.spawn(player.getWorld(), p.position().x, p.position().y, p.position().z);
+
+		}
+	}
+	public static void applyWorldshellUpdate(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf payload, PacketSender responseSender) {
+		World world = handler.getWorld() == null ? client.world : handler.getWorld();
+		if(world != null) {
+			WorldshellComponent c = world.getComponent(ConnateWorldComponents.WORLDSHELLS);
+			NbtCompound toRead = payload.readUnlimitedNbt();
+			int i = payload.readInt();
+			if (c.getWorldshells().size() > i) {
+				client.execute(() -> c.getWorldshells().get(i).readUpdateNbt(toRead));
+			}
+		}
+	}
+
 	/**
 	 * Renders all boxes selected via the {@link ConnateBracerItem}
 	 **/
