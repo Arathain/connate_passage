@@ -58,7 +58,12 @@ public class ConnateBatteryBlock extends FacingBlock {
 
 		boolean bl2 = state.get(TRIGGERED);
 		if (g != 0 && !bl2) {
-			world.scheduleBlockTick(pos, this, 0);
+			world.scheduleBlockTick(pos, this, 8);
+			for(Worldshell worldshell : world.getComponent(ConnateWorldComponents.WORLDSHELLS).getWorldshells()) {
+				if(Vec3d.ofCenter(pos.add(state.get(FACING).getVector())).distanceTo(worldshell.getPos()) < 2) {
+					worldshell.activate(10 * MathHelper.clamp(g, 0, 12), world.getBlockState(pos.add(state.get(FACING).getOpposite().getVector())).isOf(Blocks.IRON_BLOCK) ^ inverse);
+				}
+			}
 			world.setBlockState(pos, state.with(TRIGGERED, true), 2);
 		} else if (g == 0 && bl2) {
 			world.setBlockState(pos, state.with(TRIGGERED, false), 2);
@@ -68,11 +73,8 @@ public class ConnateBatteryBlock extends FacingBlock {
 
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, RandomGenerator random) {
 		int g = world.getReceivedRedstonePower(pos);
-		for(Worldshell worldshell : world.getComponent(ConnateWorldComponents.WORLDSHELLS).getWorldshells()) {
-			if(Vec3d.ofCenter(pos.add(state.get(FACING).getVector())).distanceTo(worldshell.getPos()) < 2) {
-				worldshell.activate(10 * MathHelper.clamp(g, 0, 12), world.getBlockState(pos.add(state.get(FACING).getOpposite().getVector())).isOf(Blocks.IRON_BLOCK) ^ inverse);
-			}
-		}
+
+		world.setBlockState(pos, state.with(TRIGGERED, false), 2);
 	}
 
 }

@@ -59,6 +59,9 @@ public class WorldshellCollisionPass {
 			if (r.hasCollided()) {
 				r = new WorldshellCollisionPass.WorldshellCollisionResult(r.collision().subtract(velocityShell.shell.getRotationalVelocity(e.getPos())), true);
 				e.setYaw(e.getYaw() + velocityShell.shell.getYawVelocity(1));
+				if(e instanceof LivingEntity l) {
+					l.setBodyYaw(l.bodyYaw + velocityShell.shell.getYawVelocity(1));
+				}
 			}
 		}
 

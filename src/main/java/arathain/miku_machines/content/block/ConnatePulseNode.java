@@ -74,7 +74,20 @@ public class ConnatePulseNode extends FacingBlock {
 
 		boolean bl2 = state.get(TRIGGERED);
 		if (g != 0 && !bl2) {
-			world.scheduleBlockTick(pos, this, 0);
+			world.scheduleBlockTick(pos, this, 4);
+			for(Worldshell worldshell : world.getComponent(ConnateWorldComponents.WORLDSHELLS).getWorldshells()) {
+				if(Vec3d.ofCenter(pos.add(state.get(FACING).getVector().multiply(2))).distanceTo(worldshell.getPos()) < 2) {
+					worldshell.activate(-666, world.getBlockState(pos.add(state.get(FACING).getOpposite().getVector())).isOf(Blocks.IRON_BLOCK));
+				}
+			}
+			if(world instanceof ServerWorld s) {
+				s.getPlayers().stream().filter(players -> players.getWorld().isChunkLoaded(new ChunkPos(pos).x, new ChunkPos(pos).z)).forEach(player -> {
+					PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+					ResonanceVFXPacket p = new ResonanceVFXPacket(Vec3d.ofCenter(pos), true);
+					p.write(buf);
+					ServerPlayNetworking.send(player, ResonanceVFXPacket.ID, buf);
+				});
+			}
 			world.setBlockState(pos, state.with(TRIGGERED, true), 2);
 		} else if (g == 0 && bl2) {
 			world.setBlockState(pos, state.with(TRIGGERED, false), 2);
@@ -84,16 +97,6 @@ public class ConnatePulseNode extends FacingBlock {
 
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, RandomGenerator random) {
 //		int g = world.getReceivedRedstonePower(pos);
-		for(Worldshell worldshell : world.getComponent(ConnateWorldComponents.WORLDSHELLS).getWorldshells()) {
-			if(Vec3d.ofCenter(pos.add(state.get(FACING).getVector().multiply(2))).distanceTo(worldshell.getPos()) < 2) {
-				worldshell.activate(-666, world.getBlockState(pos.add(state.get(FACING).getOpposite().getVector())).isOf(Blocks.IRON_BLOCK));
-			}
-		}
-		world.getPlayers().stream().filter(players -> players.getWorld().isChunkLoaded(new ChunkPos(pos).x, new ChunkPos(pos).z)).forEach(player -> {
-			PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-			ResonanceVFXPacket p = new ResonanceVFXPacket(Vec3d.ofCenter(pos), true);
-			p.write(buf);
-			ServerPlayNetworking.send(player, ResonanceVFXPacket.ID, buf);
-		});
+		world.setBlockState(pos, state.with(TRIGGERED, false), 2);
 	}
 }

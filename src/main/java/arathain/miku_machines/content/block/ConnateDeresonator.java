@@ -78,8 +78,20 @@ public class ConnateDeresonator extends FacingBlock {
 
 		boolean bl2 = state.get(TRIGGERED);
 		if (g != 0 && !bl2) {
-			world.scheduleBlockTick(pos, this, 0);
+			world.scheduleBlockTick(pos, this, 4);
 			world.setBlockState(pos, state.with(TRIGGERED, true), 2);
+			for(Worldshell worldshell : world.getComponent(ConnateWorldComponents.WORLDSHELLS).getWorldshells()) {
+				if(Vec3d.ofCenter(pos.add(state.get(FACING).getVector().multiply(2))).distanceTo(worldshell.getPos()) < 2) {
+					worldshell.activate(0, false);
+				}
+			}
+			if(world instanceof ServerWorld s) {
+				s.getPlayers().stream().filter(players -> players.getWorld().isChunkLoaded(new ChunkPos(pos).x, new ChunkPos(pos).z)).forEach(player -> {
+					PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+					new ResonanceVFXPacket(Vec3d.ofCenter(pos), false).write(buf);
+					ServerPlayNetworking.send(player, ResonanceVFXPacket.ID, buf);
+				});
+			}
 		} else if (g == 0 && bl2) {
 			world.setBlockState(pos, state.with(TRIGGERED, false), 2);
 		}
@@ -87,16 +99,6 @@ public class ConnateDeresonator extends FacingBlock {
 	}
 
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, RandomGenerator random) {
-		int g = world.getReceivedRedstonePower(pos);
-		for(Worldshell worldshell : world.getComponent(ConnateWorldComponents.WORLDSHELLS).getWorldshells()) {
-			if(Vec3d.ofCenter(pos.add(state.get(FACING).getVector().multiply(2))).distanceTo(worldshell.getPos()) < 2) {
-				worldshell.activate(0, false);
-			}
-		}
-		world.getPlayers().stream().filter(players -> players.getWorld().isChunkLoaded(new ChunkPos(pos).x, new ChunkPos(pos).z)).forEach(player -> {
-				PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-				new ResonanceVFXPacket(Vec3d.ofCenter(pos), false).write(buf);
-				ServerPlayNetworking.send(player, ResonanceVFXPacket.ID, buf);
-		});
+		world.setBlockState(pos, state.with(TRIGGERED, false), 2);
 	}
 }
