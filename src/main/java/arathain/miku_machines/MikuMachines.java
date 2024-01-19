@@ -5,6 +5,7 @@ import arathain.miku_machines.init.ConnateBlocks;
 import arathain.miku_machines.init.ConnateItems;
 import arathain.miku_machines.init.ConnateWorldshells;
 import arathain.miku_machines.logic.worldshell.WorldshellAddSpeedPacket;
+import arathain.miku_machines.logic.worldshell.WorldshellBlockUpdatePacket;
 import com.google.common.reflect.Reflection;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.item.ItemGroup;
@@ -38,6 +39,7 @@ public class MikuMachines implements ModInitializer {
 		Reflection.initialize(ConnateWorldshells.class);
 		ServerPlayNetworking.registerGlobalReceiver(ConnateBracerUpdateNBTPacket.ID, ConnateBracerUpdateNBTPacket::apply);
 		ServerPlayNetworking.registerGlobalReceiver(WorldshellAddSpeedPacket.ID, WorldshellAddSpeedPacket::apply);
+		ServerPlayNetworking.registerGlobalReceiver(WorldshellBlockUpdatePacket.ID, WorldshellBlockUpdatePacket::apply);
 	}
 	public static Identifier id(String name) {
 		return new Identifier(MODID, name);

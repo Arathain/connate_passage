@@ -82,6 +82,8 @@ public abstract class Worldshell implements BlockRenderView {
 	}
 	public void setWorld(World world) {
 		worldGetter = () -> world;
+		prevRotation = rotation;
+		prevPos = pos;
 	}
 
 	/**
@@ -347,6 +349,10 @@ public abstract class Worldshell implements BlockRenderView {
 	@Override
 	public int getBaseLightLevel(BlockPos pos, int ambientDarkness) {
 		return worldGetter == null ? 0 : worldGetter.get().getBaseLightLevel(getLocalPos(pos), ambientDarkness);
+	}
+
+	public void setBlockState(BlockPos pos, BlockState state) {
+		contained.replace(pos, state);
 	}
 
 }

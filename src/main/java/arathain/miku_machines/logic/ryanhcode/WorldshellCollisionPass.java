@@ -57,11 +57,14 @@ public class WorldshellCollisionPass {
 		}
 		if(velocityShell.shell != null) {
 			if (r.hasCollided()) {
+				velocityShell.hasCollided = true;
 				r = new WorldshellCollisionPass.WorldshellCollisionResult(r.collision().subtract(velocityShell.shell.getRotationalVelocity(e.getPos())), true);
 				e.setYaw(e.getYaw() + velocityShell.shell.getYawVelocity(1));
 				if(e instanceof LivingEntity l) {
 					l.setBodyYaw(l.bodyYaw + velocityShell.shell.getYawVelocity(1));
 				}
+			} else {
+				velocityShell.hasCollided = false;
 			}
 		}
 

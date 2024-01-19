@@ -29,7 +29,7 @@ public abstract  class ClientPlayerEntityMixin extends AbstractClientPlayerEntit
 	@ModifyReturnValue(method = "getYaw(F)F", at = @At(value = "RETURN") )
 	private float connate$collideWorldshells(float in, @Local float delta) {
 		Worldshell s = ((WorldshellWrapperHolder) this).getWorldshell().shell;
-		if(s != null) {
+		if(s != null && ((WorldshellWrapperHolder) this).getWorldshell().hasCollided) {
 			in += s.getYawVelocity(delta);
 		}
 		return in;

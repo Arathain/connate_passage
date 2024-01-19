@@ -61,6 +61,7 @@ public class WorldshellComponent implements AutoSyncedComponent, ServerTickingCo
 	public void addWorldshell(Worldshell shell) {
 		shell.setWorld(obj);
 		worldshells.add(shell);
+		shell.tick();
 	}
 
 	@Override
