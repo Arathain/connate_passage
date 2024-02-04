@@ -28,21 +28,22 @@ import java.util.stream.Collectors;
 /**
  * Class responsible for handling entity collision with worldshells.
  * <pre>
- * Used with express permission from Ryan, adapted for unique codebase.
+ * Proprietary code used with express permission from Ryan, adapted for unique codebase.
  * </pre>
- * @author ryanhcode/ryanh6n
+ * @author ryanhcode/ryanh6n, arathain
  */
 public class WorldshellCollisionPass {
 	public record WorldshellCollisionResult(Vec3d collision, boolean hasCollided) {
 
 	}
 	/**
-	 * Only part not made by Ryan; iterates over all worldshells to check for collision.
+	 * Main part not made by Ryan; iterates over all worldshells to check for collision.
 	 **/
 	public static Vec3d collideWithWorldshells(World world, WorldshellWrapper velocityShell, Entity e, Vec3d movement) {
 		if(velocityShell.shell != null) {
-			if(movement.y == 0) {
+			if(e.getVelocity().y == -0.0784000015258789 && movement.y == 0) {
 				velocityShell.shell = null;
+				velocityShell.hasCollided = false;
 			}
 		}
 		WorldshellCollisionPass.WorldshellCollisionResult r = new WorldshellCollisionPass.WorldshellCollisionResult(movement, false);
@@ -58,19 +59,28 @@ public class WorldshellCollisionPass {
 		if(velocityShell.shell != null) {
 			if (r.hasCollided()) {
 				velocityShell.hasCollided = true;
+				velocityShell.isColliding = true;
 				r = new WorldshellCollisionPass.WorldshellCollisionResult(r.collision().subtract(velocityShell.shell.getRotationalVelocity(e.getPos())), true);
-				e.setYaw(e.getYaw() + velocityShell.shell.getYawVelocity(1));
-				if(e instanceof LivingEntity l) {
-					l.setBodyYaw(l.bodyYaw + velocityShell.shell.getYawVelocity(1));
-				}
 			} else {
-				velocityShell.hasCollided = false;
+				velocityShell.isColliding = false;
+			}
+			if(r.hasCollided()) {
+				e.setYaw(e.getYaw() + velocityShell.shell.getYawVelocity(1));
+				if (e instanceof LivingEntity l) {
+					l.setBodyYaw(l.bodyYaw + velocityShell.shell.getYawVelocity(1));
+				} else {
+					velocityShell.hasCollided = false;
+				}
 			}
 		}
 
 
 		return r.hasCollided() ? r.collision() : movement;
 	}
+
+	/**
+	 * @author ryanhcode/ryanh6n
+	 * **/
 	public static WorldshellCollisionResult collide(Entity e, Vec3d movement, Worldshell shell, Vector3d backup) {
 		Vec3d yeag = shell.getVelocity();
 		Vector3d shellDir = new Vector3d(movement.x, movement.y, movement.z);
@@ -110,6 +120,10 @@ public class WorldshellCollisionPass {
 
 		return new WorldshellCollisionResult(new Vec3d(shellDir.x, shellDir.y, shellDir.z), hasCollided);
 	}
+
+	/**
+	 * @author ryanhcode/ryanh6n
+	 * **/
 	protected static void collisionPass(@NotNull List<VoxelShape> shapes,
 										@NotNull Worldshell shell,
 										@NotNull Iterable<? extends VoxelShape> shellCollisionIterator,
@@ -144,6 +158,10 @@ public class WorldshellCollisionPass {
 		}
 
 	}
+
+	/**
+	 * @author ryanhcode/ryanh6n
+	 * **/
 	protected static void tolerance(@NotNull Vector3d vec1,
 									@NotNull Vector3d vec2,
 									double xztolerance,
@@ -161,11 +179,17 @@ public class WorldshellCollisionPass {
 		}
 	}
 
+	/**
+	 * @author arathain
+	 * **/
 	public static boolean boxCollidesSphere(Box b, Vec3d vec, double radius) {
 		double distance = closestAABBPointSquareDistance(new Vector3d(vec.x, vec.y, vec.z), b);
 		return distance <= radius * radius;
 	}
 
+	/**
+	 * @author arathain
+	 * **/
 	public static double closestAABBPointSquareDistance(Vector3d vec, Box b) {
 		double sqDist = 0.0f;
 		for(int i = 0; i < 3; i++ ){

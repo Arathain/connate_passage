@@ -1,12 +1,12 @@
 {
 	"schema_version": 1,
 	"quilt_loader": {
-		"group": "arathain.miku",
+		"group": "arathain.miku_machines",
 		"id": "miku_machines",
 		"version": "${version}",
 		"metadata": {
-			"name": "Connate Passage",
-			"description": "<desc pending>",
+			"name": "Miku Machines",
+			"description": "A mod allowing for creation of custom, moveable worldshell components with a focus on survival integration.",
 			"contributors": {
 				"Arathain": "Developer"
 			},
@@ -33,11 +33,11 @@
 			},
 			{
 				"id": "minecraft",
-				"versions": ">=1.19.4"
+				"versions": ">=1.20.1"
 			},
 			{
 				"id": "lodestone",
-				"versions": "*"
+				"versions": ">=0.0.4+1.20.1"
 			}
 		]
 	},

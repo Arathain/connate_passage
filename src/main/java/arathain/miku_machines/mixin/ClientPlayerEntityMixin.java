@@ -2,6 +2,7 @@ package arathain.miku_machines.mixin;
 
 import arathain.miku_machines.logic.ryanhcode.WorldshellCollisionPass;
 import arathain.miku_machines.logic.worldshell.Worldshell;
+import arathain.miku_machines.logic.worldshell.WorldshellWrapper;
 import arathain.miku_machines.logic.worldshell.WorldshellWrapperHolder;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
@@ -28,8 +29,9 @@ public abstract  class ClientPlayerEntityMixin extends AbstractClientPlayerEntit
 
 	@ModifyReturnValue(method = "getYaw(F)F", at = @At(value = "RETURN") )
 	private float connate$collideWorldshells(float in, @Local float delta) {
-		Worldshell s = ((WorldshellWrapperHolder) this).getWorldshell().shell;
-		if(s != null && ((WorldshellWrapperHolder) this).getWorldshell().hasCollided) {
+		WorldshellWrapper w = ((WorldshellWrapperHolder) this).getWorldshell();
+		Worldshell s = w.shell;
+		if(s != null && w.hasCollided && w.isColliding) {
 			in += s.getYawVelocity(delta);
 		}
 		return in;

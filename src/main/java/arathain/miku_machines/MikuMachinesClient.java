@@ -69,8 +69,8 @@ public class MikuMachinesClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient(ModContainer mod) {
 		WorldRenderEvents.BEFORE_ENTITIES.register((a) -> {
-			renderSelected(a.world(), a.matrixStack(), a.consumers(), a.camera());
 			renderWorldshells(a.world(), a.matrixStack(), a.consumers(), a.world().getComponent(ConnateWorldComponents.WORLDSHELLS).getWorldshells(), a.camera(), a.tickDelta());
+			renderSelected(a.world(), a.matrixStack(), a.consumers(), a.camera());
 		});
 		ClientPlayNetworking.registerGlobalReceiver(ResonanceVFXPacket.ID, (client, handler, buf, responseSender) -> applyResonance(ResonanceVFXPacket.fromBuf(buf), handler));
 		BlockRenderLayerMap.put(RenderLayer.getCutout(), ConnateBlocks.DERESONATOR);
