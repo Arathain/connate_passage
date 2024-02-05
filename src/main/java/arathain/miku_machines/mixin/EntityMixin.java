@@ -28,6 +28,9 @@ public abstract class EntityMixin implements WorldshellWrapperHolder {
 	@Shadow
 	public abstract World getWorld();
 
+	/**
+	 * Universal worldshell collision hook.
+	 * */
 	@ModifyReturnValue(method = "adjustMovementForCollisions", at = @At(value = "RETURN") )
 	private Vec3d connate$collideWorldshells(Vec3d movement) {
 		return WorldshellCollisionPass.collideWithWorldshells(this.getWorld(), shell, (Entity) (Object) this, movement);

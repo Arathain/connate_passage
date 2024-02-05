@@ -22,6 +22,9 @@ public abstract class LivingEntityMixin extends Entity {
 		super(variant, world);
 	}
 
+	/**
+	 * Hijacks the 'distance travelled' used to determine entity limb swing.
+	 * */
 	@ModifyArgs(method = "updateLimbs(Z)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/MathHelper;magnitude(DDD)D"))
 	private void connate$cancelVelocity(Args arg) {
 		Worldshell s = ((WorldshellWrapperHolder) this).getWorldshell().shell;
@@ -33,6 +36,9 @@ public abstract class LivingEntityMixin extends Entity {
 		}
 	}
 
+	/**
+	 * Modifies X-axis entity movement delta.
+	 * */
 	@ModifyVariable(method = "tick()V", at = @At("STORE"), ordinal = 0)
 	private double connate$worldshellRotationX(double og) {
 		Worldshell s = ((WorldshellWrapperHolder) this).getWorldshell().shell;
@@ -43,6 +49,9 @@ public abstract class LivingEntityMixin extends Entity {
 		return og;
 	}
 
+	/**
+	 * Modifies Z-axis entity movement delta.
+	 * */
 	@ModifyVariable(method = "tick()V", at = @At("STORE"), ordinal = 1)
 	private double connate$worldshellRotationZ(double og) {
 		Worldshell s = ((WorldshellWrapperHolder) this).getWorldshell().shell;

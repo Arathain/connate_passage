@@ -23,9 +23,9 @@ public class MouseMixin {
 	@Final
 	private MinecraftClient client;
 
-	@Shadow
-	private double scrollDelta;
-
+	/**
+	 * Scrolling logic for adjusting worldshell speed.
+	 * */
 	@Inject(method = "onMouseScroll(JDD)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerInventory;scrollInHotbar(D)V", shift = At.Shift.BEFORE), cancellable = true, locals = LocalCapture.CAPTURE_FAILSOFT)
 	private void connate$bracerScroll(long window, double scrollDeltaX, double scrollDeltaY, CallbackInfo ci, double d, int yea) {
 		if(client.player.getMainHandStack().isOf(ConnateItems.CONNATE_BRACER)) {

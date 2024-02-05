@@ -19,6 +19,9 @@ public class MinecraftClientMixin {
 	@Nullable
 	public HitResult crosshairTarget;
 
+	/**
+	 * Redirects block-breaking mechanic to give {@link arathain.miku_machines.content.item.ConnateBracerItem}s an additional input.
+	 * */
 	@ModifyExpressionValue(method = "doAttack", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isEnabled(Lnet/minecraft/feature_flags/FeatureFlagBitSet;)Z", shift = At.Shift.BY))
 	private boolean connate$fullBracers(boolean og, @Local ItemStack stack) {
 		if(stack.isOf(ConnateItems.CONNATE_BRACER) && crosshairTarget.getType() == HitResult.Type.BLOCK) {

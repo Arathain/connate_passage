@@ -65,7 +65,7 @@ public class MikuMachinesClient implements ClientModInitializer {
 	private static final RenderLayer LIGHT_TYPE = LodestoneRenderLayers.SCROLLING_TEXTURE.apply(LIGHT_TRAIL);
 	public static boolean isIrisInstalled = QuiltLoader.isModLoaded("iris");
 
-	//TODO annotate
+
 	@Override
 	public void onInitializeClient(ModContainer mod) {
 		WorldRenderEvents.BEFORE_ENTITIES.register((a) -> {
@@ -114,6 +114,9 @@ public class MikuMachinesClient implements ClientModInitializer {
 		MidnightConfig.init("miku_machines", ConnateConfig.class);
 	}
 
+	/**
+	 * Displays VFX based off of a {@link ResonanceVFXPacket}.
+	 **/
 	public static void applyResonance(ResonanceVFXPacket p, ClientPlayPacketListener listener) {
 		if (listener instanceof ClientPlayNetworkHandler handler) {
 			ClientPlayerEntity player = MinecraftClient.getInstance().player;
@@ -129,6 +132,9 @@ public class MikuMachinesClient implements ClientModInitializer {
 
 		}
 	}
+	/**
+	 * Receives and applies a {@link WorldshellUpdatePacket}
+	 **/
 	public static void applyWorldshellUpdate(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf payload, PacketSender responseSender) {
 		World world = handler.getWorld() == null ? client.world : handler.getWorld();
 		if(world != null) {
@@ -221,6 +227,9 @@ public class MikuMachinesClient implements ClientModInitializer {
 		}
 		matrices.pop();
 	}
+	/**
+	 * Renders all in-game {@link Worldshell}s
+	 **/
 	public static void renderWorldshells(ClientWorld world, MatrixStack matrices, VertexConsumerProvider consumer, List<Worldshell> shells, Camera camera, float tickDelta) {
 		MinecraftClient c = MinecraftClient.getInstance();
 		BlockRenderManager blockRenderManager = c.getBlockRenderManager();

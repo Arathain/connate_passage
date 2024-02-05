@@ -19,6 +19,9 @@ import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Packet used for updating individual pieces of a worldshell's contained block set.
+ **/
 public class WorldshellBlockUpdatePacket {
 	public static final Identifier ID = MikuMachines.id("wshell_set_block");
 

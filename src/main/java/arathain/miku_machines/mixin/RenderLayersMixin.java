@@ -14,7 +14,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(RenderLayers.class)
 public class RenderLayersMixin {
-	private static final Identifier tex = MikuMachines.id("textures/item/bracer.png");
 	@Inject(method = "getItemLayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;getItem()Lnet/minecraft/item/Item;"), cancellable = true)
 	private static void connate$fullBracers(ItemStack stack, boolean direct, CallbackInfoReturnable<RenderLayer> cir) {
 		if(stack.isOf(ConnateItems.CONNATE_BRACER)) {
