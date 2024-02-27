@@ -138,7 +138,7 @@ public class ConnateBracerItem extends Item {
 					forEachBlockPos(b, blockPos -> {
 						if(!stateMap.containsKey(blockPos)) {
 							BlockState st = context.getWorld().getBlockState(blockPos);
-							if(!st.isAir()) {
+							if(!st.isAir() && !st.isLiquid()) {
 								stateMap.put(blockPos, st);
 								BlockEntity bE = context.getWorld().getBlockEntity(blockPos);
 								if(bE != null) {
