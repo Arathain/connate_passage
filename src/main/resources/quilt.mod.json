@@ -41,6 +41,7 @@
 			}
 		]
 	},
+	"access_widener": "miku_machines.accesswidener",
 	"mixin": "miku_machines.mixin.json",
 	"cardinal-components": [
 		"miku_machines:worldshells"

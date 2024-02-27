@@ -25,6 +25,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.light.LightingProvider;
 import org.jetbrains.annotations.Nullable;
 import org.joml.*;
+import org.quiltmc.loader.api.minecraft.ClientOnly;
 
 import java.lang.Math;
 import java.util.HashMap;
@@ -47,6 +48,9 @@ public abstract class Worldshell implements BlockRenderView {
 	protected final BlockPos pivot;
 	public final double maxDistance;
 
+	@ClientOnly
+	protected WorldshellRenderCache cache;
+
 	@Nullable
 	private Worldshell parent;
 
@@ -59,6 +63,13 @@ public abstract class Worldshell implements BlockRenderView {
 		this.pivot = pivot;
 		this.prevPos = pos;
 		this.maxDistance = computeSize();
+	}
+
+	public WorldshellRenderCache getCache() {
+		if(cache == null && this.worldGetter.get().isClient) {
+	 		cache = new WorldshellRenderCache();
+		}
+		return this.cache;
 	}
 
 	public Worldshell uploadBlockEntities(Map<BlockPos, BlockEntity> contained) {
@@ -143,14 +154,14 @@ public abstract class Worldshell implements BlockRenderView {
 		NbtList list = new NbtList();
 		contained.forEach((key, value) -> {
 			NbtCompound compound = NbtHelper.fromBlockPos(key);
-			compound.put("state", NbtHelper.fromBlockState(value));
+			compound.put("s", NbtHelper.fromBlockState(value));
 			list.add(compound);
 		});
 		NbtList listE = new NbtList();
 		containedEntities.forEach((key, value) -> {
 			if(value != null) {
 				NbtCompound compound = NbtHelper.fromBlockPos(key);
-				compound.put("entity", value.toIdentifiedNbt());
+				compound.put("e", value.toIdentifiedNbt());
 				listE.add(compound);
 			}
 		});
@@ -213,7 +224,7 @@ public abstract class Worldshell implements BlockRenderView {
 		NbtList list = nbt.getList("containedBlocks", 10);
 		Map<BlockPos, BlockState> map = new HashMap<>();
 		list.forEach(bNbt -> {
-			map.put(NbtHelper.toBlockPos((NbtCompound) bNbt), NbtHelper.toBlockState(Registries.BLOCK.asLookup(), ((NbtCompound) bNbt).getCompound("state")));
+			map.put(NbtHelper.toBlockPos((NbtCompound) bNbt), NbtHelper.toBlockState(Registries.BLOCK.asLookup(), ((NbtCompound) bNbt).getCompound("s")));
 		});
 		return map;
 	}

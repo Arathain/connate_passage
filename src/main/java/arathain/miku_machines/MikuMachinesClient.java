@@ -9,6 +9,7 @@ import arathain.miku_machines.init.ConnateItems;
 import arathain.miku_machines.init.ConnateWorldComponents;
 import arathain.miku_machines.logic.worldshell.*;
 import eu.midnightdust.lib.config.MidnightConfig;
+import me.jellysquid.mods.sodium.client.render.chunk.DefaultChunkRenderer;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.block.BlockRenderType;
@@ -212,14 +213,16 @@ public class MikuMachinesClient implements ClientModInitializer {
 		Quaternionf q = shell.getRotation(tickDelta);
 		matrices.multiply(q);
 		BlockEntityRenderDispatcher d = c.getBlockEntityRenderDispatcher();
+		WorldshellRenderCache cache = shell.getCache();
+		if(!cache.isRendered()) {
+			cache.reset();
+			drawToCache(c, b, world, consumer, shell, r, tickDelta);
+		}
+		cache.draw(matrices);
 		for(Map.Entry<BlockPos, BlockState> entry : shell.getContained().entrySet()) {
 			BlockPos blockPos = entry.getKey().subtract(shell.getPivot());
-			BlockState state = entry.getValue();
 			matrices.push();
 			matrices.translate(blockPos.getX()-0.5, blockPos.getY()-0.5, blockPos.getZ()-0.5);
-			if(state.getRenderType() != BlockRenderType.INVISIBLE) {
-				b.renderBlock(state, blockPos, shell, matrices, consumer.getBuffer(RenderLayers.getBlockLayer(state)), true, r);
-			}
 			if(shell.getContainedEntities().containsKey(entry.getKey())) {
 				d.render(shell.getContainedEntities().get(entry.getKey()), tickDelta, matrices, consumer);
 			}
@@ -227,6 +230,23 @@ public class MikuMachinesClient implements ClientModInitializer {
 		}
 		matrices.pop();
 	}
+
+	private static void drawToCache(MinecraftClient c, BlockRenderManager b, ClientWorld world, VertexConsumerProvider consumer, Worldshell shell, RandomGenerator  r, float tickDelta) {
+		MatrixStack matrices = new MatrixStack();
+		WorldshellRenderCache cache = shell.getCache();
+		for(Map.Entry<BlockPos, BlockState> entry : shell.getContained().entrySet()) {
+			BlockPos blockPos = entry.getKey().subtract(shell.getPivot());
+			BlockState state = entry.getValue();
+			matrices.push();
+			matrices.translate(blockPos.getX()-0.5, blockPos.getY()-0.5, blockPos.getZ()-0.5);
+			if(state.getRenderType() != BlockRenderType.INVISIBLE) {
+				b.renderBlock(state, blockPos, shell, matrices, cache.get(RenderLayers.getBlockLayer(state)), true, r);
+			}
+			matrices.pop();
+		}
+		cache.upload();
+	}
+
 	/**
 	 * Renders all in-game {@link Worldshell}s
 	 **/

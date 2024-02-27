@@ -7,6 +7,10 @@ archivesBaseName = project.archives_base_name
 version = "${project.version}+${libs.versions.minecraft.get()}"
 group = project.maven_group
 
+loom {
+	accessWidenerPath = file("src/main/resources/miku_machines.accesswidener")
+}
+
 repositories {
 	maven {
 		name = "Ladysnake"
