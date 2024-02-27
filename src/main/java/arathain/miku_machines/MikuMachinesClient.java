@@ -258,7 +258,8 @@ public class MikuMachinesClient implements ClientModInitializer {
 		Vec3d vec = camera.getPos();
 		matrices.translate(-vec.getX(), -vec.getY(), -vec.getZ());
 		for(Worldshell shell : shells) {
-			renderWorldshell(c, blockRenderManager, world, matrices, consumer, shell, r, tickDelta);
+			if(shell.getPos().distanceTo(vec) < c.options.getViewDistance().get()*16+shell.maxDistance)
+				renderWorldshell(c, blockRenderManager, world, matrices, consumer, shell, r, tickDelta);
 		}
 		matrices.pop();
 	}

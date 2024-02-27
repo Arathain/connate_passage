@@ -79,7 +79,7 @@ public class WorldshellCollisionPass {
 		Vector3d shellDir = new Vector3d(movement.x, movement.y, movement.z);
 		List<VoxelShape> shapes = new ArrayList<>();
 		boolean hasCollided = false;
-		Iterable<? extends VoxelShape> collisionIterator = shell.getContained().entrySet().stream().map(en -> en.getValue().getCollisionShape(shell, en.getKey()).offset(en.getKey().getX()-shell.getPivot().getX(), en.getKey().getY()-shell.getPivot().getY(), en.getKey().getZ()-shell.getPivot().getZ())).collect(Collectors.toList());
+		Iterable<? extends VoxelShape> collisionIterator = shell.getContained().entrySet().stream().map(en -> en.getValue().getCollisionShape(shell, en.getKey()).offset(en.getKey().getX()-shell.getPivot().getX(), en.getKey().getY()-shell.getPivot().getY(), en.getKey().getZ()-shell.getPivot().getZ())).filter(cull -> shell.getLocalPos(cull.getBoundingBox().getCenter()).distanceTo(e.getPos()) < 5).collect(Collectors.toList());
 		Box box = e.getBoundingBox();
 		Vec3d cent = box.getCenter();
 		Vector3d pos = new Vector3d(cent.x, cent.y, cent.z);
@@ -134,6 +134,9 @@ public class WorldshellCollisionPass {
 				Quaterniond obbRot = shell.getRotation().get(new Quaterniond());
 
 				obbPos = shell.getLocalPos(obbPos);
+				if(pos.distanceSquared(obbPos) > 36) {
+					return;
+				}
 
 				QuaternionOrientedBoundingBox shellBox = new QuaternionOrientedBoundingBox(
 					obbPos,

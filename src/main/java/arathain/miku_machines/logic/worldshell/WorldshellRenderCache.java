@@ -11,6 +11,9 @@ import org.joml.Matrix4f;
 
 import java.util.*;
 
+/**
+ * @author snakefangox
+ * */
 public class WorldshellRenderCache {
 	private boolean rendered = false;
 	private static final List<RenderLayer> blockRenderLayers = RenderLayer.getBlockLayers();
