@@ -146,7 +146,7 @@ public class WorldshellCollisionPass {
 
 				entityBox.setPosition(pos);
 
-				Vector3d mtv = QuaternionOrientedBoundingBox.sat(entityBox, shellBox);
+				Vector3d mtv = QuaternionOrientedBoundingBox.satToleranced(entityBox, shellBox, 1);
 				pos.add(mtv);
 				collisionEffect.add(mtv);
 				shapes.add(shape);

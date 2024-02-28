@@ -73,7 +73,7 @@ public class MikuMachinesClient implements ClientModInitializer {
 			renderWorldshells(a.world(), a.matrixStack(), a.consumers(), a.world().getComponent(ConnateWorldComponents.WORLDSHELLS).getWorldshells(), a.camera(), a.tickDelta());
 			renderSelected(a.world(), a.matrixStack(), a.consumers(), a.camera());
 		});
-		ClientPlayNetworking.registerGlobalReceiver(ResonanceVFXPacket.ID, (client, handler, buf, responseSender) -> applyResonance(ResonanceVFXPacket.fromBuf(buf), handler));
+		ClientPlayNetworking.registerGlobalReceiver(ResonanceVFXPacket.ID, (client, handler, buf, responseSender) -> applyResonance(client, ResonanceVFXPacket.fromBuf(buf), handler));
 		BlockRenderLayerMap.put(RenderLayer.getCutout(), ConnateBlocks.DERESONATOR);
 		HudRenderCallback.EVENT.register((guiGraphics, tickDelta) -> {
 			PlayerEntity player = MinecraftClient.getInstance().player;
@@ -118,20 +118,23 @@ public class MikuMachinesClient implements ClientModInitializer {
 	/**
 	 * Displays VFX based off of a {@link ResonanceVFXPacket}.
 	 **/
-	public static void applyResonance(ResonanceVFXPacket p, ClientPlayPacketListener listener) {
-		if (listener instanceof ClientPlayNetworkHandler handler) {
-			ClientPlayerEntity player = MinecraftClient.getInstance().player;
+	public static void applyResonance(MinecraftClient client, ResonanceVFXPacket p, ClientPlayPacketListener listener) {
+		client.executeTask(() -> {
+			if (listener instanceof ClientPlayNetworkHandler handler) {
+				ClientPlayerEntity player = MinecraftClient.getInstance().player;
 
-			WorldParticleBuilder.create(LodestoneParticles.STAR_PARTICLE)
-				.setScaleData(GenericParticleData.create(p.b() ? 0.01f : 3.5f, p.b() ? 3.5f : 0.01f).build())
-				.setLifetime(8)
-				.setColorData(ColorParticleData.create(parryStart, parryEnd).setCoefficient(0.9f).setEasing(Easing.QUAD_IN).build())
-				.setTransparencyData(GenericParticleData.create(p.b() ? 0.8f : 0, p.b() ? 0f : 0.8f).setEasing(Easing.QUAD_OUT).build())
-				.enableNoClip()
-				.setSpinData(SpinParticleData.create(player.getRandom().nextFloat()* MathHelper.PI*2).build())
-				.spawn(player.getWorld(), p.position().x, p.position().y, p.position().z);
+				WorldParticleBuilder.create(LodestoneParticles.STAR_PARTICLE)
+					.setScaleData(GenericParticleData.create(p.b() ? 0.01f : 3.5f, p.b() ? 3.5f : 0.01f).build())
+					.setLifetime(8)
+					.setColorData(ColorParticleData.create(parryStart, parryEnd).setCoefficient(0.9f).setEasing(Easing.QUAD_IN).build())
+					.setTransparencyData(GenericParticleData.create(p.b() ? 0.8f : 0, p.b() ? 0f : 0.8f).setEasing(Easing.QUAD_OUT).build())
+					.enableNoClip()
+					.setSpinData(SpinParticleData.create(player.getRandom().nextFloat() * MathHelper.PI * 2).build())
+					.spawn(player.getWorld(), p.position().x, p.position().y, p.position().z);
 
-		}
+			}
+
+		});
 	}
 	/**
 	 * Receives and applies a {@link WorldshellUpdatePacket}

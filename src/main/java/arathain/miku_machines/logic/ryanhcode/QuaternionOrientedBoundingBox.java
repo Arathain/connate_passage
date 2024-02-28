@@ -92,6 +92,19 @@ public class QuaternionOrientedBoundingBox {
 		return Math.min(a.y, b.y) - Math.max(a.x, b.x);
 	}
 
+	public static Vector3d satToleranced(QuaternionOrientedBoundingBox a, QuaternionOrientedBoundingBox b, double tolerance) {
+		// Start out with a normal SAT check
+		Vector3d mtv = QuaternionOrientedBoundingBox.sat(a, b);
+
+		Vector3d check = new Vector3d(0, 1, 0);
+
+		if (mtv.lengthSquared() > 0.0 && mtv.normalize(new Vector3d()).dot(check) > 1.0 - tolerance) {
+			return mtv.mul(0.0, 1.0, 0.0, new Vector3d());
+		} else {
+			return mtv;
+		}
+	}
+
 	/**
 	 * Computes the MTV, or Minimum Translation Vector between the vertices of two OBBs.
 	 */

@@ -138,6 +138,9 @@ public abstract class Worldshell implements BlockRenderView {
 		return pos;
 	}
 	public Vec3d getPos(float tickDelta) {
+		if(prevPos.equals(pos)) {
+			return pos;
+		}
 		return prevPos.lerp(pos, tickDelta);
 	}
 
