@@ -13,6 +13,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Quaterniond;
 import org.joml.Vector3d;
+import org.joml.Vector3dc;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,29 @@ import java.util.stream.Collectors;
  * @author ryanhcode/ryanh6n, arathain
  */
 public class WorldshellCollisionPass {
+
+	//ryan what the actual shit
+	private static final Vector3d preDim = new Vector3d();
+	private static final Vector3d col = new Vector3d();
+	private static final Vector3d up = new Vector3d(0, 1, 0);
+	private static final Vector3d stickVelo = new Vector3d();
+	private static final Vector3d blockExtents = new Vector3d();
+	private static final Vector3d backup = new Vector3d();
+	private static final Vector3d offsetPosition = new Vector3d();
+	private static final Vector3d normalizedSAT = new Vector3d();
+	private static final Vector3d lastMTV = new Vector3d();
+	private static final Vector3d local = new Vector3d();
+	private static final Vector3d projectedLocal = new Vector3d();
+	private static final Vector3d velo = new Vector3d();
+	private static final Vector3d playerExtents = new Vector3d();
+	private static final Vector3d delta = new Vector3d();
+	private static final Vector3d jomlAABBCenter = new Vector3d();
+	private static final Vector3d globalPosition = new Vector3d();
+
+	public static final QuatOBB.ProjectionContext context = new QuatOBB.ProjectionContext();
+
+	private static final QuatOBB playerCollider = new QuatOBB(new Vector3d(), new Vector3d(), new Quaterniond(), context);
+	private static final QuatOBB shellCollider = new QuatOBB(new Vector3d(), new Vector3d(), new Quaterniond(), context);
 	public record WorldshellCollisionResult(Vec3d collision, boolean hasCollided) {
 
 	}
@@ -79,7 +103,7 @@ public class WorldshellCollisionPass {
 		Vector3d shellDir = new Vector3d(movement.x, movement.y, movement.z);
 		List<VoxelShape> shapes = new ArrayList<>();
 		boolean hasCollided = false;
-		Iterable<? extends VoxelShape> collisionIterator = shell.getContained().entrySet().stream().map(en -> en.getValue().getCollisionShape(shell, en.getKey()).offset(en.getKey().getX()-shell.getPivot().getX(), en.getKey().getY()-shell.getPivot().getY(), en.getKey().getZ()-shell.getPivot().getZ())).filter(cull -> !cull.isEmpty() && shell.getLocalPos(cull.getBoundingBox().getCenter()).distanceTo(e.getPos()) < 5).collect(Collectors.toList());
+		Iterable<? extends VoxelShape> collisionIterator = shell.getContained().entrySet().stream().map(en -> en.getValue().getCollisionShape(shell, en.getKey()).offset(en.getKey().getX()-shell.getPivot().getX(), en.getKey().getY()-shell.getPivot().getY(), en.getKey().getZ()-shell.getPivot().getZ())).filter(cull -> !cull.isEmpty()).collect(Collectors.toList());
 		Box box = e.getBoundingBox();
 		Vec3d cent = box.getCenter();
 		Vector3d pos = new Vector3d(cent.x, cent.y, cent.z);
@@ -88,10 +112,11 @@ public class WorldshellCollisionPass {
 		double xztolerance = 0.06;
 		double ytolerance = 0.01;
 
-		QuaternionOrientedBoundingBox entityBox = new QuaternionOrientedBoundingBox(
+		QuatOBB entityBox = new QuatOBB(
 			pos,
 			new Vector3d(box.getXLength(), box.getYLength(), box.getZLength()),
-			new Quaterniond().identity()
+			new Quaterniond().identity(),
+				context
 		);
 
 		pos.add(0, shellDir.y, 0);
@@ -120,7 +145,7 @@ public class WorldshellCollisionPass {
 	protected static void collisionPass(@NotNull List<VoxelShape> shapes,
 										@NotNull Worldshell shell,
 										@NotNull Iterable<? extends VoxelShape> shellCollisionIterator,
-										@NotNull QuaternionOrientedBoundingBox entityBox,
+										@NotNull QuatOBB entityBox,
 										@NotNull Vector3d pos,
 										@NotNull Vector3d collisionEffect) {
 
@@ -138,15 +163,16 @@ public class WorldshellCollisionPass {
 					return;
 				}
 
-				QuaternionOrientedBoundingBox shellBox = new QuaternionOrientedBoundingBox(
+				QuatOBB shellBox = new QuatOBB(
 					obbPos,
 					obbDim,
-					obbRot
+					obbRot,
+					context
 				);
 
 				entityBox.setPosition(pos);
 
-				Vector3d mtv = QuaternionOrientedBoundingBox.sat(entityBox, shellBox);
+				Vector3dc mtv = QuatOBB.satToleranced(entityBox, shellBox, 0.1);
 				pos.add(mtv);
 				collisionEffect.add(mtv);
 				shapes.add(shape);
