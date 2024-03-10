@@ -2,6 +2,8 @@ package arathain.miku_machines.logic.worldshell;
 
 import arathain.miku_machines.init.ConnateWorldshells;
 import arathain.miku_machines.logic.ConnateMathUtil;
+import arathain.miku_machines.logic.ryanhcode.JOMLConversions;
+import arathain.miku_machines.logic.ryanhcode.Pose;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -43,8 +45,7 @@ public abstract class Worldshell implements BlockRenderView {
 	private Supplier<World> worldGetter = null;
 	protected final Map<BlockPos, BlockState> contained;
 	protected final Map<BlockPos, BlockEntity> containedEntities;
-	protected Quaternionf rotation, prevRotation = new Quaternionf();
-	protected Vec3d prevPos, pos;
+	protected Pose prevPose = new Pose(), pose = new Pose();
 	protected final BlockPos pivot;
 	public final double maxDistance;
 
@@ -59,9 +60,9 @@ public abstract class Worldshell implements BlockRenderView {
 	public Worldshell(Map<BlockPos, BlockState> contained, Vec3d initialPos, BlockPos pivot) {
 		this.contained = contained;
 		containedEntities = new HashMap<>();
-		this.pos = initialPos;
 		this.pivot = pivot;
-		this.prevPos = pos;
+		this.pose.setPosition(JOMLConversions.toJOML(initialPos));
+		this.prevPose.setPosition(pose.getPosition());
 		this.maxDistance = computeSize();
 	}
 
@@ -93,8 +94,7 @@ public abstract class Worldshell implements BlockRenderView {
 	}
 	public void setWorld(World world) {
 		worldGetter = () -> world;
-		prevRotation = rotation;
-		prevPos = pos;
+		prevPose = pose.copy();
 	}
 
 	/**
@@ -103,7 +103,7 @@ public abstract class Worldshell implements BlockRenderView {
 	public abstract Identifier getId();
 
 	public void tick() {
-		this.prevPos = pos;
+		prevPose = pose.copy();
 	}
 	public void outerTick() {
 		this.tick();
@@ -112,12 +112,11 @@ public abstract class Worldshell implements BlockRenderView {
 		this.invertedMotion = invert;
 		this.shutdownTickCountdown = countdown;
 	}
-	public Quaternionf getRotation() {
-		return getRotation(1);
+	public Quaterniond getRotation() {
+		return getRotation(1).normalize();
 	}
-	public Quaternionf getRotation(float tickDelta) {
-		checkRotation();
-		return prevRotation.slerp(rotation, tickDelta, new Quaternionf());
+	public Quaterniond getRotation(float tickDelta) {
+		return prevPose.getOrientation().slerp(pose.getOrientation(), tickDelta, new Quaterniond()).normalize();
 	}
 
 	public BlockPos getPivot() {
@@ -125,23 +124,23 @@ public abstract class Worldshell implements BlockRenderView {
 	}
 
 	public void setPos(Vec3d pos) {
-		this.pos = pos;
+		this.pose.setPosition(JOMLConversions.toJOML(pos));
 	}
 	public void rotate(float pitch, float yaw, float roll) {
-		rotation.rotateZYX(roll, yaw, pitch);
+		this.pose.getOrientation().rotateZYX(roll, yaw, pitch);
 	}
-	public void setRotation(Quaternionf quat) {
-		rotation.set(quat);
+	public void setRotation(Quaterniond quat) {
+		this.pose.setOrientation(quat);
 	}
 
 	public Vec3d getPos() {
-		return pos;
+		return JOMLConversions.toMinecraft(this.pose.getPosition());
 	}
 	public Vec3d getPos(float tickDelta) {
-		if(prevPos.equals(pos)) {
-			return pos;
+		if(prevPose.getPosition().equals(pose.getPosition())) {
+			return JOMLConversions.toMinecraft(pose.getPosition());
 		}
-		return prevPos.lerp(pos, tickDelta);
+		return JOMLConversions.toMinecraft(prevPose.getPosition().lerp(pose.getPosition(), tickDelta, new Vector3d()));
 	}
 
 	public Map<BlockPos, BlockState> getContained() {
@@ -149,6 +148,16 @@ public abstract class Worldshell implements BlockRenderView {
 	}
 	public Map<BlockPos, BlockEntity> getContainedEntities() {
 		return containedEntities;
+	}
+
+	public Pose getPose() {
+		return pose;
+	}
+	public Pose getPrevPose() {
+		return prevPose;
+	}
+	public Pose getSmoothedPose(float delta) {
+		return prevPose.lerp(pose, delta, new Pose());
 	}
 
 	public void writeNbt(NbtCompound nbt) {
@@ -176,31 +185,14 @@ public abstract class Worldshell implements BlockRenderView {
 
 	}
 	public NbtCompound writeUpdateNbt(NbtCompound nbt) {
-		checkRotation();
-		nbt.putFloat("qX", rotation.x);
-		nbt.putFloat("qY", rotation.y);
-		nbt.putFloat("qZ", rotation.z);
-		nbt.putFloat("qW", rotation.w);
-
-		nbt.putDouble("pX", pos.x);
-		nbt.putDouble("pY", pos.y);
-		nbt.putDouble("pZ", pos.z);
+		nbt.put("pose", pose.write());
 
 		nbt.putInt("sCd", shutdownTickCountdown);
 		nbt.putBoolean("invM", invertedMotion);
 		return nbt;
 	}
-	protected void checkRotation() {
-		if(rotation == null) {
-			rotation = new Quaternionf();
-		}
-		if(prevRotation == null) {
-			prevRotation = new Quaternionf();
-		}
-	}
 	public void readUpdateNbt(NbtCompound nbt) {
-		this.rotation = new Quaternionf(nbt.getFloat("qX"), nbt.getFloat("qY"), nbt.getFloat("qZ"), nbt.getFloat("qW"));
-		this.pos = new Vec3d(nbt.getDouble("pX"), nbt.getDouble("pY"), nbt.getDouble("pZ"));
+		this.pose.read(nbt.getCompound("pose"));
 		this.shutdownTickCountdown = nbt.getInt("sCd");
 		this.invertedMotion = nbt.getBoolean("invM");
 	}
@@ -236,25 +228,25 @@ public abstract class Worldshell implements BlockRenderView {
 	 * Naive worldshell velocity implementation, not taking rotation into account.
 	 **/
 	public Vec3d getVelocity() {
-		return pos.subtract(prevPos);
+		return JOMLConversions.toMinecraft(pose.getPosition().sub(prevPose.getPosition(), new Vector3d()));
 	}
 	/**
 	 * Rotational velocity implementation.
 	 **/
 	public Vec3d getRotationalVelocity(Vec3d entityPos) {
-		entityPos = entityPos.subtract(this.pos);
-		Quaternionf c = new Quaternionf().identity().mul(rotation.invert(new Quaternionf()));
-		Quaternionf p = new Quaternionf().identity().mul(prevRotation.invert(new Quaternionf()));
+		entityPos = entityPos.subtract(JOMLConversions.toMinecraft(this.pose.getPosition()));
+		Quaterniond c = new Quaterniond().identity().mul(pose.getOrientation().invert(new Quaterniond()));
+		Quaterniond p = new Quaterniond().identity().mul(prevPose.getOrientation().invert(new Quaterniond()));
 		p.invert().mul(c).normalize();
 		return ConnateMathUtil.rotateViaQuat(entityPos, p).subtract(entityPos);
 	}
 
 	public float getYawVelocity(float delta) {
-		Quaternionf c = new Quaternionf().identity().mul(prevRotation.slerp(rotation, delta, new Quaternionf()).invert(new Quaternionf()));
-		Quaternionf p = new Quaternionf().identity().mul(prevRotation.invert(new Quaternionf()));
+		Quaterniond c = new Quaterniond().identity().mul(prevPose.getOrientation().slerp(pose.getOrientation(), delta, new Quaterniond()).invert(new Quaterniond()));
+		Quaterniond p = new Quaterniond().identity().mul(prevPose.getOrientation().invert(new Quaterniond()));
 		p.invert().mul(c).normalize();
-		Vector3f f = p.getEulerAnglesZYX(new Vector3f());
-		return f.y * 180f / MathHelper.PI;
+		Vector3d f = p.getEulerAnglesZYX(new Vector3d());
+		return (float) f.y * 180f / MathHelper.PI;
 	}
 
 	/**
@@ -289,15 +281,16 @@ public abstract class Worldshell implements BlockRenderView {
 			default -> 1.0F;
 		};
 	}
+	private static final Quaternionf jank = new Quaternionf();
 
 	private Direction getLocal(Direction dir) {
 		Vector3f v = dir.getUnitVector();
-		v.rotate(this.getRotation());
+		v.rotate(this.getRotation().get(jank));
 		return Direction.getFacing(v.x, v.y, v.z);
 	}
 	private Vector3f getLocalVec(Direction dir) {
 		Vector3f v = dir.getUnitVector();
-		v.rotate(this.getRotation());
+		v.rotate(this.getRotation().get(jank));
 		return v;
 	}
 
@@ -338,20 +331,20 @@ public abstract class Worldshell implements BlockRenderView {
 	}
 
 	public Vec3d getLocalPos(Vec3d bPos) {
-		return new Vec3d(pos.x, pos.y, pos.z).add(ConnateMathUtil.rotateViaQuat(bPos, rotation));
+		return new Vec3d(prevPose.getPosition().x, prevPose.getPosition().y, prevPose.getPosition().z).add(ConnateMathUtil.rotateViaQuat(bPos, pose.getOrientation()));
 	}
 	public Vec3d getLocalPos(Vec3d bPos, float tickDelta) {
-		return new Vec3d(pos.x, pos.y, pos.z).add(ConnateMathUtil.rotateViaQuat(bPos, getRotation(tickDelta)));
+		return new Vec3d(prevPose.getPosition().x, prevPose.getPosition().y, prevPose.getPosition().z).add(ConnateMathUtil.rotateViaQuat(bPos, getRotation(tickDelta)));
 	}
 	public Vector3d getLocalPos(Vector3d bPos) {
-		return new Vector3d(pos.x, pos.y, pos.z).add(bPos.rotate(rotation.get(new Quaterniond())));
+		return new Vector3d(prevPose.getPosition().x, prevPose.getPosition().y, prevPose.getPosition().z).add(bPos.rotate(pose.getOrientation().get(new Quaterniond())));
 	}
 	public Vector3d getLocalPos(Vector3d bPos, float tickDelta) {
-		return new Vector3d(pos.x, pos.y, pos.z).add(bPos.rotate(getRotation(tickDelta).get(new Quaterniond())));
+		return new Vector3d(prevPose.getPosition().x, prevPose.getPosition().y, prevPose.getPosition().z).add(bPos.rotate(getRotation(tickDelta).get(new Quaterniond())));
 	}
 
 	private BlockPos getLocalPos(BlockPos bPos) {
-		Vec3d vec = new Vec3d(pos.x, pos.y, pos.z).add(ConnateMathUtil.rotateViaQuat(new Vec3d(bPos.getX(), bPos.getY(), bPos.getZ()), rotation));
+		Vec3d vec = new Vec3d(prevPose.getPosition().x, prevPose.getPosition().y, prevPose.getPosition().z).add(ConnateMathUtil.rotateViaQuat(new Vec3d(bPos.getX(), bPos.getY(), bPos.getZ()), prevPose.getOrientation()));
 		return new BlockPos(MathHelper.floor(vec.getX()), MathHelper.floor(vec.getY()), MathHelper.floor(vec.getZ()));
 	}
 

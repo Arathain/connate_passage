@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "AutoSyncedComponentMixin",
+    "EntityAccessor",
     "EntityMixin",
     "LivingEntityMixin",
     "iris.ShadowRendererMixin"

@@ -1,6 +1,7 @@
 package arathain.miku_machines.logic.worldshell;
 
 import arathain.miku_machines.MikuMachines;
+import arathain.miku_machines.logic.ryanhcode.JOMLConversions;
 import arathain.miku_machines.logic.spline.CatmullRomCurveSpline;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FacingBlock;
@@ -9,7 +10,9 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import org.joml.Quaterniond;
 import org.joml.Quaternionf;
+import org.joml.Vector3d;
 import org.joml.Vector3f;
 
 import java.util.List;
@@ -99,12 +102,10 @@ public class SplineFollowingAxisLimitedWorldshell extends AxisLimitedWorldshell 
 
 		}
 
-		this.prevPos = this.pos;
-		this.pos = this.spline.getPos(1);
+		this.pose.setPosition(JOMLConversions.toJOML(this.spline.getPos(1)));
 		Vec3d prod = this.spline.getVelocity(1).normalize();
-		checkRotation();
-		this.axis = prod.toVector3f().rotate(new Vector3f(0, 0, 1).rotationTo(contained.get(pivot).get(FacingBlock.FACING).getUnitVector(), new Quaternionf()));
-		this.prevRotation = rotation;
-		this.rotation = new Quaternionf().rotateTo(new Vector3f(0, 0, -1), axis);
+		this.axis = prod.toVector3f().rotate(new Vector3f(0, 0, 1).rotationTo(contained.get(pivot).get(FacingBlock.FACING).getUnitVector(), new Quaternionf())).get(new Vector3d());
+		this.prevPose.setOrientation(this.pose.getOrientation().get(new Quaterniond()));
+		this.pose.setOrientation(new Quaterniond().rotateTo(new Vector3d(0, 0, -1), axis));
 	}
 }

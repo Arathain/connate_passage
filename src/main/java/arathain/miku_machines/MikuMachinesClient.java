@@ -213,7 +213,7 @@ public class MikuMachinesClient implements ClientModInitializer {
 
 			matrices.pop();
 		}
-		Quaternionf q = shell.getRotation(tickDelta);
+		Quaternionf q = shell.getRotation(tickDelta).get(new Quaternionf());
 		matrices.multiply(q);
 		BlockEntityRenderDispatcher d = c.getBlockEntityRenderDispatcher();
 		WorldshellRenderCache cache = shell.getCache();

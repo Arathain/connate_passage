@@ -7,6 +7,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import org.joml.Vector3d;
 import org.joml.Vector3f;
 
 import java.util.Map;
@@ -22,16 +23,16 @@ public class ConstantAxisLimitedWorldshell extends AxisLimitedWorldshell impleme
 	@Override
 	public void readUpdateNbt(NbtCompound nbt) {
 		super.readUpdateNbt(nbt);
-		this.putAxis(new Vector3f(nbt.getFloat("axisX"), nbt.getFloat("axisY"), nbt.getFloat("axisZ")));
+		this.putAxis(new Vector3d(nbt.getDouble("axisX"), nbt.getDouble("axisY"), nbt.getDouble("axisZ")));
 		this.speed = nbt.getInt("speed");
 	}
 
 	@Override
 	public NbtCompound writeUpdateNbt(NbtCompound nbt) {
 		nbt.putInt("speed", speed);
-		nbt.putFloat("axisX", axis.x);
-		nbt.putFloat("axisY", axis.y);
-		nbt.putFloat("axisZ", axis.z);
+		nbt.putDouble("axisX", axis.x);
+		nbt.putDouble("axisY", axis.y);
+		nbt.putDouble("axisZ", axis.z);
 		return super.writeUpdateNbt(nbt);
 	}
 
@@ -61,15 +62,14 @@ public class ConstantAxisLimitedWorldshell extends AxisLimitedWorldshell impleme
 	public void tick() {
 		super.tick();
 
-		this.prevRotation = this.getRotation();
 		if(this.shutdownTickCountdown > 0 || this.shutdownTickCountdown == -666) {
 			if(this.shutdownTickCountdown != -666)
 				this.shutdownTickCountdown--;
-			this.rotation.rotateAxis(getSpeedHz() * (this.invertedMotion ? -1 : 1) * MathHelper.PI / 20f, this.axis);
+			this.pose.getOrientation().rotateAxis(getSpeedHz() * (this.invertedMotion ? -1 : 1) * MathHelper.PI / 20f, this.axis).normalize();
 		}
 
 		if(this.speed == 0) {
-			this.rotation = this.prevRotation;
+			this.pose = this.prevPose;
 		}
 	}
 

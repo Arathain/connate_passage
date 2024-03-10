@@ -1,6 +1,5 @@
 package arathain.miku_machines.mixin;
 
-import arathain.miku_machines.logic.ryanhcode.WorldshellCollisionPass;
 import arathain.miku_machines.logic.worldshell.Worldshell;
 import arathain.miku_machines.logic.worldshell.WorldshellWrapper;
 import arathain.miku_machines.logic.worldshell.WorldshellWrapperHolder;
@@ -10,9 +9,6 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;

@@ -25,6 +25,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.joml.Vector3d;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -159,12 +160,12 @@ public class ConnateBracerItem extends Item {
 					context.getWorld().removeBlock(toRemove, false);
 				}
 
-				Vector3f axis = null;
+				Vector3d axis = null;
 				if(i == 2) {
 					switch (state.get().get(AXIS)) {
-						case X -> axis = new Vector3f(1, 0, 0);
-						case Y -> axis = new Vector3f(0, 1, 0);
-						default -> axis = new Vector3f(0, 0, 1);
+						case X -> axis = new Vector3d(1, 0, 0);
+						case Y -> axis = new Vector3d(0, 1, 0);
+						default -> axis = new Vector3d(0, 0, 1);
 					}
 				}
 
