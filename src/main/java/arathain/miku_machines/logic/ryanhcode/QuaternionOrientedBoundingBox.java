@@ -99,8 +99,12 @@ public class QuaternionOrientedBoundingBox {
 		Vector3d check = new Vector3d(0, 1, 0);
 
 		if (mtv.lengthSquared() > 0.0 && mtv.normalize(new Vector3d()).dot(check) > 1.0 - tolerance) {
-			return mtv.mul(0.0, 1.0, 0.0, new Vector3d());
+			System.out.println("toleranced: " + mtv);
+			mtv = mtv.mul(0.0, 1.0, 0.0);
+			return mtv;
 		} else {
+			if(mtv.lengthSquared() > 0.0 )
+				System.out.println("not toleranced: " + mtv);
 			return mtv;
 		}
 	}

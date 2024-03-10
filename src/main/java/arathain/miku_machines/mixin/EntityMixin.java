@@ -14,6 +14,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(Entity.class)
 public abstract class EntityMixin implements WorldshellWrapperHolder {
@@ -31,9 +33,10 @@ public abstract class EntityMixin implements WorldshellWrapperHolder {
 	/**
 	 * Universal worldshell collision hook.
 	 * */
-	@ModifyReturnValue(method = "adjustMovementForCollisions", at = @At(value = "RETURN") )
+	@ModifyArg(method = "move", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;adjustMovementForCollisions(Lnet/minecraft/util/math/Vec3d;)Lnet/minecraft/util/math/Vec3d;"), index = 0)
 	private Vec3d connate$collideWorldshells(Vec3d movement) {
-		return WorldshellCollisionPass.collideWithWorldshells(this.getWorld(), shell, (Entity) (Object) this, movement);
+		Vec3d result = WorldshellCollisionPass.collideWithWorldshells(this.getWorld(), shell, (Entity) (Object) this, movement);
+		return result;
 	}
 
 

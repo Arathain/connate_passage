@@ -12,6 +12,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Quaterniond;
+import org.joml.Quaternionf;
 import org.joml.Vector3d;
 
 import java.util.ArrayList;
@@ -67,6 +68,10 @@ public class WorldshellCollisionPass {
 			}
 		}
 
+		if(r.hasCollided()) {
+			System.out.println("og: " + movement);
+			System.out.println("result: " + r.collision());
+		}
 
 		return r.hasCollided() ? r.collision() : movement;
 	}
@@ -84,6 +89,7 @@ public class WorldshellCollisionPass {
 		Vec3d cent = box.getCenter();
 		Vector3d pos = new Vector3d(cent.x, cent.y, cent.z);
 		Vector3d collisionEffect = new Vector3d();
+		Quaterniond obbRot = shell.getRotation().get(new Quaterniond()).normalize();
 
 		double xztolerance = 0.06;
 		double ytolerance = 0.01;
@@ -95,15 +101,15 @@ public class WorldshellCollisionPass {
 		);
 
 		pos.add(0, shellDir.y, 0);
-		collisionPass(shapes, shell, collisionIterator, entityBox, pos, collisionEffect);
+		collisionPass(shapes, shell, collisionIterator, entityBox, pos, collisionEffect, obbRot);
 		tolerance(shellDir, backup, xztolerance, ytolerance);
 
 		pos.add(0, 0, shellDir.z);
-		collisionPass(shapes, shell, collisionIterator, entityBox, pos, collisionEffect);
+		collisionPass(shapes, shell, collisionIterator, entityBox, pos, collisionEffect, obbRot);
 		tolerance(shellDir, backup, xztolerance, ytolerance);
 
 		pos.add(shellDir.x, 0, 0);
-		collisionPass(shapes, shell, collisionIterator, entityBox, pos, collisionEffect);
+		collisionPass(shapes, shell, collisionIterator, entityBox, pos, collisionEffect, obbRot);
 		tolerance(shellDir, backup, xztolerance, ytolerance);
 
 		if(collisionEffect.lengthSquared() > 0.0) {
@@ -122,7 +128,8 @@ public class WorldshellCollisionPass {
 										@NotNull Iterable<? extends VoxelShape> shellCollisionIterator,
 										@NotNull QuaternionOrientedBoundingBox entityBox,
 										@NotNull Vector3d pos,
-										@NotNull Vector3d collisionEffect) {
+										@NotNull Vector3d collisionEffect,
+										@NotNull Quaterniond obbRot) {
 
 		for(VoxelShape shape : shellCollisionIterator) {
 			shape.forEachBox((x1, y1, z1, x2, y2, z2) -> {
@@ -131,7 +138,7 @@ public class WorldshellCollisionPass {
 
 				Vector3d obbDim = max.sub(min, new Vector3d());
 				Vector3d obbPos = min.add(max, new Vector3d()).mul(0.5).add(-0.5, -0.5, -0.5);
-				Quaterniond obbRot = shell.getRotation().get(new Quaterniond());
+
 
 				obbPos = shell.getLocalPos(obbPos);
 				if(pos.distanceSquared(obbPos) > 36) {
@@ -146,7 +153,10 @@ public class WorldshellCollisionPass {
 
 				entityBox.setPosition(pos);
 
-				Vector3d mtv = QuaternionOrientedBoundingBox.satToleranced(entityBox, shellBox, 1);
+				Vector3d mtv = QuaternionOrientedBoundingBox.satToleranced(entityBox, shellBox, 0.1);
+				if(mtv.lengthSquared() > 0) {
+					System.out.println("mtv: " + mtv);
+				}
 				pos.add(mtv);
 				collisionEffect.add(mtv);
 				shapes.add(shape);
