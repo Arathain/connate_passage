@@ -13,6 +13,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.*;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.util.thread.ThreadExecutor;
 import net.minecraft.world.World;
 import org.joml.Quaterniond;
 import org.joml.Vector3d;
@@ -76,7 +77,7 @@ public class WorldshellCollision {
 
 		// Player collision matters a lot more to us than actual entities.
 		// We're willing to spend more performance on it.
-		int substeps = (entity instanceof PlayerEntity && entity.getWorld().isClient()) ? 40 : 1;
+		int substeps = (entity instanceof PlayerEntity && entity.getWorld().isClient()) ? 30 : 1;
 
 		// Backup to compare to by the end.
 		// If the difference is extremely negligible, just return the original motion.
@@ -253,6 +254,8 @@ public class WorldshellCollision {
 		for (Box aabb : shellBoxes) {
 			QuatOBB shipCollider = transform(aabb, currentPoseSubstep);
 			playerCollider.setPosition(position);
+			if(playerCollider.getPosition().distance(shipCollider.getPosition()) > 2)
+				continue;
 			Vector3dc sat = QuatOBB.satToleranced(playerCollider, shipCollider, 0.1);
 
 			if (sat.lengthSquared() > 1E-7) {
