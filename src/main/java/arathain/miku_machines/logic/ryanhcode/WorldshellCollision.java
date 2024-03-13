@@ -120,9 +120,6 @@ public class WorldshellCollision {
 				Box boundingBox = entity.getBoundingBox();
 				boundingBox = boundingBox.offset(JOMLConversions.toMinecraft(globalPosition).subtract(boundingBox.getCenter().subtract(0.0, boundingBox.getYLength() / 2, 0.0)));
 
-				Box gatherAABB = ConnateMathUtil.inverseTransformBox(context, currentPoseSubstep, boundingBox).expand(0.2);
-
-
 				Collection<Box> shellBoxes = new ArrayList<>();
 
 				for (BlockPos pos : shell.getContained().keySet()) {
@@ -134,9 +131,9 @@ public class WorldshellCollision {
 							shellBoxes.add(new Box(0, 0, 0, 0, 0, 0));
 						else if (le.getY() > currentPoseSubstep.fromWorldToProjected(Vec3d.ofCenter(pos.subtract(shell.getPivot()))).y + 0.4)
 							shellBoxes.add(new Box(0, 15 / 16f, 0, 1f, 1f, 1f).offset(
-								pos.getX() - shell.getPivot().getX(),
-								pos.getY() - shell.getPivot().getY(),
-								pos.getZ() - shell.getPivot().getZ()));
+								pos.getX() - 0.5 - shell.getPivot().getX(),
+								pos.getY() - 0.5 - shell.getPivot().getY(),
+								pos.getZ() - 0.5 - shell.getPivot().getZ()));
 
 						continue;
 					}
@@ -150,7 +147,7 @@ public class WorldshellCollision {
 					List<Box> aabbs = shape.getBoundingBoxes();
 
 					for (Box aabb : aabbs) {
-						shellBoxes.add(aabb.offset(pos.getX()-shell.getPivot().getX(), pos.getY()-shell.getPivot().getY(), pos.getZ()-shell.getPivot().getZ()));
+						shellBoxes.add(aabb.offset(pos.getX()-0.5-shell.getPivot().getX(), pos.getY()-0.5-shell.getPivot().getY(), pos.getZ()-0.5-shell.getPivot().getZ()));
 					}
 				}
 

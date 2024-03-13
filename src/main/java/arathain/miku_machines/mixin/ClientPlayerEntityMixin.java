@@ -23,16 +23,16 @@ public abstract  class ClientPlayerEntityMixin extends AbstractClientPlayerEntit
 		super(world, profile);
 	}
 
-	/**
-	 * Rotates the player across the Y-axis in accordance with collided worldshell.
-	 * */
-	@ModifyReturnValue(method = "getYaw(F)F", at = @At(value = "RETURN") )
-	private float connate$collideWorldshells(float in, @Local float delta) {
-		WorldshellWrapper w = ((WorldshellWrapperHolder) this).getWorldshell();
-		Worldshell s = w.shell;
-		if(s != null && w.hasCollided && w.isColliding) {
-			in += s.getYawVelocity(delta);
-		}
-		return in;
-	}
+//	/**
+//	 * Rotates the player across the Y-axis in accordance with collided worldshell.
+//	 * */
+//	@ModifyReturnValue(method = "getYaw(F)F", at = @At(value = "RETURN") )
+//	private float connate$collideWorldshells(float in, @Local float delta) {
+//		WorldshellWrapper w = ((WorldshellWrapperHolder) this).getWorldshell();
+//		Worldshell s = w.shell;
+//		if(s != null && w.hasCollided && w.isColliding) {
+//			in += s.getYawVelocity(delta);
+//		}
+//		return in;
+//	}
 }
