@@ -146,7 +146,7 @@ public class QuatOBB {
 		double minOverlap = Double.MAX_VALUE;
 
 		for (Vector3d check : context.checks) {
-			if (check.equals(0, 0, 0)) {
+			if (check.lengthSquared() <= 0) {
 				continue;
 			}
 
