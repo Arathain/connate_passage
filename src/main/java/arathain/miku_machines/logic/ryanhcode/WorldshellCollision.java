@@ -19,10 +19,7 @@ import org.joml.Quaterniond;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class WorldshellCollision {
@@ -121,9 +118,25 @@ public class WorldshellCollision {
 				Box boundingBox = entity.getBoundingBox();
 				boundingBox = boundingBox.offset(JOMLConversions.toMinecraft(globalPosition).subtract(boundingBox.getCenter().subtract(0.0, boundingBox.getYLength() / 2, 0.0)));
 
+
+				Box gatherAABB = ConnateMathUtil.inverseTransformBox(context, currentPoseSubstep, boundingBox).expand(0.2);
+
+				// all blocks
+				Iterable<BlockPos> stream = BlockPos.iterate(MathHelper.floor(gatherAABB.minX),
+						MathHelper.floor(gatherAABB.minY - 1), // fences/walls!
+						MathHelper.floor(gatherAABB.minZ),
+						MathHelper.floor(gatherAABB.maxX),
+						MathHelper.floor(gatherAABB.maxY),
+						MathHelper.floor(gatherAABB.maxZ));
+
 				Collection<Box> shellBoxes = new ArrayList<>();
 
-				for (BlockPos pos : shell.getContained().keySet()) {
+				for (BlockPos pos : stream) {
+					pos = pos.add(shell.getPivot());
+
+					if(!shell.getContained().containsKey(pos)) {
+						continue;
+					}
 
 					BlockState state = shell.getContained().get(pos);
 
